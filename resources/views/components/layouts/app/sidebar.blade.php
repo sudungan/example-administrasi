@@ -16,9 +16,9 @@
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 </flux:navlist.group>
 
-                <flux:navlist.group expandable heading="Favorites" class="hidden lg:grid">
-                    <flux:navlist.item href="#">Marketing site</flux:navlist.item>
-                    <flux:navlist.item href="#">Android app</flux:navlist.item>
+                <flux:navlist.group expandable heading="Administrasi" class="hidden lg:grid">
+                    <flux:navlist.item href="#">Presensi</flux:navlist.item>
+                    <flux:navlist.item href="#">Batasan Ma-Pel</flux:navlist.item>
                 <flux:navlist.item href="#">Brand guidelines</flux:navlist.item>
 
             </flux:navlist.group>
