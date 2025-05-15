@@ -15,6 +15,13 @@
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 </flux:navlist.group>
+
+                <flux:navlist.group expandable heading="Favorites" class="hidden lg:grid">
+                    <flux:navlist.item href="#">Marketing site</flux:navlist.item>
+                    <flux:navlist.item href="#">Android app</flux:navlist.item>
+                <flux:navlist.item href="#">Brand guidelines</flux:navlist.item>
+
+            </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />
