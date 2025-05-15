@@ -19,7 +19,7 @@
                 <flux:navlist.group expandable heading="Administrasi" class="hidden lg:grid">
                     <flux:navlist.item href="#">Presensi</flux:navlist.item>
                     <flux:navlist.item href="#">Batasan Ma-Pel</flux:navlist.item>
-                <flux:navlist.item href="#">Brand guidelines</flux:navlist.item>
+                <flux:navlist.item href="#">Batasan Guru</flux:navlist.item>
 
             </flux:navlist.group>
             </flux:navlist>
