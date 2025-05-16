@@ -11,20 +11,26 @@
                 <x-app-logo />
             </a>
 
-            <flux:navlist variant="outline">
+            {{-- <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 </flux:navlist.group>
+            </flux:navlist> --}}
 
-                <flux:navlist.group expandable heading="Administrasi" class="hidden lg:grid">
-                    <flux:navlist.item href="#">Presensi</flux:navlist.item>
-                    <flux:navlist.item href="#">Batasan Ma-Pel</flux:navlist.item>
+            <flux:navlist variant="outline">
+              <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>   
+                {{-- <flux:navlist.item icon="home" href="#" current>Home</flux:navlist.item> --}}
+                <flux:navlist.item icon="inbox" badge="12"  href="#">Inbox</flux:navlist.item>
+                <flux:navlist.item icon="document-text" :href="route('roles.listrole')" :current="request()->routeIs('roles.listrole')" wire:navigate>Jabatan / Role</flux:navlist.item>
+                <flux:navlist.item icon="calendar" href="#">Calendar</flux:navlist.item>
+            <flux:navlist.group expandable heading="Administrasi" class="hidden lg:grid">
+                <flux:navlist.item href="#">Presensi Siswa</flux:navlist.item>
+                <flux:navlist.item href="#">Batasan Pelajaran</flux:navlist.item>
                 <flux:navlist.item href="#">Batasan Guru</flux:navlist.item>
-
             </flux:navlist.group>
-            </flux:navlist>
-
+        </flux:navlist>
             <flux:spacer />
+            
 
             <flux:navlist variant="outline">
                 <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
