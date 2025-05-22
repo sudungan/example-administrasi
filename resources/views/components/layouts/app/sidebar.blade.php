@@ -18,7 +18,7 @@
             </flux:navlist> --}}
 
             <flux:navlist variant="outline">
-              <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>   
+              <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 {{-- <flux:navlist.item icon="home" href="#" current>Home</flux:navlist.item> --}}
                 <flux:navlist.item icon="inbox" badge="12"  href="#">Inbox</flux:navlist.item>
                 <flux:navlist.item icon="document-text" :href="route('roles.listrole')" :current="request()->routeIs('roles.listrole')" wire:navigate>Jabatan / Role</flux:navlist.item>
@@ -30,7 +30,7 @@
             </flux:navlist.group>
         </flux:navlist>
             <flux:spacer />
-            
+
 
             <flux:navlist variant="outline">
                 <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
