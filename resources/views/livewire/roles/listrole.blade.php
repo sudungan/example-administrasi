@@ -6,23 +6,24 @@ use App\Models\Role;
 new class extends Component {
     public $role = [];
     public $name = "";
-    public $isOpenModal = false;
+    public $createSuccess = false;
 
     public function storeDataRole() {
         $this->validate([
-            'name' => ['required','min:5', 'string', 'lowercase', 'unique:' . Role::class],
+            'name' => ['required','min:5', 'string', 'unique:' . Role::class],
         ], [
             'name.required' => 'nama jabatan wajib diisi..',
             'name.min'      => 'Nama jabatan minimal 5 karakter..',
-            'name.unique'   => 'Nama jabatan sudah dipakai..    '
+            'name.unique'   => 'Nama jabatan sudah dipakai..',
+            'name.string'   => 'Nama Jabatan harus huruf'
         ]);
 
         Role::create([
             'name'  => $this->name
         ]);
 
+        $this->dispatch('role-created');
         $this->reset('name');
-
     }
 
     public function cancelSend() {
@@ -45,8 +46,14 @@ new class extends Component {
 <div x-data="{
         isShowFormCreate: false,
         name: $wire.entangle('name'),
+        isShowFormEdit: false,
+        roleId: null,
         openModalCreate() {
-            this.isShowFormCreate = true;
+            if(this.isShowFormEdit ==true) {
+                this.isShowFormCreate = false;
+            }else {
+                this.isShowFormCreate = true;
+            }
         },
         closeCreate() {
             if(this.name != '') {
@@ -64,7 +71,27 @@ new class extends Component {
         saveRole() {
             $wire.storeDataRole()
         }
-     }">
+     }"
+    x-init="
+    window.addEventListener('role-created', () => {
+        this.isShowFormCreate = false;
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: 'Role berhasil ditambahkan!',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    });
+
+    window.addEventListener('open-edit-form-role', (event)=> {
+        this.isShowFormEdit = true;
+        this.isShowFormCreate = false;
+        this.roleId = event.detail.roleId;
+        console.log(this.roleId, this.isShowFormCreate)
+    })
+    "
+    >
     <button
         x-show="!isShowFormCreate"
         type="button"
@@ -73,6 +100,7 @@ new class extends Component {
         <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
         role
     </button>
+
     <div x-show="isShowFormCreate" class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-2xl max-h-full">
             <!-- Modal content -->
@@ -116,5 +144,11 @@ new class extends Component {
             </div>
         </div>
     </div>
+
+
+{{-- <livewire:roles.edit-role :param="roleId"/> --}}
+
+
+    <livewire:roles.list-table-role />
 </div>
 
