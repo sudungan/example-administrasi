@@ -13,7 +13,7 @@ Route::view('dashboard', 'dashboard')
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('roles', 'roles');
-    Volt::route('roles', 'roles.listrole')->name('roles.listrole');
+    Volt::route('roles', 'roles.index')->name('roles.index');
 
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
