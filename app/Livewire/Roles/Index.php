@@ -37,7 +37,6 @@ class Index extends Component
     #[On('close-edited')]
     public function closeEdit() {
         $this->edit = false;
-        dd('kedua');
     }
 
     #[On('edited-success')]

@@ -160,6 +160,6 @@ x-init="
         </div>
     @endif
     @if ($edit)
-        <livewire:roles.edit :idRole="$selectedRoleId"  wire:key="$selectedRoleId"/>
+        <livewire:roles.edit :idRole="$selectedRoleId" />
     @endif
 </div>

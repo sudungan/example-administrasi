@@ -15,9 +15,10 @@ new class extends Component {
     }
 
     public function updateDataRole($name) {
-        
+        $this->name = $name;
+
         $newName = $this->validate([
-             'name' => ['required','min:5', 'string', 'unique:' . Role::class],
+             'name' => ['required','min:5',  'unique:' . Role::class],
         ], [
             'name.required' => 'nama jabatan wajib diisi..',
             'name.min'      => 'Nama jabatan minimal 5 karakter..',
@@ -25,7 +26,6 @@ new class extends Component {
             'name.string'   => 'Nama Jabatan harus huruf'
         ]);
 
-        // dd($validated);
         $this->role->update([
             'name'  => $name
         ]);
