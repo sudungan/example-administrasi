@@ -1,17 +1,72 @@
 <?php
 
 use Livewire\Volt\Component;
+use App\Models\Role;
+use Illuminate\Support\Facades\Validator;
 
 new class extends Component {
     public $edit = false;
+    public $role;
+    public $name = '';
+
+    public function mount($idRole) {
+
+        $this->role = Role::findOrFail($idRole);
+    }
+
+    public function updateDataRole($name) {
+        
+        $newName = $this->validate([
+             'name' => ['required','min:5', 'string', 'unique:' . Role::class],
+        ], [
+            'name.required' => 'nama jabatan wajib diisi..',
+            'name.min'      => 'Nama jabatan minimal 5 karakter..',
+            'name.unique'   => 'Nama jabatan sudah dipakai..',
+            'name.string'   => 'Nama Jabatan harus huruf'
+        ]);
+
+        // dd($validated);
+        $this->role->update([
+            'name'  => $name
+        ]);
+
+        $this->edit = false;
+
+        $this->dispatch('edited-success');
+    }
+
 }; ?>
 
 <div x-data="{
     edit: $wire.entangle('edit'),
+    name: '{{ $role->name }}',
+    oldName:  '{{ $role->name }}',
     closeModalEdit() {
-     $wire.dispatch('close-edited');
-    }
-}">
+        if(this.name !== this.oldName) {
+            Swal.fire({
+                title: 'Batalkan perubahan?',
+                text: 'Data ini akan dikembalikan ke awal',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $wire.dispatch('close-edited');
+                }
+            });
+        }else {
+            $wire.dispatch('close-edited');
+        }
+    },
+    sendDataUpdate() {
+        $wire.updateDataRole(this.name);
+    },
+}"
+{{-- x-init="$watch('name', value => console.log(name))" --}}
+>
     <div class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
        <div class="relative p-4 w-full max-w-2xl max-h-full">
             <!-- Modal content -->
@@ -30,7 +85,7 @@ new class extends Component {
                 </div>
                 <!-- Modal body -->
                 <div class="p-4 md:p-5 space-y-4">
-                    <form wire:submit="storeDataRole" class="space-y-4">
+                    <form @submit.prevent="sendDataUpdate" class="space-y-4">
                     <div>
                         <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Jabatan</label>
                         <input type="text"  x-model="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="write role name here.." />
@@ -43,7 +98,7 @@ new class extends Component {
                         <button
                             type="submit"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                            Save
+                            update
                         </button>
                         <button
                             @click="closeModalEdit"

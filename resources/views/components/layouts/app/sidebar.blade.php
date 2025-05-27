@@ -3,6 +3,7 @@
     <head>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         @include('partials.head')
+            {{-- @fluxAppearance --}}
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
@@ -12,24 +13,19 @@
                 <x-app-logo />
             </a>
 
-            {{-- <flux:navlist variant="outline">
-                <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                </flux:navlist.group>
-            </flux:navlist> --}}
-
             <flux:navlist variant="outline">
-              <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                {{-- <flux:navlist.item icon="home" href="#" current>Home</flux:navlist.item> --}}
-                <flux:navlist.item icon="inbox" badge="12"  href="#">Inbox</flux:navlist.item>
-                <flux:navlist.item icon="document-text" :href="route('roles.index')" :current="request()->routeIs('roles.index')" wire:navigate>Jabatan / Role</flux:navlist.item>
-                <flux:navlist.item icon="calendar" href="#">Calendar</flux:navlist.item>
-            <flux:navlist.group expandable heading="Administrasi" class="hidden lg:grid">
-                <flux:navlist.item href="#">Presensi Siswa</flux:navlist.item>
-                <flux:navlist.item href="#">Batasan Pelajaran</flux:navlist.item>
-                <flux:navlist.item href="#">Batasan Guru</flux:navlist.item>
-            </flux:navlist.group>
-        </flux:navlist>
+                <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item icon="inbox" badge="12"  href="#">Inbox</flux:navlist.item>
+                    <flux:navlist.item icon="document-text" :href="route('roles.index')" :current="request()->routeIs('roles.index')" wire:navigate>Jabatan / Role</flux:navlist.item>
+                    <flux:navlist.item icon="calendar" href="#">Calendar
+                </flux:navlist.item>
+                <flux:navlist.group expandable heading="Administrasi" class="hidden lg:grid">
+                    <flux:navlist.item href="#">Presensi Siswa</flux:navlist.item>
+                    <flux:navlist.item href="#">Batasan Pelajaran</flux:navlist.item>
+                    <flux:navlist.item href="#">Batasan Guru</flux:navlist.item>
+                </flux:navlist.group>
+            </flux:navlist>
+
             <flux:spacer />
 
 
@@ -143,4 +139,5 @@
 
         @fluxScripts
     </body>
+     {{-- @fluxScripts --}}
 </html>

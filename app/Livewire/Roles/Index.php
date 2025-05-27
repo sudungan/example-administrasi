@@ -17,6 +17,7 @@ class Index extends Component
     public $create = false;
     public $edit = false;
     public $createSuccess = false;
+    public $selectedRoleId = null;
 
     #[Url]
     public ?string $search = '';
@@ -30,11 +31,19 @@ class Index extends Component
 
     public function editRole($idRole) {
         $this->edit = true;
+        $this->selectedRoleId = $idRole;
     }
 
     #[On('close-edited')]
     public function closeEdit() {
         $this->edit = false;
+        dd('kedua');
+    }
+
+    #[On('edited-success')]
+    public function closeUpdate() {
+        $this->edit = false;
+        $this->dispatch('success-notification');
     }
 
     public function closeCreateForm() {
@@ -46,11 +55,11 @@ class Index extends Component
         $this->resetPage();
     }
 
-        public function updatingSearch()
-    {
+    public function updatingSearch() {
         $this->resetPage();
     }
 
+    #[On('role-updated')]
     public function render()
     {
           $query = Role::query();
