@@ -2,13 +2,6 @@
     isShowFormCreate: $wire.entangle('create'),
     name: $wire.entangle('name'),
     edit: $wire.entangle('edit'),
-    openModalCreate() {
-        if(this.name != '') {
-
-        }else {
-            this.isShowFormCreate = true;
-        }
-    },
     closeModalCreate(){
         if(this.name != ''){
              Swal.fire({
@@ -23,13 +16,15 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                        this.isShowFormCreate = false;
-                       $wire.closeCreateForm();
                        this.name = ''
                     }
             });
         }else {
-            $wire.closeCreateForm();
+        this.isShowFormCreate = false;
         }
+    },
+    closeModal() {
+        this.isShowFormCreate = false;
     },
     sendDataRole() {
         $wire.storeDataRole();
@@ -57,9 +52,9 @@
     }
 }"
 x-init="
-    window.addEventListener('success-notification', () => {
+    window.addEventListener('success-update-notification', () => {
 
-    let Toast = Swal.mixin({
+    let updateNotification = Swal.mixin({
         toast: true,
         position: 'top-end',
         showConfirmButton: false,
@@ -71,9 +66,29 @@ x-init="
         }
     });
 
-    Toast.fire({
+    updateNotification.fire({
         icon: 'success',
         title: 'berhasil diupdate'
+        });
+    });
+
+    window.addEventListener('success-created-notification', () => {
+
+    let createdNotifiation = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+
+    createdNotifiation.fire({
+        icon: 'success',
+        title: 'berhasil disimpan.'
         });
     });
 "
@@ -82,11 +97,10 @@ x-init="
         @include('partials.roles-heading')
     </section>
 
-    @if (!$edit)
         <div class="flex gap-4">
             <button
                 type="button"
-                wire:click="openModalCreate"
+                x-on:click="$wire.create = true"
                 class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
                 role
@@ -94,12 +108,9 @@ x-init="
 
 
         </div>
-    @endif
-        @if ($create)
-            <div class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div wire:show="create" x-transition.duration.500ms class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
                 @include('livewire.roles._card-form-create')
             </div>
-        @endif
     @if (!$edit)
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <div class="justify-items-end pb-4 bg-white dark:bg-gray-900">
@@ -137,7 +148,7 @@ x-init="
                                 {{ $role->name }}
                             </th>
                             <td class="px-6 py-4 flex gap-3">
-                                <a wire:click="editRole({{$role->id}})" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                <a x-on:click="$wire.editRole({{$role->id}})" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                     </svg>

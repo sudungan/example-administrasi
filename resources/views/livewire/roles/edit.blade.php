@@ -18,7 +18,7 @@ new class extends Component {
         $this->name = $name;
 
         $newName = $this->validate([
-             'name' => ['required','min:5',  'unique:' . Role::class],
+             'name' => ['required','min:4',  'unique:' . Role::class],
         ], [
             'name.required' => 'nama jabatan wajib diisi..',
             'name.min'      => 'Nama jabatan minimal 5 karakter..',

@@ -29,6 +29,12 @@ class Index extends Component
         $this->create = true;
     }
 
+    public function closeCreateForm() {
+        $this->create = false;
+        $this->reset('name');
+        $this->dispatch('success-created-notification');
+    }
+
     public function editRole($idRole) {
         $this->edit = true;
         $this->selectedRoleId = $idRole;
@@ -42,12 +48,7 @@ class Index extends Component
     #[On('edited-success')]
     public function closeUpdate() {
         $this->edit = false;
-        $this->dispatch('success-notification');
-    }
-
-    public function closeCreateForm() {
-         $this->create = false;
-        $this->reset('name');
+        $this->dispatch('success-update-notification');
     }
 
     public function updatetingCreate() {
@@ -91,7 +92,6 @@ class Index extends Component
         Role::create([
             'name'  => $this->name
         ]);
-        // $this->dispatch('role-created');
         $this->resetErrorBag('name');
         $this->closeCreateForm();
     }
