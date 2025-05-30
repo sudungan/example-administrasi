@@ -23,8 +23,23 @@ class Index extends Component
     public ?string $search = '';
 
     public function mount() {
-
+        $this->checkRole();
     }
+
+    public function checkRole() {
+
+        $existRole = Role::pluck('name')->toArray();
+        $listRole = ['admin'];
+
+        $newRoles = array_diff($listRole, $existRole);
+         if (!empty($newRoles)) {
+            foreach ($newRoles as $key => $role) {
+               Role::create(['name'=> $role]);
+            }
+
+        }
+    }
+
     public function openModalCreate() {
         $this->create = true;
     }
@@ -49,6 +64,10 @@ class Index extends Component
     public function closeUpdate() {
         $this->edit = false;
         $this->dispatch('success-update-notification');
+    }
+
+    public function resetError() {
+        $this->resetErrorBag('name');
     }
 
     public function updatetingCreate() {
@@ -81,7 +100,7 @@ class Index extends Component
 
        public function storeDataRole() {
         $this->validate([
-            'name' => ['required','min:5', 'string', 'unique:' . Role::class],
+            'name' => ['required','min:4', 'string', 'unique:' . Role::class],
         ], [
             'name.required' => 'nama jabatan wajib diisi..',
             'name.min'      => 'Nama jabatan minimal 5 karakter..',
@@ -92,7 +111,7 @@ class Index extends Component
         Role::create([
             'name'  => $this->name
         ]);
-        $this->resetErrorBag('name');
+        $this->resetError();
         $this->closeCreateForm();
     }
 

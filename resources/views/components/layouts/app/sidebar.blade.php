@@ -28,7 +28,9 @@
                 </flux:navlist.group>
 
                 <flux:navlist.group expandable :expanded="false" heading="Management User" class="hidden lg:grid">
-                    <flux:navlist.item href="#">Presensi Siswa</flux:navlist.item>
+                    <flux:navlist.item :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>
+                        {{__('users')}}
+                    </flux:navlist.item>
                     <flux:navlist.item href="#">Batasan Pelajaran</flux:navlist.item>
                     <flux:navlist.item href="#">Batasan Guru</flux:navlist.item>
                 </flux:navlist.group>

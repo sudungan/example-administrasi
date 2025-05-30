@@ -1,9 +1,32 @@
 <div x-data="{
     isShowFormCreate: $wire.entangle('create'),
     name: $wire.entangle('name'),
+    last_name: $wire.entangle('last_name'),
+    first_name: $wire.entangle('firstname'),
+    address: $wire.entangle('address'),
+    email: $wire.entangle('email'),
+    password: $wire.entangle('password'),
+    phone_number: $wire.entangle('phone_number'),
+    role_user: {},
     edit: $wire.entangle('edit'),
+    selectClassroom: false,
+    resetField() {
+        this.name = '';
+        this.last_name = '';
+        this.first_name = '';
+        this.address = '';
+        this.email = '';
+        this.password  = '';
+        this.role_user = {};
+    },
     closeModalCreate(){
-        if(this.name != ''){
+        if(this.name != '' ||
+            this.last_name != '' ||
+            this.first_name != '' ||
+            this.address != '' ||
+            this.password != '' ||
+            this.email != ''
+        ){
              Swal.fire({
                     title: 'yakin membatalkan?',
                     text: 'Data ini akan dihapus dan tidak bisa dikembalikan!',
@@ -16,20 +39,26 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                        this.isShowFormCreate = false;
-                       this.name = ''
+                       $wire.resetFields();
+                       this.selectClassroom = false;
+                       $wire.resetError();
                     }
             });
         }else {
         this.isShowFormCreate = false;
-         $wire.resetError();
+        this.selectClassroom = false;
+
+        $wire.resetFields();
+        $wire.resetError();
         }
     },
     closeModal() {
-        this.isShowFormCreate = false;
         $wire.resetError();
+        this.isShowFormCreate = false;
     },
-    sendDataRole() {
-        $wire.storeDataRole();
+    sendDataUser() {
+        console.log('kesini', this.states)
+        $wire.storeDataUser();
     },
     deleteConfirm(idRole) {
          Swal.fire({
@@ -54,64 +83,45 @@
     }
 }"
 x-init="
-    window.addEventListener('success-update-notification', () => {
-
-    let updateNotification = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
+    $('#selectRole').select2({
+        placeholder: 'Pilih Jabatan / role'
     });
 
-    updateNotification.fire({
-        icon: 'success',
-        title: 'berhasil diupdate'
+      $('#selectRole').on('change', function () {
+       let selectedOptions = $(this).find('option:selected');
+       let selectedRoles = [];
+
+        selectedOptions.each(function () {
+            selectedRoles.push({
+                id: $(this).val(),
+                name: $(this).text().trim()
+            });
         });
-    });
 
-    window.addEventListener('success-created-notification', () => {
+        $wire.role_user = selectedRoles.map(role => role.id)
 
-    let createdNotifiation = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-    });
-
-    createdNotifiation.fire({
-        icon: 'success',
-        title: 'berhasil disimpan.'
-        });
+        let isSiswaSelected = selectedRoles.some(role => role.name === 'siswa');
+        $wire.selectClassroom = isSiswaSelected;
     });
 "
 >
     <section class="w-full">
-        @include('partials.roles-heading')
+        @include('partials.users-heading')
     </section>
 
-        <div class="flex gap-4">
+    <div class="flex gap-4">
             <button
                 type="button"
                 x-on:click="$wire.create = true"
                 class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                role
+                user
             </button>
 
 
         </div>
             <div wire:show="create" x-transition.duration.500ms class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                @include('livewire.roles._card-form-create')
+                @include('livewire.users._card-form-create')
             </div>
     @if (!$edit)
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -129,11 +139,23 @@ x-init="
             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead class=" bg-gray-200 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
-                        <th scope="col" class="p-4">
+                        <th scope="col" class="px-6 py-3">
                             #
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Nama Jabatan
+                            Nama
+                        </th>
+                         <th scope="col" class="px-6 py-3">
+                            Nama Depan
+                        </th>
+                         <th scope="col" class="px-6 py-3">
+                            Nama Belakang
+                        </th>
+                         <th scope="col" class="px-6 py-3">
+                            Alamat
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Jabatan
                         </th>
                         <th scope="col" class="px-6 py-3">
                             Action
@@ -141,21 +163,33 @@ x-init="
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($listRole as $role)
+                    @forelse ($listUser as $user)
                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 {{ $loop->iteration }}
                             </th>
                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ $role->name }}
+                                {{ $user->name }}
+                            </th>
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ $user->first_name }}
+                            </th>
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ $user->last_name }}
+                            </th>
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ $user->address }}
+                            </th>
+                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ $user->roles }}
                             </th>
                             <td class="px-6 py-4 flex gap-3">
-                                <a x-on:click="$wire.editRole({{$role->id}})" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                <a x-on:click="$wire.editRole({{$user->id}})" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                     </svg>
                                 </a>
-                                <a @click="deleteConfirm( {{$role->id}} )" class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                <a @click="deleteConfirm( {{$user->id}} )" class="font-medium text-red-600 dark:text-red-500 hover:underline">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                     </svg>
@@ -164,12 +198,12 @@ x-init="
                         </tr>
                     @empty
                         <th scope="row" class="px-6  text-yellow-800 rounded-lg bg-yellow-50 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            <span class="font-medium"> Tidak ada data jabatan..</span>
+                            <span class="font-medium"> Tidak ada data user..</span>
                         </th>
                     @endforelse
                 </tbody>
             </table>
-            {{ $listRole->links() }}
+            {{-- {{ $listUser->links() }} --}}
         </div>
     @endif
     @if ($edit)
