@@ -1,4 +1,4 @@
-<div class="relative p-4 w-full max-w-4xl max-h-full">
+<div class="relative p-2 w-full max-w-4xl max-h-full">
     <!-- Modal content -->
     <div class="relative bg-white rounded-lg shadow-sm bg-gray-900">
         <!-- Modal body -->
@@ -48,20 +48,20 @@
                             wire:model="password"
                             :label="__('Password')"
                             type="password"
-                            autocomplete="new-password"
                             :placeholder="__('Password')"
+                             autocomplete="new-password"
                             viewable
                     />
                     <div class="col-span-2 sm:col-span-1">
-                        <label for="firstname" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Depan</label>
+                        <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Depan</label>
                         <input
-                            type="firstname"
-                            wire:model="firstname"
-                            id="firstname"
+                            type="first_name"
+                            wire:model="first_name"
+                            id="first_name"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder="write your firstname here.."
                         >
-                         @error('firstname')
+                         @error('first_name')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                         @enderror
                     </div>
@@ -91,19 +91,33 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                         @enderror
                     </div>
-                    <div wire:ignore class="col-span-2 sm:col-span-1">
+                    <div class="col-span-2 sm:col-span-1">
                         <label for="role_user" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jabatan / Role</label>
-                        <select
-                            wire:model.live="role_user"
-                            id="selectRole"
+                         <select wire:model.live="role_user" id="role_user" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <option selected="">Select category</option>
+                                @forelse ($mainRole as $key => $value)
+                                    @if ($key != 'admin')
+                                        <option value="{{ $value }}">{{ $key }}</option>
+                                    @endif
+                                @endforeach
+                        </select>
+                         @error('role_user')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+
+                        {{-- <select
+                            wire:model="role_user"
+                            id="role_user"
                             class="bg-gray-50 py-6 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                         >
-                                @forelse ($listRole as $role)
-                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                @empty
-                                    <option disabled class="font-normal bg-yellow-400 hover:font-bold capitalize">Data Role Belum Tersedia..</option>
-                                @endforelse
+                                <option value=""></option>
+                                @forelse ($mainRole as $key => $value)
+                                    <option value="{{ $value }}">{{ $key }}</option>
+                                @endforeach
                         </select>
+                         @error('role_user')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror --}}
                     </div>
 
                      <div wire:show="selectClassroom" class="col-span-2 sm:col-span-1">

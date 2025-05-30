@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\{User, Major, Role};
+use App\Helpers\MainRole;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -23,9 +24,13 @@ class DatabaseSeeder extends Seeder
             'phone_number'  => '081264626720'
         ]);
 
-        Role::factory()->create([
-            'name' => 'admin',
-        ]);
+
+        foreach (MainRole::mainRole as $key => $value) {
+            Role::create([
+                'name'  => $key
+            ]);
+        }
+
 
         $listMajor = [
             [
@@ -37,7 +42,7 @@ class DatabaseSeeder extends Seeder
                 'user_id'   => rand(1, 3),
             ],
         ];
-        
+
         Major::insert($listMajor);
 
     }

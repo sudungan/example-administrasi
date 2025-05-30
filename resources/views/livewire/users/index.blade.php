@@ -2,7 +2,7 @@
     isShowFormCreate: $wire.entangle('create'),
     name: $wire.entangle('name'),
     last_name: $wire.entangle('last_name'),
-    first_name: $wire.entangle('firstname'),
+    first_name: $wire.entangle('first_name'),
     address: $wire.entangle('address'),
     email: $wire.entangle('email'),
     password: $wire.entangle('password'),
@@ -181,7 +181,9 @@ x-init="
                                 {{ $user->address }}
                             </th>
                              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ $user->roles }}
+                               @foreach ($user->roles as $role)
+                                    {{ $role->name ?? __('TIDAK ADA') }}
+                               @endforeach
                             </th>
                             <td class="px-6 py-4 flex gap-3">
                                 <a x-on:click="$wire.editRole({{$user->id}})" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">

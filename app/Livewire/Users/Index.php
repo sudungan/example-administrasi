@@ -6,7 +6,7 @@ use App\Models\{Classroom, Role, User, Major};
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-
+use App\Helpers\MainRole;
 use Livewire\Component;
 
 class Index extends Component
@@ -14,7 +14,7 @@ class Index extends Component
     public $name = "";
     public $email = "";
     public $password = "";
-    public $firstname = "";
+    public $first_name = "";
     public $last_name = "";
     public $address = "";
     public $phone_number = "";
@@ -30,7 +30,7 @@ class Index extends Component
     {
         return view('livewire.users.index', [
             'listUser'  => User::with('roles')->get(),
-            'listRole'  => Role::get(['id', 'name']),
+            'mainRole'  => MainRole::mainRole,
             'listMajor' => Major::get(['id', 'name']),
             'listClassroom'=> Classroom::get(['id', 'name'])
         ]);
@@ -42,54 +42,62 @@ class Index extends Component
 
     public function resetFields() {
         $this->reset(['name', 'address', 'email', 'password',
-        'last_name', 'firstname', 'major_id', 'phone_number', 'classroom_id', 'role_user', 'selectClassroom']);
+        'last_name', 'first_name', 'major_id', 'phone_number', 'classroom_id', 'role_user', 'selectClassroom']);
     }
 
     public function resetError() {
-        $this->resetErrorBag(['name', 'address', 'phone_number', 'email', 'password', 'last_name', 'firstname', 'major_id', 'classroom_id']);
+        $this->resetErrorBag(['name', 'address', 'phone_number', 'email', 'role_user', 'password', 'last_name', 'first_name', 'major_id', 'classroom_id']);
     }
 
     public function sendDataUser() {
 
         $roleName = DB::table('roles')->where('id', $this->role_user)->value('name');
 
-       $this->validate([
+       $validated = $this->validate([
             'name'          => 'required|min:3',
-            'firstname'    => 'required|min:4',
+            'first_name'    => 'required|min:4',
             'last_name'     => 'required|min:4',
             'role_user'     => 'required',
             'address'       => 'required|min:4',
-            'phone_number'  => 'required|number|min:9',
+            'phone_number'  => 'required|numeric|min_digits:9',
             'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password'      => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'password'      => ['required','string', Rules\Password::defaults()],
             'major_id'      => $roleName === 'siswa' ? 'required' : 'nullable',
             'classroom_id'  => $roleName === 'siswa' ? 'required' : 'nullable',
         ],[
             'name.required'             => 'Username wajib diisi..',
             'name.min'                  => 'Username minimal 3 karakter',
-            'firstname.required'       => 'Nama Depan Wajib diisi..',
-            'firstname.min'            => 'Nama Depan minimal 4 karakter..',
+            'first_name.required'       => 'Nama Depan Wajib diisi..',
+            'first_name.min'            => 'Nama Depan minimal 4 karakter..',
             'last_name.required'        => 'Nama Belakang Wajib diisi..',
             'last_name.min'             => 'Nama Belakang minimal 4 karakter..',
             'role_user.required'        => 'Nama Jabatan wajib diisi..',
             'address.required'          => 'Alamat wajib diisi..',
             'address.min'               => 'Alamat minimal 4 karakter',
-            'phone_number.required'     => 'Nomor telepon wajib diisi..',
-            'phone_number.min'          => 'Nomor Telepon minimal 9 angka',
+            'phone_number.required'     => 'Nomor Telepon wajib diisi',
+            'phone_number.numeric'      => 'Nomor Telepon hanya boleh angka',
+            'phone_number.min_digits'   => 'Nomor Telepon minimal 9 angka',
             'email.required'            => 'Alamat email wajib diisi',
             'email.unique'              => 'Alamat email sudah digunakan..',
             'email.email'               => 'format email salah..',
             'password.required'         => 'Password wajib diisi..',
-            'password.confirmed'        => 'Password tidak cocok..',
             'major_id.required'         => 'Jurusan wajib dipilih..',
             'classroom_id.required'     => 'Kelas wajib dipilih..'
         ]);
 
-        dd($this->role_user);
+        $user = User::create([
+            'name'          => $validated['name'],
+            'first_name'    => $validated['first_name'],
+            'last_name'     => $validated['last_name'],
+            'address'       => $validated['address'],
+            'phone_number'  => $validated['phone_number'],
+            'email'         => $validated['email'],
+            'password'      => Hash::make($validated['password']),
+            'major_id'      => $validated['major_id'],
+            'classroom_id'  => $validated['classroom_id'],
+        ]);
 
-
-
-
-
+        $newUser = User::find($user->id);
+        $newUser->roles()->attach($validated['role_user'], ['role_id'   => $validated['role_user']]);
     }
 }
