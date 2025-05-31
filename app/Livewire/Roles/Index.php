@@ -4,7 +4,9 @@ namespace App\Livewire\Roles;
 
 use Livewire\Attributes\{On, Url};
 use Livewire\Component;
-use App\Models\Role;
+use App\Models\{Role, AdditionRole};
+use App\Helpers\MainRole;
+
 use Livewire\{WithPagination};
 
 class Index extends Component
@@ -12,9 +14,9 @@ class Index extends Component
     use WithPagination;
 
     public $role = [];
-    public $roleId = null;
+    public $role_id = null;
     public $name = "";
-    public $create = false;
+    public $isShowForm = false;
     public $edit = false;
     public $createSuccess = false;
     public $selectedRoleId = null;
@@ -41,12 +43,13 @@ class Index extends Component
     }
 
     public function openModalCreate() {
-        $this->create = true;
+        $this->isShowForm = true;
     }
 
     public function closeCreateForm() {
-        $this->create = false;
+        $this->isShowForm = false;
         $this->reset('name');
+        $this->reset('role_id');
         $this->dispatch('success-created-notification');
     }
 
@@ -67,7 +70,7 @@ class Index extends Component
     }
 
     public function resetError() {
-        $this->resetErrorBag('name');
+        $this->resetErrorBag(['name', 'role_id']);
     }
 
     public function updatetingCreate() {
@@ -81,7 +84,7 @@ class Index extends Component
     #[On('role-updated')]
     public function render()
     {
-          $query = Role::query();
+          $query = Role::with('additionRole');
 
         if (!empty(trim($this->search))) {
             $query->where('name', 'like', '%' . $this->search . '%');
@@ -89,6 +92,7 @@ class Index extends Component
             $query = $query->latest();
 
         return view('livewire.roles.index', [
+             'mainRole'  => MainRole::mainRole,
             'listRole' => $query->paginate(5)
         ]);
     }
@@ -100,23 +104,25 @@ class Index extends Component
 
        public function storeDataRole() {
         $this->validate([
-            'name' => ['required','min:4', 'string', 'unique:' . Role::class],
+            'name' => ['required','min:4', 'string', 'unique:' . AdditionRole::class],
+            'role_id'   => 'required',
         ], [
-            'name.required' => 'nama jabatan wajib diisi..',
-            'name.min'      => 'Nama jabatan minimal 5 karakter..',
-            'name.unique'   => 'Nama jabatan sudah dipakai..',
-            'name.string'   => 'Nama Jabatan harus huruf'
+            'name.required'     => 'nama jabatan tambahan wajib diisi..',
+            'name.min'          => 'Nama jabatan tambahan minimal 5 karakter..',
+            'name.unique'       => 'Nama jabatan tambahan sudah dipakai..',
+            'name.string'       => 'Nama Jabatan tambahan harus huruf',
+            'role_id.required'  => 'nama jabatan utama wajib dipilih..',
         ]);
 
-        Role::create([
-            'name'  => $this->name
+        AdditionRole::create([
+            'name'  => $this->name,
+            'role_id'   => $this->role_id,
         ]);
         $this->resetError();
         $this->closeCreateForm();
     }
 
-    public function deleteRole($idRole) {
-        Role::findOrFail($idRole)->delete();
-
+    public function deleteAdditionRole($additionRoleId) {
+        AdditionRole::findOrFail($additionRoleId)->delete();
     }
 }

@@ -1,5 +1,7 @@
 <div x-data="{
     isShowFormCreate: $wire.entangle('create'),
+    isShowFormGeneral: false,
+    isShowFormProfileDetail: false,
     name: $wire.entangle('name'),
     last_name: $wire.entangle('last_name'),
     first_name: $wire.entangle('first_name'),
@@ -19,7 +21,7 @@
         this.password  = '';
         this.role_user = {};
     },
-    closeModalCreate(){
+    closeModalForm(){
         if(this.name != '' ||
             this.last_name != '' ||
             this.first_name != '' ||
@@ -53,8 +55,17 @@
         }
     },
     closeModal() {
-        $wire.resetError();
         this.isShowFormCreate = false;
+    },
+    showForm() {
+        this.isShowFormGeneral = true
+        if(this.isShowFormGeneral) {
+            this.isShowFormGeneral = true;
+        }
+
+        if(this.isShowFormGeneral) {
+            this.isShowFormGeneral = true;
+        }
     },
     sendDataUser() {
         console.log('kesini', this.states)
@@ -110,19 +121,22 @@ x-init="
     </section>
 
     <div class="flex gap-4">
-            <button
-                type="button"
-                x-on:click="$wire.create = true"
-                class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                user
-            </button>
-
-
-        </div>
-            <div wire:show="create" x-transition.duration.500ms class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <button
+            type="button"
+            x-on:click="showForm"
+            class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+            user
+        </button>
+    </div>
+        {{-- <template> --}}
+            <div x-show="isShowFormGeneral" x-cloak x-transition.duration.500ms class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
                 @include('livewire.users._card-form-create')
             </div>
+        {{-- </template> --}}
+        <div x-show="isShowFormProfileDetail" x-cloak x-transition.duration.500ms class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            @include('livewire.users._card-form-create')
+        </div>
     @if (!$edit)
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <div class="justify-items-end pb-4 bg-white dark:bg-gray-900">
@@ -205,7 +219,6 @@ x-init="
                     @endforelse
                 </tbody>
             </table>
-            {{-- {{ $listUser->links() }} --}}
         </div>
     @endif
     @if ($edit)

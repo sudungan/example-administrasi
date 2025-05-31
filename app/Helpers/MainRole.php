@@ -6,6 +6,7 @@ class MainRole {
     public const mainRole = [
         'admin'   => 1,
         'guru'   => 2,
-        'siswa'   => 3
+        'siswa'   => 3,
+        'orang-tua'=> 4
     ];
 }

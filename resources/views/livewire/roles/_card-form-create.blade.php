@@ -16,13 +16,28 @@
         <!-- Modal body -->
         <div class="p-4 md:p-5 space-y-4">
             <form wire:submit="storeDataRole" class="space-y-4">
+            <div class="col-span-2 sm:col-span-1">
+                <label for="role_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jabatan / Role</label>
+                    <select wire:model.live="role_id" id="role_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                    <option selected="">Select role</option>
+                        @forelse ($mainRole as $key => $value)
+                            @if ($key != 'admin')
+                                <option value="{{ $value }}">{{ $key }}</option>
+                            @endif
+                        @endforeach
+                </select>
+                    @error('role_id')
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
             <div>
-                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Jabatan</label>
-                <input type="text"  x-model="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="write role name here.." />
+                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jabatan Tambahan</label>
+                <input type="text"  x-model="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="write addition role name here.." />
                     @error('name')
                     <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                     @enderror
             </div>
+
             <!-- Modal footer -->
             <div class="flex items-center p-4 md:p-5 border-gray-200 rounded-b dark:border-gray-600">
                 <button
