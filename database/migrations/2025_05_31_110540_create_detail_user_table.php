@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\{Classroom, Major, };
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,19 +21,9 @@ return new class extends Migration
             $table->string('status')->default('active');
             $table->string('place_of_birth');
             $table->string('date_of_birth');
-            $table->foreignId('user_id')
-                ->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-            $table->foreignId('classroom_id')
-                ->nullable()
-                ->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-            $table->foreignId('major_id')
-                ->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignIdFor(Classroom::class)->nullable();
+            $table->foreignIdFor(Major::class)->nullable();
             $table->timestamps();
         });
     }
