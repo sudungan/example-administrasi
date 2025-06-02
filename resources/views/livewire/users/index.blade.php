@@ -1,35 +1,29 @@
-<div x-data="{
-    isShowFormCreate: $wire.entangle('create'),
-    isShowFormGeneral: false,
-    isShowFormProfileDetail: false,
-    name: $wire.entangle('name'),
-    last_name: $wire.entangle('last_name'),
-    first_name: $wire.entangle('first_name'),
-    address: $wire.entangle('address'),
-    email: $wire.entangle('email'),
-    password: $wire.entangle('password'),
-    phone_number: $wire.entangle('phone_number'),
-    role_user: {},
-    edit: $wire.entangle('edit'),
-    selectClassroom: false,
-    resetField() {
-        this.name = '';
-        this.last_name = '';
-        this.first_name = '';
-        this.address = '';
-        this.email = '';
-        this.password  = '';
-        this.role_user = {};
+<div
+    x-data="{
+        isShowFormGeneral: $wire.entangle('createMainRole'),
+        isShowFormProfileDetail: $wire.entangle('createAdditionRole'),
+        name: $wire.entangle('name'),
+        email: $wire.entangle('email'),
+        password: $wire.entangle('password'),
+        role_id: $wire.entangle('role_id'),
+        showFormRoleGeneral() {
+        this.isShowFormGeneral = true;
     },
-    closeModalForm(){
-        if(this.name != '' ||
-            this.last_name != '' ||
-            this.first_name != '' ||
-            this.address != '' ||
-            this.password != '' ||
-            this.email != ''
-        ){
-             Swal.fire({
+    resetFormUserGeneral() {
+        this.isShowFormGeneral = false;
+        this.name = '';
+        this.role_id = '';
+        this.email = '';
+        this.password = '';
+    },
+    closeFormMainRole() {
+        if(
+            (this.name && this.name.trim() !== '') ||
+            (this.password && this.password.trim() !== '') ||
+            (this.email && this.email.trim() !== '') ||
+            (this.role_id && this.role_id.trim() !== '')
+           ) {
+            Swal.fire({
                     title: 'yakin membatalkan?',
                     text: 'Data ini akan dihapus dan tidak bisa dikembalikan!',
                     icon: 'warning',
@@ -40,80 +34,26 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                       this.isShowFormCreate = false;
-                       $wire.resetFields();
-                       this.selectClassroom = false;
-                       $wire.resetError();
+                        this.resetFormUserGeneral();
+                        this.isShowFormGeneral = false;
                     }
             });
         }else {
-        this.isShowFormCreate = false;
-        this.selectClassroom = false;
-
-        $wire.resetFields();
-        $wire.resetError();
+            this.isShowFormGeneral = false;
+            $wire.resetError();
         }
-    },
-    closeModal() {
-        this.isShowFormCreate = false;
-    },
-    showForm() {
-        this.isShowFormGeneral = true
-        if(this.isShowFormGeneral) {
-            this.isShowFormGeneral = true;
-        }
-
-        if(this.isShowFormGeneral) {
-            this.isShowFormGeneral = true;
-        }
-    },
-    sendDataUser() {
-        console.log('kesini', this.states)
-        $wire.storeDataUser();
-    },
-    deleteConfirm(idRole) {
-         Swal.fire({
-                title: 'Apakah kamu yakin?',
-                text: 'Data ini akan dihapus dan tidak bisa dikembalikan!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $wire.deleteRole(idRole);
-                    Swal.fire(
-                        'Terhapus!',
-                        'Data berhasil dihapus.',
-                        'success'
-                    );
-                }
-        });
     }
 }"
 x-init="
-    $('#selectRole').select2({
-        placeholder: 'Pilih Jabatan / role'
+    window.addEventListener('data-user-general', ()=> {
+        this.isShowFormGeneral = false;
     });
 
-      $('#selectRole').on('change', function () {
-       let selectedOptions = $(this).find('option:selected');
-       let selectedRoles = [];
-
-        selectedOptions.each(function () {
-            selectedRoles.push({
-                id: $(this).val(),
-                name: $(this).text().trim()
-            });
-        });
-
-        $wire.role_user = selectedRoles.map(role => role.id)
-
-        let isSiswaSelected = selectedRoles.some(role => role.name === 'siswa');
-        $wire.selectClassroom = isSiswaSelected;
+    $(document).ready(function() {
+    $('#select-role').select2({
+        placeholder: 'pilih jabatan'
     });
+});
 "
 >
     <section class="w-full">
@@ -123,7 +63,7 @@ x-init="
     <div class="flex gap-4">
         <button
             type="button"
-            x-on:click="showForm"
+            x-on:click="showFormRoleGeneral"
             class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
             user
@@ -131,12 +71,14 @@ x-init="
     </div>
         {{-- <template> --}}
             <div x-show="isShowFormGeneral" x-cloak x-transition.duration.500ms class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                @include('livewire.users._card-form-create')
+                @include('livewire.users._card-form-create-general-user')
             </div>
         {{-- </template> --}}
-        <div x-show="isShowFormProfileDetail" x-cloak x-transition.duration.500ms class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            @include('livewire.users._card-form-create')
-        </div>
+        @if ($createAdditionRole)
+            <div x-cloak x-transition.duration.500ms class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <livewire:users.form-create-user-detail :userId="$userId"/>
+            </div>
+        @endif
     @if (!$edit)
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <div class="justify-items-end pb-4 bg-white dark:bg-gray-900">

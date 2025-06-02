@@ -14,18 +14,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => bcrypt('password'),
-        ]);
-
-
         foreach (MainRole::mainRole as $key => $value) {
             Role::create([
                 'name'  => $key
             ]);
         }
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => bcrypt('password'),
+            'role_id'   => 1,
+        ]);
+
+
+
 
 
         $listMajor = [
