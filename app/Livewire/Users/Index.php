@@ -32,7 +32,7 @@ class Index extends Component
     public function render()
     {
         return view('livewire.users.index', [
-            'listUser'  => User::with('roles')->get(),
+            'listUser'  => User::with('role')->get(),
             'mainRole'  => MainRole::mainRole,
             'listMajor' => Major::get(['id', 'name']),
             'listClassroom'=> Classroom::get(['id', 'name'])
