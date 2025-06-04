@@ -17,17 +17,18 @@ class Index extends Component
     public $role_id = "";
     public $createMainRole = false;
     public $userId = null;
-    public $createAdditionRole = false;
     public $first_name = "";
     public $last_name = "";
     public $address = "";
     public $phone_number = "";
     public $role_user = null;
-    public $edit = false;
+    public $additedRole = false;
+    public $additionDetailProfile = false;
     public $selectClassroom = false;
     public $search = "";
     public $major_id;
     public $classroom_id;
+
 
     public function render()
     {
@@ -79,88 +80,23 @@ class Index extends Component
             ]);
             $this->resetFields();
             $this->dispatch('data-user-general');
-            $this->createAdditionRole = true;
-            $this->userId = $user->id;
+            $this->additionDetailProfile = true;
+    }
 
-        //       $validated = $this->validate([
-        //     'name'          => 'required|min:3',
-        //     'first_name'    => 'required|min:4',
-        //     'last_name'     => 'required|min:4',
-        //     'role_user'     => 'required',
-        //     'address'       => 'required|min:4',
-        //     'phone_number'  => 'required|numeric|min_digits:9',
-        //     'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-        //     'password'      => ['required','string', Rules\Password::defaults()],
-        //     'major_id'      => $roleName === 'siswa' ? 'required' : 'nullable',
-        //     'classroom_id'  => $roleName === 'siswa' ? 'required' : 'nullable',
-        //     ],[
-        //     'name.required'             => 'Username wajib diisi..',
-        //     'name.min'                  => 'Username minimal 3 karakter',
-        //     'first_name.required'       => 'Nama Depan Wajib diisi..',
-        //     'first_name.min'            => 'Nama Depan minimal 4 karakter..',
-        //     'last_name.required'        => 'Nama Belakang Wajib diisi..',
-        //     'last_name.min'             => 'Nama Belakang minimal 4 karakter..',
-        //     'role_user.required'        => 'Nama Jabatan wajib diisi..',
-        //     'address.required'          => 'Alamat wajib diisi..',
-        //     'address.min'               => 'Alamat minimal 4 karakter',
-        //     'phone_number.required'     => 'Nomor Telepon wajib diisi',
-        //     'phone_number.numeric'      => 'Nomor Telepon hanya boleh angka',
-        //     'phone_number.min_digits'   => 'Nomor Telepon minimal 9 angka',
-        //     'email.required'            => 'Alamat email wajib diisi',
-        //     'email.unique'              => 'Alamat email sudah digunakan..',
-        //     'email.email'               => 'format email salah..',
-        //     'password.required'         => 'Password wajib diisi..',
-        //     'major_id.required'         => 'Jurusan wajib dipilih..',
-        //     'classroom_id.required'     => 'Kelas wajib dipilih..'
-        // ]);
-        // $roleName = DB::table('roles')->where('id', $this->role_user)->value('name');
+    public function storeDetailProfile() {
+        dd($this->userId);
+    }
 
-        // $validated = $this->validate([
-        //     'name'          => 'required|min:3',
-        //     'first_name'    => 'required|min:4',
-        //     'last_name'     => 'required|min:4',
-        //     'role_user'     => 'required',
-        //     'address'       => 'required|min:4',
-        //     'phone_number'  => 'required|numeric|min_digits:9',
-        //     'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-        //     'password'      => ['required','string', Rules\Password::defaults()],
-        //     'major_id'      => $roleName === 'siswa' ? 'required' : 'nullable',
-        //     'classroom_id'  => $roleName === 'siswa' ? 'required' : 'nullable',
-        //     ],[
-        //     'name.required'             => 'Username wajib diisi..',
-        //     'name.min'                  => 'Username minimal 3 karakter',
-        //     'first_name.required'       => 'Nama Depan Wajib diisi..',
-        //     'first_name.min'            => 'Nama Depan minimal 4 karakter..',
-        //     'last_name.required'        => 'Nama Belakang Wajib diisi..',
-        //     'last_name.min'             => 'Nama Belakang minimal 4 karakter..',
-        //     'role_user.required'        => 'Nama Jabatan wajib diisi..',
-        //     'address.required'          => 'Alamat wajib diisi..',
-        //     'address.min'               => 'Alamat minimal 4 karakter',
-        //     'phone_number.required'     => 'Nomor Telepon wajib diisi',
-        //     'phone_number.numeric'      => 'Nomor Telepon hanya boleh angka',
-        //     'phone_number.min_digits'   => 'Nomor Telepon minimal 9 angka',
-        //     'email.required'            => 'Alamat email wajib diisi',
-        //     'email.unique'              => 'Alamat email sudah digunakan..',
-        //     'email.email'               => 'format email salah..',
-        //     'password.required'         => 'Password wajib diisi..',
-        //     'major_id.required'         => 'Jurusan wajib dipilih..',
-        //     'classroom_id.required'     => 'Kelas wajib dipilih..'
-        // ]);
-
-        // $user = User::create([
-        //     'name'          => $validated['name'],
-        //     'first_name'    => $validated['first_name'],
-        //     'last_name'     => $validated['last_name'],
-        //     'address'       => $validated['address'],
-        //     'phone_number'  => $validated['phone_number'],
-        //     'email'         => $validated['email'],
-        //     'password'      => Hash::make($validated['password']),
-        //     'major_id'      => $validated['major_id'],
-        //     'classroom_id'  => $validated['classroom_id'],
-        // ]);
-
-        // $newUser = User::find($user->id);
-        // $newUser->roles()->attach($validated['role_user'], ['role_id'   => $validated['role_user']]);
+    public function showDetailUser($idUser = null) {
+        if ($idUser) {
+            $this->userId = $idUser;
+            $this->createMainRole = false;
+        } else {
+            // Untuk menutup komponen
+            $this->userId = null;
+        }
+        $this->dispatch('close');
+        // $this->userId = $idUser;
     }
 
     public function resetFormGeneral() {
@@ -172,5 +108,13 @@ class Index extends Component
 
     public function resetErrorFormGeneral() {
         $this->resetErrorBag(['name', 'email', 'password', 'role_id']);
+    }
+
+    public function editRole($idUser) {
+
+    }
+
+    public function deleteUser($idUser) {
+        User::findOrFail($idUser)->delete();
     }
 }

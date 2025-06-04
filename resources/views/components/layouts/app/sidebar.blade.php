@@ -3,6 +3,8 @@
     <head>
         <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        {{-- <script type="module" src="js/helper.js"></script> --}}
         @include('partials.head')
             {{-- @fluxAppearance --}}
     </head>
@@ -17,7 +19,7 @@
             <flux:navlist variant="outline">
 
                 <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                    <flux:navlist.item icon="inbox" badge="12"  href="#">Inbox</flux:navlist.item>
+                    <flux:navlist.item icon="inbox" badge="12"  :href="route('classrooms.index')" :current="request()->routeIs('classrooms.index')" wire:navigate>Inbox</flux:navlist.item>
                     <flux:navlist.item icon="document-text" :href="route('roles.index')" :current="request()->routeIs('roles.index')" wire:navigate>Jabatan / Role</flux:navlist.item>
                     <flux:navlist.item icon="calendar" href="#">Calendar
                 </flux:navlist.item>
