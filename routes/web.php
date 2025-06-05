@@ -16,12 +16,13 @@ Route::view('dashboard', 'dashboard')
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('classrooms', [ClassroomController::class, 'index'])->name('classrooms');
     Route::redirect('roles', 'roles');
     Volt::route('roles', 'roles.index')->name('roles.index');
-    Route::redirect('users', 'users');
-    Volt::route('users', 'users.index')->name('users.index');
+    // Route::redirect('users', 'users');
+    // Volt::route('users', 'users.index')->name('users.index');
 
-    Route::get('classrooms',[ClassroomController::class, 'index'])->name('classrooms.index');
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::get('getListUser', [UserController::class, 'getAllUser'])->name('getListUser');
 
     Route::redirect('settings', 'settings/profile');

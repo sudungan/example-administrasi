@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
+use App\Models\Classroom;
 use Illuminate\Http\Request;
 use App\Models\User;
 
 class ClassroomController extends Controller
 {
     public function index() {
-        return view('classrooms.index');
+        $listClassroom = Classroom::all();
+        return view('classrooms.index', compact('listClassroom'));
     }
 
     public function getAllUser(Request $request) {

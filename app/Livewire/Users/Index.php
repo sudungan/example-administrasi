@@ -34,7 +34,7 @@ class Index extends Component
     {
         return view('livewire.users.index', [
             'listUser'  => User::with('role')->get(),
-            'mainRole'  => MainRole::mainRole,
+            'listRole'  => MainRole::mainRole,
             'listMajor' => Major::get(['id', 'name']),
             'listClassroom'=> Classroom::get(['id', 'name'])
         ]);

@@ -19,7 +19,7 @@
             <flux:navlist variant="outline">
 
                 <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                    <flux:navlist.item icon="inbox" badge="12"  :href="route('classrooms.index')" :current="request()->routeIs('classrooms.index')" wire:navigate>Inbox</flux:navlist.item>
+                    <flux:navlist.item icon="inbox" badge="12"  :href="route('classrooms')" :current="request()->routeIs('classrooms')" wire:navigate>Classroom</flux:navlist.item>
                     <flux:navlist.item icon="document-text" :href="route('roles.index')" :current="request()->routeIs('roles.index')" wire:navigate>Jabatan / Role</flux:navlist.item>
                     <flux:navlist.item icon="calendar" href="#">Calendar
                 </flux:navlist.item>
