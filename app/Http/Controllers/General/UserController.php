@@ -21,7 +21,7 @@ class UserController extends Controller
         try {
             $users = User::with('role')->get();
             return response()->json([
-                'data'     => $users, 
+                'data'     => $users,
                 'message'  => 'get all data successfully'
             ]);
 
@@ -29,4 +29,18 @@ class UserController extends Controller
             //throw $th;
         }
     }
+
+    public function showUser(Request $request, $userId) {
+       try {
+           $user = User::with(['role', 'detailUser'])->where('id', $userId)->first();
+           return response()->json([
+            'message'   => 'get user succesfully',
+            'data'      => $user
+           ]);
+       } catch (\Throwable $th) {
+        return response()->json([
+            'message'   => $th->getMessage()
+        ]);
+       }
+     }
 }

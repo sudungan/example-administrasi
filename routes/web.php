@@ -23,6 +23,7 @@ Route::middleware(['auth'])->group(function () {
     // Volt::route('users', 'users.index')->name('users.index');
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::get('user/{userId}', [UserController::class, 'showUser']);
     Route::get('getListUser', [UserController::class, 'getAllUser'])->name('getListUser');
 
     Route::redirect('settings', 'settings/profile');
