@@ -3,7 +3,6 @@
     <head>
         <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         {{-- <script type="module" src="js/helper.js"></script> --}}
         @include('partials.head')
             {{-- @fluxAppearance --}}

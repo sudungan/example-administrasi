@@ -47,30 +47,26 @@
             </div>
 
         </div>
+        <pagination />
     </div>
 
     <script type="module">
         import { createApp, ref, reactive, onMounted   } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
         import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
-
+        import pagination from '/js/components/paginate.js';
         createApp({
+            components: {
+                pagination,
+            },
             setup() {
                 const listUser = ref(@json($listUser));
                 const user = ref([]);
+                const users = ref([])
                 const currentView = ref('table')
                 const listRole = ref([{id: 1, name: 'admin'},{id: 2, name: 'guru'}, {id: 3, name: 'siswa'}, {id: 4, name: 'orang-tua'}])
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
+                const errors = reactive({})
 
-                async function getUserDetail(id) {
-                    try {
-                        const result = await axios.get('user/' + id);
-                        user.value = result.data.data
-                        currentView.value = 'detail'
-                        console.log(user.value)
-                    } catch (error) {
-                        console.log(error)
-                    }
-                }
                 const showDetailUser = async(id) => {
                     try {
                         const result = await axios.get('user/' + id);
@@ -106,14 +102,19 @@
                         role_id: ''
                     });
                 }
+                async function getListUser() {
 
-                onMounted(()=> {
-                    $(document).ready(function() {
-                        $('#js-example-basic-multiple').select2();
-                    });
+                    users.value = listUser.value.data
+                    console.log(users.value)
+                }
+
+                onMounted( ()=> {
+                    // $(document).ready(function() {
+                    //     $('#js-example-basic-multiple').select2();
+                    // });
                 })
                 return {
-                    listUser, deleteConfirm, editUser,listRole,
+                    listUser, deleteConfirm, editUser,listRole,users,
                     storeDataUserGeneral, dataUserGeneral, user, currentView,
                     showFormCreate, showFormEdit, showDetailUser, showTable
                 }
