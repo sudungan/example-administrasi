@@ -11,12 +11,13 @@ export default defineComponent({
     emits: ['fetchPage'],
     setup(props , {emit}) {
         const localUsers = ref(props.users);
+        const links = ref([]);
         console.log('check data dari child class', props.users)
 
         watch(
             ()=> props.users,
             (newValue)=> {
-                console.log('update users', newValue)
+                console.log('update users dari child', newValue)
                 localUsers.value = newValue
             },
             { immediate: true }
@@ -44,6 +45,7 @@ export default defineComponent({
         return {
             users: props.users,
             btnPrevious,
+            links,
             btnNextPage,
             localUsers,
             goToPage,

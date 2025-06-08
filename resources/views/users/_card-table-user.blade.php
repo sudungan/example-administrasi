@@ -6,7 +6,9 @@
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
             </svg>
         </div>
-        <input type="text" id="table-search" wire:model.live="search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search for items">
+        <form @submit.prevent="searchUser">
+            <input type="text" id="table-search" v-model="search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search for items">
+        </form>
     </div>
 </div>
 
@@ -31,8 +33,7 @@
         </tr>
     </thead>
     <tbody>
-
-        <tr v-if="users.data && users.data.length > 0" v-for="(user, index) in users.data" :key="user.id"  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <tr v-if="users.length > 0" v-for="(user, index) in users" :key="user.id"  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 @{{index+1}}
             </th>
@@ -91,9 +92,10 @@
                     </a>
                 </td>
             </tr>
-            {{-- <th v-else scope="row" class="px-6  text-yellow-800 rounded-lg bg-yellow-50 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                <span class="font-medium"> Tidak ada data user..</span>
-            </th> --}}
+        </tr>
+        <tr v-else colspan="5" class="px-6  text-yellow-800 rounded-lg bg-yellow-50 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <span class="font-medium"> Tidak ada data user..</span>
         </tr>
     </tbody>
 </table>
+

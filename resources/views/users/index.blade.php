@@ -46,12 +46,42 @@
                 @include('users._card-table-user')
             </div>
 
+            {{-- search input  --}}
+            <nav  v-show="currentView === 'table'" class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4" aria-label="Table navigation">
+                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Showing <span class="font-semibold text-gray-900 dark:text-white">1-10</span> of <span class="font-semibold text-gray-900 dark:text-white">1000</span></span>
+                    <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+                        <li>
+                            <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
+                        </li>
+                        <li>
+                            <a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
+                        </li>
+                        <li>
+                        <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
+                        </li>
+                    </ul>
+            </nav>
         </div>
-        <pagination :users="users"/>
+        {{-- pagination --}}
+
+
+        {{-- <pagination :users="users"/> --}}
     </div>
 
     <script type="module">
-        import { createApp, ref, reactive, onMounted   } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        import { createApp, ref, reactive, onMounted, watch } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
         import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
         import pagination from '/js/components/paginate.js';
         createApp({
@@ -59,13 +89,14 @@
                 pagination,
             },
             setup() {
-                const listUser = ref(@json($listUser));
                 const user = ref([]);
-                const users = ref([])
+                const users = ref([]);
+                const search = ref("")
                 const currentView = ref('table')
                 const listRole = ref([{id: 1, name: 'admin'},{id: 2, name: 'guru'}, {id: 3, name: 'siswa'}, {id: 4, name: 'orang-tua'}])
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
                 const errors = reactive({})
+                const links = ref([])
 
                 const showDetailUser = async(id) => {
                     try {
@@ -92,6 +123,22 @@
                 function deleteConfirm(id) {
                     console.log(id)
                 }
+
+                const searchUser = async () => {
+                    try {
+                        let result = await axios.get("/search-user/?search=" + search.value)
+                        users.value = result.data.data.data
+                        console.log(users.value)
+                    } catch (error) {
+                        console.log(error.response)
+                        if (error.response.status == 404) {
+                               errors.message = error.response.data.message
+                        }else {
+                            errors.message = error.response.message
+                        }
+                    }
+                }
+
                 function storeDataUserGeneral() {  }
 
                 function resetField() {
@@ -102,25 +149,28 @@
                         role_id: ''
                     });
                 }
-                async function getListUser() {
+                const getListUser = async () => {
                     try {
-                        const result = await axios.get('listUser');
-                       users.value = result.data
-                       console.log('ambil data dari parent class', users.value)
+                        const result = await axios.get('list-user');
+                       users.value = result.data.data?.data || []
+                       console.log('ambil data dari parent class', result.data.data)
+                        console.log('ambil data links', users.value.data.links)
                     } catch (error) {
 
                         console.log(error)
                     }
                 }
 
-                onMounted( ()=> {
-                    getListUser()
-                    // $(document).ready(function() {
-                    //     $('#js-example-basic-multiple').select2();
-                    // });
+                watch( search, async (newSearch) => {
+                    newSearch ?  await searchUser() :  await getListUser();
+                 })
+
+                onMounted( async ()=> {
+                    await getListUser()
                 })
                 return {
-                    listUser, deleteConfirm, editUser,listRole,users,
+                    deleteConfirm, editUser,listRole,users,
+                    links, search,searchUser,
                     storeDataUserGeneral, dataUserGeneral, user, currentView,
                     showFormCreate, showFormEdit, showDetailUser, showTable
                 }
