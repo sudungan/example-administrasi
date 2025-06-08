@@ -12,21 +12,23 @@ class UserController extends Controller
 
     public function index() {
         return view('users.index', [
-            'listUser'  => User::with('role')->get(),
+            'listUser'  => User::with('role')->paginate(5),
             'listRole'  => MainRole::mainRole,
         ]);
     }
 
     public function getAllUser(Request $request) {
         try {
-            $users = User::with('role')->get();
+            $users = User::with('role')->paginate(5);
             return response()->json([
                 'data'     => $users,
                 'message'  => 'get all data successfully'
             ]);
 
         } catch (\Throwable $th) {
-            //throw $th;
+            return response()->json([
+                'mesaage'   => $th->getMessage()
+            ]);
         }
     }
 

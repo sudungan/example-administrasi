@@ -32,7 +32,7 @@
     </thead>
     <tbody>
 
-        <tr v-if="listUser.length > 0" v-for="(user, index) in listUser" :key="user.id"  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <tr v-if="users.data && users.data.length > 0" v-for="(user, index) in users.data" :key="user.id"  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 @{{index+1}}
             </th>

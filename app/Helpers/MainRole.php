@@ -4,9 +4,10 @@ namespace App\Helpers;
 
 class MainRole {
     public const mainRole = [
-        'admin'   => 1,
-        'guru'   => 2,
-        'siswa'   => 3,
-        'orang-tua'=> 4
+        'kepala-sekolah'    => 1,
+        'admin'             => 2,
+        'guru'              => 3,
+        'siswa'             => 4,
+        'orang-tua'         => 5
     ];
 }

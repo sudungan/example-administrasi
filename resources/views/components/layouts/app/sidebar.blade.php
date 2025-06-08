@@ -36,6 +36,12 @@
                     <flux:navlist.item href="#">Batasan Pelajaran</flux:navlist.item>
                     <flux:navlist.item href="#">Batasan Guru</flux:navlist.item>
                 </flux:navlist.group>
+
+                <flux:navlist.group expandable :expanded="false" heading="Management Kurikulum" class="hidden lg:grid">
+                    <flux:navlist.item :href="route('majors.index')" :current="request()->routeIs('majors.index')" wire:navigate> {{__('Jurusan')}} </flux:navlist.item>
+                    <flux:navlist.item href="#">Batasan Pelajaran</flux:navlist.item>
+                    <flux:navlist.item href="#">Batasan Guru</flux:navlist.item>
+                </flux:navlist.group>
             </flux:navlist>
             <flux:spacer />
 

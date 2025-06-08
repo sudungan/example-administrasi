@@ -47,7 +47,7 @@
             </div>
 
         </div>
-        <pagination />
+        <pagination :users="users"/>
     </div>
 
     <script type="module">
@@ -103,12 +103,18 @@
                     });
                 }
                 async function getListUser() {
+                    try {
+                        const result = await axios.get('listUser');
+                       users.value = result.data
+                       console.log('ambil data dari parent class', users.value)
+                    } catch (error) {
 
-                    users.value = listUser.value.data
-                    console.log(users.value)
+                        console.log(error)
+                    }
                 }
 
                 onMounted( ()=> {
+                    getListUser()
                     // $(document).ready(function() {
                     //     $('#js-example-basic-multiple').select2();
                     // });

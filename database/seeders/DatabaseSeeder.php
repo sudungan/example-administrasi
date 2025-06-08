@@ -6,6 +6,7 @@ use App\Models\{User, Major, Role};
 use App\Helpers\MainRole;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,6 +15,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+          $faker = Faker::create();
+
         foreach (MainRole::mainRole as $key => $value) {
             Role::create([
                 'name'  => $key
@@ -26,22 +29,18 @@ class DatabaseSeeder extends Seeder
             'role_id'   => 1,
         ]);
 
+         for ($index = 0; $index < 14; $index++) {
+            User::create([
+                'name' => $faker->name,
+                'email' => $faker->unique()->safeEmail,
+                'role_id' => rand(1, 4), // Angka antara 1 dan 4
+                'password' => bcrypt('password'), // default password
+            ]);
+        }
 
-
-
-
-        $listMajor = [
-            [
-                'name'      => 'Akuntansi dan lembagan keuangan',
-                'user_id'   => rand(1, 3),
-            ],
-            [
-                'name'      => 'Rekayasa Perangkat Lunak',
-                'user_id'   => rand(1, 3),
-            ],
-        ];
-
-        Major::insert($listMajor);
+        $this->call([
+            MajorSeeder::class
+        ]);
 
     }
 }
