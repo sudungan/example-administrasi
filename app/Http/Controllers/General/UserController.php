@@ -43,7 +43,6 @@ class UserController extends Controller
 
     public function getListUser() {
         try {
-            
             $users = User::with(['role'])->paginate(5);
 
             return response()->json([

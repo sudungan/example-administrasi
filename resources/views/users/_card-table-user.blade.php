@@ -35,7 +35,7 @@
     <tbody>
         <tr v-if="users.length > 0" v-for="(user, index) in users" :key="user.id"  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                @{{index+1}}
+                @{{index + 1 + (links.current_page -1) * links.per_page  }}
             </th>
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 @{{user.name}}
@@ -98,4 +98,3 @@
         </tr>
     </tbody>
 </table>
-

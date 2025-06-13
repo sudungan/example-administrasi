@@ -22,8 +22,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::redirect('majors', 'major');
     Volt::route('majors', 'majors.index')->name('majors.index');
-    // Route::redirect('users', 'users');
-    // Volt::route('users', 'users.index')->name('users.index');
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::get('user/{userId}', [UserController::class, 'showUser']);

@@ -45,43 +45,16 @@
                 class="relative shadow-md sm:rounded-lg">
                 @include('users._card-table-user')
             </div>
-
-            {{-- search input  --}}
-            <nav  v-show="currentView === 'table'" class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4" aria-label="Table navigation">
-                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Showing <span class="font-semibold text-gray-900 dark:text-white">1-10</span> of <span class="font-semibold text-gray-900 dark:text-white">1000</span></span>
-                    <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-                        <li>
-                            <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-                        </li>
-                        <li>
-                            <a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
-                        </li>
-                        <li>
-                        <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
-                        </li>
-                    </ul>
-            </nav>
+            <pagination :data-user="links" @paginate="getListUser" />
         </div>
         {{-- pagination --}}
 
 
-        {{-- <pagination :users="users"/> --}}
     </div>
 
     <script type="module">
-        import { createApp, ref, reactive, onMounted, watch } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+          const { createApp, ref, reactive, onMounted, watch } = Vue
+        // import { createApp, ref, reactive, onMounted, watch } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
         import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
         import pagination from '/js/components/paginate.js';
         createApp({
@@ -93,6 +66,7 @@
                 const users = ref([]);
                 const search = ref("")
                 const currentView = ref('table')
+                const perPage = ref(1);
                 const listRole = ref([{id: 1, name: 'admin'},{id: 2, name: 'guru'}, {id: 3, name: 'siswa'}, {id: 4, name: 'orang-tua'}])
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
                 const errors = reactive({})
@@ -110,6 +84,7 @@
                 const showFormCreate = () => currentView.value = 'create'
                 const showFormEdit = () => currentView.value = 'edit'
                 const showTable = () => currentView.value = 'table'
+                const page = ref(1)
                 const editUser = async (id) => {
                      try {
                         const result = await axios.get('user/' + id);
@@ -128,7 +103,6 @@
                     try {
                         let result = await axios.get("/search-user/?search=" + search.value)
                         users.value = result.data.data.data
-                        console.log(users.value)
                     } catch (error) {
                         console.log(error.response)
                         if (error.response.status == 404) {
@@ -149,12 +123,12 @@
                         role_id: ''
                     });
                 }
-                const getListUser = async () => {
+                const getListUser = async (dataUser = `list-user?page=${page.value}`) => {
                     try {
-                        const result = await axios.get('list-user');
+                        const result = await axios.get(dataUser)
                        users.value = result.data.data?.data || []
-                       console.log('ambil data dari parent class', result.data.data)
-                        console.log('ambil data links', users.value.data.links)
+                       page.value = result.data.data
+                       links.value = result.data.data
                     } catch (error) {
 
                         console.log(error)
@@ -169,8 +143,8 @@
                     await getListUser()
                 })
                 return {
-                    deleteConfirm, editUser,listRole,users,
-                    links, search,searchUser,
+                    deleteConfirm, editUser,listRole,users, getListUser,
+                    links, search,searchUser, perPage, page,
                     storeDataUserGeneral, dataUserGeneral, user, currentView,
                     showFormCreate, showFormEdit, showDetailUser, showTable
                 }
