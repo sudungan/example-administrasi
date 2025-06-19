@@ -24,6 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('majors', 'majors.index')->name('majors.index');
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::post('store-data-user-general', [UserController::class, 'storeDataUserGeneral']);
     Route::get('user/{userId}', [UserController::class, 'showUser']);
     Route::get('list-user', [UserController::class, 'getListUser'])->name('list-user');
     Route::get('search-user', [UserController::class, 'searchUser'])->name('search-user');

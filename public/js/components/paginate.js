@@ -17,7 +17,7 @@ export default defineComponent({
         }
 
         return {
-            btnChangePage // mengekspose fungsi agar bisa digunakan ditemplate
+            btnChangePage 
         }
     },
     template:

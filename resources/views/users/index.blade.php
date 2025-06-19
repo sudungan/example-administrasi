@@ -23,6 +23,13 @@
                     @include('users._card-form-create')
             </div>
 
+            {{-- form create data user detail--}}
+            <div
+                v-cloak
+                v-show="currentView === 'create-user-detail'"
+                class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                    @include('users._card-form-create-user-detail')
+            </div>
             {{-- form edit data user general--}}
             <div
                 v-cloak
@@ -45,7 +52,11 @@
                 class="relative shadow-md sm:rounded-lg">
                 @include('users._card-table-user')
             </div>
+            <div
+              v-show="currentView === 'table'"
+            >
             <pagination :data-user="links" @paginate="getListUser" />
+            </div>
         </div>
         {{-- pagination --}}
 
@@ -69,7 +80,7 @@
                 const perPage = ref(1);
                 const listRole = ref([{id: 1, name: 'admin'},{id: 2, name: 'guru'}, {id: 3, name: 'siswa'}, {id: 4, name: 'orang-tua'}])
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
-                const errors = reactive({})
+                const errors = reactive({ name: '', email: '', password: '', role_id: '', message: '' })
                 const links = ref([])
 
                 const showDetailUser = async(id) => {
@@ -113,7 +124,38 @@
                     }
                 }
 
-                function storeDataUserGeneral() {  }
+                async function storeDataUserGeneral() {
+                    try {
+             console.log('awal mau kirm data',dataUserGeneral)
+                        if (!dataUserGeneral.name.trim()) {
+                           errors.name = 'nama tidak boleh kosong'
+                        }
+                        if (!dataUserGeneral.email.trim()) {
+                           errors.email = 'email tidak boleh kosong'
+                        }
+
+                        if (!dataUserGeneral.email.trim()) {
+                           errors.password = 'email tidak boleh kosong'
+                        }
+
+                        if (!dataUserGeneral.role_id) {
+                           errors.role_id = 'jabatan tidak boleh kosong'
+                        }
+
+                        let sendData = {
+                            'name': dataUserGeneral.name,
+                            'email': dataUserGeneral.email,
+                            'password': dataUserGeneral.password,
+                            'role_id': dataUserGeneral.role_id
+                        }
+
+                        const result = axios.post('/store-data-user-general', sendData);
+                        currentView.value = 'create-user-detail'
+
+                    } catch (error) {
+                        console.log(error)
+                    }
+                 }
 
                 function resetField() {
                      Object.assign(dataUserGeneral, {
@@ -144,7 +186,7 @@
                 })
                 return {
                     deleteConfirm, editUser,listRole,users, getListUser,
-                    links, search,searchUser, perPage, page,
+                    links, search,searchUser, perPage, page,errors,
                     storeDataUserGeneral, dataUserGeneral, user, currentView,
                     showFormCreate, showFormEdit, showDetailUser, showTable
                 }

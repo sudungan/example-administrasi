@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Hash;
 
 
 class UserController extends Controller
@@ -69,5 +71,26 @@ class UserController extends Controller
             'message'   => $th->getMessage()
         ]);
        }
+    }
+
+    public function storeDataUserGeneral(Request $request) {
+        try {
+            $validated = $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+                'password' => ['required', 'string', Rules\Password::defaults()],
+                'role_id'   => 'required',
+            ]);
+
+             $validated['password'] = Hash::make($validated['password']);
+             $user = User::create($validated);
+             return response()->json([
+                'message'   => 'data user general created succesfully'
+             ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ]);
+        }
      }
 }
