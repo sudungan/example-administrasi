@@ -4,7 +4,7 @@ namespace App\Http\Controllers\General;
 
 use App\Helpers\MainRole;
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\{AdditionRole, User,};
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules;
@@ -48,8 +48,8 @@ class UserController extends Controller
             $users = User::with(['role'])->paginate(5);
 
             return response()->json([
+                'message'  => 'get all data successfully',
                 'data'     => $users,
-                'message'  => 'get all data successfully'
             ]);
 
         } catch (\Throwable $th) {
@@ -84,13 +84,51 @@ class UserController extends Controller
 
              $validated['password'] = Hash::make($validated['password']);
              $user = User::create($validated);
+
+            $dataUser = [
+                'role_id'   => $user->role_id,
+                'user_id'   => $user->id
+            ];
+
              return response()->json([
-                'message'   => 'data user general created succesfully'
+                'message'   => 'data user general created succesfully',
+                'data'      =>  $dataUser
              ]);
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
             ]);
         }
-     }
+    }
+
+    public function getAdditionRole(Request $request, $roleId) {
+        try {
+            $additionRole = AdditionRole::where('role_id', $roleId)->get();
+
+            return response()->json([
+                'message'   => 'get all addition role succesfully',
+                'data'      => $additionRole
+            ]);
+        } catch (\Exception $error) {
+           return response()->json([
+            'message'   => $error->getMessage()
+           ]);
+        }
+    }
+
+    public function getSelectedRole(Request $request, $roleId) {
+        try {
+            $additionRole = AdditionRole::where('role_id', $roleId)->get();
+
+            return response()->json([
+                'data'  => $additionRole,
+                'message'   => 'addition role get succesfully'
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ]);
+        }
+    }
+
 }

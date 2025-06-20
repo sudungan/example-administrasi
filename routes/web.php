@@ -25,9 +25,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::post('store-data-user-general', [UserController::class, 'storeDataUserGeneral']);
-    Route::get('user/{userId}', [UserController::class, 'showUser']);
+    Route::get('user/{userId}', [UserController::class, 'showUser'])->name('user');
+    Route::get('addition-role/{roleId}', [UserController::class, 'getAdditionRole'])->name('addition-role');
     Route::get('list-user', [UserController::class, 'getListUser'])->name('list-user');
     Route::get('search-user', [UserController::class, 'searchUser'])->name('search-user');
+    Route::get('select-addition-role/{roleId}', [UserController::class, 'getSelectedRole'])->name('select-addition-role');
 
 
     Route::redirect('settings', 'settings/profile');

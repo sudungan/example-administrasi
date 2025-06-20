@@ -28,8 +28,9 @@
                 v-cloak
                 v-show="currentView === 'create-user-detail'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                    @include('users._card-form-create-user-detail')
+                <form-user-detail :role-id="roleId" :user-id="userId"/>
             </div>
+
             {{-- form edit data user general--}}
             <div
                 v-cloak
@@ -68,21 +69,29 @@
         // import { createApp, ref, reactive, onMounted, watch } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
         import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
         import pagination from '/js/components/paginate.js';
+        import formUserDetail from '/js/components/formUserDetail.js';
         createApp({
             components: {
                 pagination,
+                formUserDetail,
             },
             setup() {
-                const user = ref([]);
+                const user = ref({
+                    userId: '',
+                    roleId: '',
+                    name: '',
+                    address: ''
+                });
                 const users = ref([]);
                 const search = ref("")
                 const currentView = ref('table')
                 const perPage = ref(1);
-                const listRole = ref([{id: 1, name: 'admin'},{id: 2, name: 'guru'}, {id: 3, name: 'siswa'}, {id: 4, name: 'orang-tua'}])
+                const listRole = ref([{id: 1, name: 'kepala-sekolah'},{id: 2, name: 'admin'},{id: 3, name: 'guru'}, {id: 4, name: 'siswa'}, {id: 5, name: 'orang-tua'}])
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
                 const errors = reactive({ name: '', email: '', password: '', role_id: '', message: '' })
                 const links = ref([])
-
+                const roleId = ref(0);
+                const userId = ref(0)
                 const showDetailUser = async(id) => {
                     try {
                         const result = await axios.get('user/' + id);
@@ -126,7 +135,6 @@
 
                 async function storeDataUserGeneral() {
                     try {
-             console.log('awal mau kirm data',dataUserGeneral)
                         if (!dataUserGeneral.name.trim()) {
                            errors.name = 'nama tidak boleh kosong'
                         }
@@ -149,13 +157,15 @@
                             'role_id': dataUserGeneral.role_id
                         }
 
-                        const result = axios.post('/store-data-user-general', sendData);
-                        currentView.value = 'create-user-detail'
 
+                        let result = await axios.post('/store-data-user-general', sendData);
+                        userId.value = result.data.data.user_id;
+                        roleId.value = result.data.data.role_id
+                        currentView.value = 'create-user-detail';
                     } catch (error) {
                         console.log(error)
                     }
-                 }
+                }
 
                 function resetField() {
                      Object.assign(dataUserGeneral, {
@@ -186,7 +196,8 @@
                 })
                 return {
                     deleteConfirm, editUser,listRole,users, getListUser,
-                    links, search,searchUser, perPage, page,errors,
+                    links, search,searchUser, perPage, page,errors, roleId,
+                    userId,
                     storeDataUserGeneral, dataUserGeneral, user, currentView,
                     showFormCreate, showFormEdit, showDetailUser, showTable
                 }

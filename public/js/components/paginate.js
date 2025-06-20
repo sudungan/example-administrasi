@@ -1,4 +1,5 @@
-import { defineComponent } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+// import { defineComponent } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+ const { defineComponent } = Vue
 
 export default defineComponent({
     name: 'pagination', // nama child component
@@ -9,7 +10,7 @@ export default defineComponent({
         }
     },
     emits: ['paginate'], // nama event yang akan digunakan ke parent
-   setup(props, { emit }) {
+    setup(props, { emit }) {
         function btnChangePage(link) {
             if (link.url !== null) {
                 emit('paginate', link.url) // membuat nama emit dan mengirimkan object ke parent
@@ -17,7 +18,7 @@ export default defineComponent({
         }
 
         return {
-            btnChangePage 
+            btnChangePage
         }
     },
     template:

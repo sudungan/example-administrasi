@@ -44,6 +44,9 @@
                 @{{user.email}}
             </th>
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                <span v-if="user.role.name ==='kepala-sekolah'" class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-blue-400 border border-blue-400">
+                        @{{user.role.name}}
+                </span>
                 <span v-if="user.role.name ==='admin'" class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-blue-400 border border-blue-400">
                         @{{user.role.name}}
                 </span>
