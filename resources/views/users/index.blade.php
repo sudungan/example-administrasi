@@ -76,12 +76,7 @@
                 formUserDetail,
             },
             setup() {
-                const user = ref({
-                    userId: '',
-                    roleId: '',
-                    name: '',
-                    address: ''
-                });
+                const user = ref({ userId: '', roleId: '',  name: '', address: ''  });
                 const users = ref([]);
                 const search = ref("")
                 const currentView = ref('table')
@@ -90,6 +85,7 @@
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
                 const errors = reactive({ name: '', email: '', password: '', role_id: '', message: '' })
                 const links = ref([])
+                const fieldLabels = { name: 'Nama', email: 'Email', password: 'Password',  role_id: 'Jabatan' };
                 const roleId = ref(0);
                 const userId = ref(0)
                 const showDetailUser = async(id) => {
@@ -105,29 +101,20 @@
                 const showFormEdit = () => currentView.value = 'edit'
                 const showTable = () =>  currentView.value = 'table'
                 const closeCreateForm = () => {
-                    let isAnyFilled = Object.values(dataUserGeneral).some( value => value !== '')
+                    let isAnyFilled = Object.values(dataUserGeneral).some( value => value !== '') // mengambil sebagian alue dataUserGenaral
                     if (isAnyFilled) {
-                        Swal.fire({
-                            title: 'yakin membatalkan?',
-                            text: 'Data ini akan dihapus dan tidak bisa dikembalikan!',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Ya, batalkan!',
-                            cancelButtonText: 'Batal'
-                        }).then((result)=> {
+                        // menggunakan cancelConfirmation dari public js/helper
+                        cancelConfirmation('Yakin membatalkan?', (result)=> {
                             if (result.isConfirmed) {
                                 currentView.value = 'table';
                                 resetField();
                                 resetError()
                             }
-                        })
-                    } else {
+                        });
+                    }else {
                         currentView.value = 'table'
                         resetError()
                     }
-
                 }
                 const page = ref(1)
                 const editUser = async (id) => {
@@ -160,20 +147,18 @@
 
                 async function storeDataUserGeneral() {
                     try {
-                        if (!dataUserGeneral.name.trim()) {
-                           errors.name = 'nama tidak boleh kosong'
-                        }
-                        if (!dataUserGeneral.email.trim()) {
-                           errors.email = 'email tidak boleh kosong'
+                        let isValid = true;
+                        for (let key in dataUserGeneral) {
+                            if (!dataUserGeneral[key].toString().trim()) {
+                                let label = fieldLabels[key] || key;
+                                errors[key] = `${label} tidak boleh kosong`;
+                                isValid = false;
+                            } else {
+                                errors[key] = '';
+                            }
                         }
 
-                        if (!dataUserGeneral.email.trim()) {
-                           errors.password = 'email tidak boleh kosong'
-                        }
-
-                        if (!dataUserGeneral.role_id) {
-                           errors.role_id = 'jabatan tidak boleh kosong'
-                        }
+                        if (!isValid) return
 
                         let sendData = {
                             'name': dataUserGeneral.name,
@@ -188,8 +173,17 @@
                         // roleId.value = result.data.data.role_id
                         // currentView.value = 'create-user-detail';
                         currentView.value = 'table';
+                        successNotification(result.data.message) // meggunakan swal successNotifaction dari js/helper
+
                     } catch (error) {
-                        console.log(error)
+                        if (error.response && error.response.status === 422) {
+                            let responseErrors = error.response.data.errors;
+                            for (let key in responseErrors) {
+                                errors[key] = responseErrors[key][0];
+                            }
+                        } else {
+                            Swal.fire('Error', error.response?.data?.message || 'Terjadi kesalahan', 'error');
+                        }
                     }
                 }
 
@@ -231,7 +225,7 @@
                 return {
                     deleteConfirm, editUser,listRole,users, getListUser,
                     links, search,searchUser, perPage, page,errors, roleId,
-                    userId,
+                    userId, fieldLabels,
                     storeDataUserGeneral, dataUserGeneral, user, currentView,
                     showFormCreate, showFormEdit, showDetailUser, showTable,
                     closeCreateForm,

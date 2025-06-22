@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\General;
 
 use App\Helpers\MainRole;
-use App\Http\Controllers\Controller;
-use App\Models\{AdditionRole, User,};
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Validation\Rules;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Controller;
+use App\Models\{AdditionRole, User};
+use Illuminate\Validation\{ValidationException, Rules};
+use Illuminate\Support\Facades\{Hash, Validator};
 
 
 class UserController extends Controller
@@ -75,29 +74,40 @@ class UserController extends Controller
 
     public function storeDataUserGeneral(Request $request) {
         try {
-            $validated = $request->validate([
-                'name' => ['required', 'string', 'max:255'],
+             $validator = Validator::make($request->all(), [
+                'name' => ['required', 'string', 'max:255', 'min:3'],
                 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-                'password' => ['required', 'string', Rules\Password::defaults()],
-                'role_id'   => 'required',
+                'password' => ['required', 'string', 'min:8'],
+                'role_id' => 'required',
+            ], [
+                'email.unique'  => 'Email sudah digunakan..',
+                'name.min'  => 'Nama user minimal 3 karakter',
+                'password.string'  => 'tet',
+                'password.min'  => 'Password minimal 8 karakter',
             ]);
 
-             $validated['password'] = Hash::make($validated['password']);
-             $user = User::create($validated);
-
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+            $validated = $validator->validated();
+            $validated['password'] = Hash::make($validated['password']);
+            $user = User::create($validated);
             $dataUser = [
                 'role_id'   => $user->role_id,
                 'user_id'   => $user->id
             ];
 
              return response()->json([
-                'message'   => 'data user general created succesfully',
+                'message'   => 'User created successfully',
                 'data'      =>  $dataUser
              ]);
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
-            ]);
+            ], 500);
         }
     }
 

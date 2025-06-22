@@ -59,7 +59,7 @@
                             <option value="">Select role</option>
                             <option v-for="role in listRole" :key="role.id" :value="role.id">@{{role.name}}</option>
                         </select>
-                            <p v-if="dataUserGeneral.role_id" class="mt-1 text-sm text-red-600 dark:text-red-500">@{{ dataUserGeneral.role_id }}</p>
+                            <p v-if="errors.role_id" class="mt-1 text-sm text-red-600 dark:text-red-500">@{{ errors.role_id }}</p>
                     </div>
 
                     <div class="flex gap-4">
