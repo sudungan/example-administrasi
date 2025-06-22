@@ -1,5 +1,5 @@
 import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
- const { defineComponent, watch, ref, onMounted  } = Vue
+const { defineComponent, watch, ref, onMounted  } = Vue
 export default defineComponent({
     name: 'formUserDetail', // nama child component
     props: {

@@ -65,29 +65,33 @@
     </div>
 
     <script type="module">
-          const { createApp, ref, reactive, onMounted, watch } = Vue
+          const { createApp, ref, toRefs, reactive, onMounted, watch } = Vue
         // import { createApp, ref, reactive, onMounted, watch } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
         import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
         import pagination from '/js/components/paginate.js';
         import formUserDetail from '/js/components/formUserDetail.js';
+        import inputPassword from '/js/components/inputPassword.js';
         createApp({
             components: {
                 pagination,
                 formUserDetail,
+                inputPassword
             },
             setup() {
-                const user = ref({ userId: '', roleId: '',  name: '', address: ''  });
                 const users = ref([]);
                 const search = ref("")
-                const currentView = ref('table')
+                const links = ref([])
+                const roleId = ref(0);
+                const userId = ref(0)
                 const perPage = ref(1);
+                const currentView = ref('table')
+                const user = ref({ userId: '', roleId: '',  name: '', address: ''  });
                 const listRole = ref([{id: 1, name: 'kepala-sekolah'},{id: 2, name: 'admin'},{id: 3, name: 'guru'}, {id: 4, name: 'siswa'}, {id: 5, name: 'orang-tua'}])
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
                 const errors = reactive({ name: '', email: '', password: '', role_id: '', message: '' })
-                const links = ref([])
                 const fieldLabels = { name: 'Nama', email: 'Email', password: 'Password',  role_id: 'Jabatan' };
-                const roleId = ref(0);
-                const userId = ref(0)
+                const { name, email, password, role_id } = toRefs(dataUserGeneral);
+
                 const showDetailUser = async(id) => {
                     try {
                         const result = await axios.get('user/' + id);
@@ -173,6 +177,7 @@
                         // roleId.value = result.data.data.role_id
                         // currentView.value = 'create-user-detail';
                         currentView.value = 'table';
+                        resetField()
                         successNotification(result.data.message) // meggunakan swal successNotifaction dari js/helper
 
                     } catch (error) {
@@ -215,12 +220,14 @@
                     }
                 }
 
-                watch( search, async (newSearch) => {
+                watch(search, async (newSearch) => {
                     newSearch ?  await searchUser() :  await getListUser();
                  })
 
                 onMounted( async ()=> {
                     await getListUser()
+
+                    // await setupWatchers()
                 })
                 return {
                     deleteConfirm, editUser,listRole,users, getListUser,
