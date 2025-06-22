@@ -1,10 +1,10 @@
 <div
 x-data="{
-    isShowForm: $wire.entangle('isShowForm'),
     name: $wire.entangle('name'),
+    currentView: 'table',
     role_id: $wire.entangle('role_id'),
     edit: $wire.entangle('edit'),
-    closeModalCreate(){
+    closeFormCreate() {
         if(this.name != '' || this.role_id){
              Swal.fire({
                     title: 'yakin membatalkan?',
@@ -17,29 +17,45 @@ x-data="{
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                       this.isShowForm = false;
-                       this.name = ''
-                       this.role = ''
+                        this.currentView = 'table'
+                        this.name = ''
+                        this.role = ''
                     }
             });
-        }else {
-        this.isShowForm = false;
-         $wire.resetError();
+        } else {
+        this.currentView = 'table'
+        $wire.resetError();
         }
     },
-    openModal() {
-        this.isShowForm = true;
+    createdSuccessNotification() {
+         let createdNotifiation = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {  toast.onmouseenter = Swal.stopTimer; toast.onmouseleave = Swal.resumeTimer;  }
+        });
+
+        createdNotifiation.fire({
+            icon: 'success',
+            title: 'berhasil disimpan.'
+        });
     },
-    closeModal() {
-        this.isShowForm = false;
+    showTable() {
+        this.currentView = 'table'
+    },
+
+    showFormCreate() {
         $wire.resetError();
+        this.currentView = 'create'
+    },
+    showEditForm() {
+        this.currentView = 'edit'
     },
     sendDataRole() {
         $wire.storeDataRole();
     },
-    {{-- deleteConfirmAdditionRole(additionRoleId) {
-        console.log(additionRoleId);
-    }, --}}
     deleteConfirmAdditionRole(additionRoleId) {
          Swal.fire({
                 title: 'Apakah kamu yakin?',
@@ -62,46 +78,32 @@ x-data="{
         });
     }
 }"
-x-ref="formContainer"
+{{-- terima event kiriman dari livewire reactive melalui window--}}
+@success-created-notification.window="currentView = 'table'"
 x-init="
     window.addEventListener('success-update-notification', () => {
-
-    let updateNotification = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-    });
-
-    updateNotification.fire({
-        icon: 'success',
-        title: 'berhasil diupdate'
+        let updateNotification = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
         });
-    });
+
+        updateNotification.fire({
+            icon: 'success',
+            title: 'berhasil diupdate'
+        });
+     });
 
     window.addEventListener('success-created-notification', (event) => {
-    $root.dataset.isShowForm = event.detail.isShow;
-    let createdNotifiation = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-    });
-
-    createdNotifiation.fire({
-        icon: 'success',
-        title: 'berhasil disimpan.'
-        });
+        setTimeout(()=> {
+            createdSuccessNotification()
+        },200);
     });
 "
 >
@@ -110,17 +112,29 @@ x-init="
     </section>
 
         <div class="flex gap-4">
-            <flux:button  x-on:click="openModal" size="sm">
+            <flux:button
+                x-show="currentView =='table'"
+                @click="showFormCreate" size="sm"
+                >
                  <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
                 Role
             </flux:button>
 
         </div>
-            <div x-show="isShowForm" x-cloak x-transition.duration.500ms class="flex bg-gray-400 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                @include('livewire.roles._card-form-create')
-            </div>
-    @if (!$edit)
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <template x-teleport="body">
+                <div
+                    x-show="currentView == 'create'"
+                    x-cloak
+                    x-transition.duration.300ms
+                    class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                    @include('livewire.roles._card-form-create')
+                </div>
+            </template>
+        <div
+            x-show="currentView =='table'"
+            x-cloak
+            x-transition.duration.100ms
+            class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <div class="justify-items-end pb-4 bg-white dark:bg-zinc-800">
                 <label for="table-search" class="sr-only">Search</label>
                 <div class="relative mt-1">
@@ -181,10 +195,11 @@ x-init="
             </table>
             {{ $listRole->links() }}
         </div>
-    @endif
-    @if ($edit)
-        <livewire:roles.edit :idRole="$selectedRoleId" />
-    @endif
+
+        <div x-show="currentView =='edit'">
+            {{ __('EDIT') }}
+        </div>
+        {{-- <livewire:roles.edit :idRole="$selectedRoleId" /> --}}
 </div>
 
 

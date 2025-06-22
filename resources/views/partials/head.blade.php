@@ -13,6 +13,7 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://unpkg.com/vuejs-paginate@latest"></script>
 <link rel="stylesheet" href="{{ asset('/css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('/css/alpine.css') }}">
 <script src="{{ asset('/js/helper.js') }}"></script>
 
 

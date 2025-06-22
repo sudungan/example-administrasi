@@ -16,10 +16,10 @@ class Index extends Component
     public $role = [];
     public $role_id = null;
     public $name = "";
-    public $isShowForm = false;
     public $edit = false;
     public $createSuccess = false;
     public $selectedRoleId = null;
+    public $currentView = "table";
 
     #[Url]
     public ?string $search = '';
@@ -42,15 +42,10 @@ class Index extends Component
         }
     }
 
-    public function openModalCreate() {
-        $this->isShowForm = true;
-    }
-
     public function closeCreateForm() {
-        $this->isShowForm = false;
         $this->reset('name');
         $this->reset('role_id');
-        $this->dispatch('success-created-notification');
+        $this->dispatch('success-created-notification', currentView: 'table');
     }
 
     public function editRole($idRole) {

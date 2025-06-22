@@ -161,7 +161,8 @@
                         let result = await axios.post('/store-data-user-general', sendData);
                         userId.value = result.data.data.user_id;
                         roleId.value = result.data.data.role_id
-                        currentView.value = 'create-user-detail';
+                        // currentView.value = 'create-user-detail';
+                        currentView.value = 'table';
                     } catch (error) {
                         console.log(error)
                     }
