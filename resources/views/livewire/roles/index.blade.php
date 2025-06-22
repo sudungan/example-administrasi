@@ -45,7 +45,6 @@ x-data="{
     showTable() {
         this.currentView = 'table'
     },
-
     showFormCreate() {
         $wire.resetError();
         this.currentView = 'create'

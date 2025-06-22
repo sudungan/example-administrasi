@@ -103,7 +103,32 @@
                 }
                 const showFormCreate = () => currentView.value = 'create'
                 const showFormEdit = () => currentView.value = 'edit'
-                const showTable = () => currentView.value = 'table'
+                const showTable = () =>  currentView.value = 'table'
+                const closeCreateForm = () => {
+                    let isAnyFilled = Object.values(dataUserGeneral).some( value => value !== '')
+                    if (isAnyFilled) {
+                        Swal.fire({
+                            title: 'yakin membatalkan?',
+                            text: 'Data ini akan dihapus dan tidak bisa dikembalikan!',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Ya, batalkan!',
+                            cancelButtonText: 'Batal'
+                        }).then((result)=> {
+                            if (result.isConfirmed) {
+                                currentView.value = 'table';
+                                resetField();
+                                resetError()
+                            }
+                        })
+                    } else {
+                        currentView.value = 'table'
+                        resetError()
+                    }
+
+                }
                 const page = ref(1)
                 const editUser = async (id) => {
                      try {
@@ -159,8 +184,8 @@
 
 
                         let result = await axios.post('/store-data-user-general', sendData);
-                        userId.value = result.data.data.user_id;
-                        roleId.value = result.data.data.role_id
+                        // userId.value = result.data.data.user_id;
+                        // roleId.value = result.data.data.role_id
                         // currentView.value = 'create-user-detail';
                         currentView.value = 'table';
                     } catch (error) {
@@ -169,7 +194,15 @@
                 }
 
                 function resetField() {
-                     Object.assign(dataUserGeneral, {
+                    Object.assign(dataUserGeneral, {
+                        name: '',
+                        email: '',
+                        password: '',
+                        role_id: ''
+                    });
+                }
+                function resetError() {
+                    Object.assign(errors, {
                         name: '',
                         email: '',
                         password: '',
@@ -200,7 +233,8 @@
                     links, search,searchUser, perPage, page,errors, roleId,
                     userId,
                     storeDataUserGeneral, dataUserGeneral, user, currentView,
-                    showFormCreate, showFormEdit, showDetailUser, showTable
+                    showFormCreate, showFormEdit, showDetailUser, showTable,
+                    closeCreateForm,
                 }
             }
         }).mount('#app')
