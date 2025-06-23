@@ -5,17 +5,17 @@ namespace App\Http\Controllers\General;
 use App\Helpers\MainRole;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\{AdditionRole, User};
+use App\Models\{AdditionRole, Role, User};
 use Illuminate\Validation\{ValidationException, Rules};
 use Illuminate\Support\Facades\{Hash, Validator};
-
+use Illuminate\Database\Eloquent\Builder;
 
 class UserController extends Controller
 {
 
     public function index() {
         return view('users.index', [
-            'listRole'  => MainRole::mainRole,
+            'listRole'  => MainRole::role,
         ]);
     }
 
@@ -108,6 +108,31 @@ class UserController extends Controller
             return response()->json([
                 'message'   => $error->getMessage()
             ], 500);
+        }
+    }
+
+    public function getListRole(Request $request) {
+        try {
+            $rolesUsed = User::whereHas('role', function ($query) {
+                $query->whereIn('role_id', [
+                    MainRole::role['admin'],
+                    MainRole::role['kepala-sekolah']
+                ]);
+            })->pluck('role_id')->unique()->toArray();
+
+            $roles = count($rolesUsed) > 0
+                ? Role::whereNotIn('id', $rolesUsed)->select('id','name')->get()
+                : Role::select('id','name')->get();
+            $listRole = $roles->toArray();
+
+            return response()->json([
+                'message'   => 'get List Rol Successfuly',
+                'data'      => $listRole
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ]);
         }
     }
 

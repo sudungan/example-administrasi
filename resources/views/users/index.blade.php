@@ -66,7 +66,6 @@
 
     <script type="module">
           const { createApp, ref, toRefs, reactive, onMounted, watch } = Vue
-        // import { createApp, ref, reactive, onMounted, watch } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
         import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
         import pagination from '/js/components/paginate.js';
         import formUserDetail from '/js/components/formUserDetail.js';
@@ -81,13 +80,13 @@
                 const users = ref([]);
                 const search = ref("")
                 const links = ref([])
+                const listRole = ref([])
                 const roleId = ref(0);
                 const userId = ref(0)
                 const perPage = ref(1);
                 const currentView = ref('table')
                 const isLoading = ref(false)
                 const user = ref({ userId: '', roleId: '',  name: '', address: ''  });
-                const listRole = ref([{id: 1, name: 'kepala-sekolah'},{id: 2, name: 'admin'},{id: 3, name: 'guru'}, {id: 4, name: 'siswa'}, {id: 5, name: 'orang-tua'}])
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
                 const errors = reactive({ name: '', email: '', password: '', role_id: '', message: '' })
                 const fieldLabels = { name: 'Nama', email: 'Email', password: 'Password',  role_id: 'Jabatan' };
@@ -138,12 +137,12 @@
 
                 const searchUser = async () => {
                     try {
-                        let result = await axios.get("/search-user/?search=" + search.value)
-                        users.value = result.data.data.data
-                    } catch (error) {
+                        let result = await axios.get("/search-user/?search=" + search.value) // endpoint
+                        users.value = result.data.data.data // mengambil data dari response api dan dikoleksi
+                    } catch (error) { // menangkap objek error
                         console.log(error.response)
-                        if (error.response.status == 404) {
-                               errors.message = error.response.data.message
+                        if (error.response.status == 404) { // validasi error response status yang dikirim dari back-end
+                               errors.message = error.response.data.message // mengambil pesan error dan menampilkan
                         }else {
                             errors.message = error.response.message
                         }
@@ -153,7 +152,7 @@
                 async function storeDataUserGeneral() {
                     try {
                         let isValid = true;
-                        for (let key in dataUserGeneral) {
+                        for (let key in dataUserGeneral) { // validasi inputan data dibongkar melalui objek dataUserGeneral
                             if (!dataUserGeneral[key].toString().trim()) {
                                 let label = fieldLabels[key] || key;
                                 errors[key] = `${label} tidak boleh kosong`;
@@ -165,7 +164,7 @@
 
                         if (!isValid) return
 
-                        let sendData = {
+                        let sendData = { // mengkoleksi data user kedalam objek
                             'name': dataUserGeneral.name,
                             'email': dataUserGeneral.email,
                             'password': dataUserGeneral.password,
@@ -178,15 +177,18 @@
                         // currentView.value = 'create-user-detail';
                         currentView.value = 'table';
                         isLoading.value = false;
-                        resetField()
                         successNotification(result.data.message) // meggunakan swal successNotifaction dari js/helper
+                        await getListUser() // agar reaktif data terupdate otomatis
+                        await getListRole()
+                        resetField()
 
                     } catch (error) {
                         if (error.response && error.response.status === 422) {
                             let responseErrors = error.response.data.errors;
                             for (let key in responseErrors) {
                                 errors[key] = responseErrors[key][0];
-                            }
+                        }
+                             isLoading.value = false;
                         } else {
                             Swal.fire('Error', error.response?.data?.message || 'Terjadi kesalahan', 'error');
                         }
@@ -221,14 +223,24 @@
                     }
                 }
 
+                const getListRole = async ()=> {
+                    try {
+                        const result = await axios.get('list-role');
+                        listRole.value =  result.data.data
+                    } catch (error) {
+                        console.log(error)
+                    }
+
+                }
+
                 watch(search, async (newSearch) => {
                     newSearch ?  await searchUser() :  await getListUser();
                  })
 
                 onMounted( async ()=> {
-                    await getListUser()
-
-                    // await setupWatchers()
+                    await getListUser(),
+                    await getListRole(),
+                    await getListRole()
                 })
                 return {
                     deleteConfirm, editUser,listRole,users, getListUser,

@@ -33,7 +33,8 @@
         </tr>
     </thead>
     <tbody>
-        <tr v-if="users.length > 0" v-for="(user, index) in users" :key="user.id"  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <template v-if="users.length > 0">
+             <tr v-for="(user, index) in users" :key="user.id"  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 @{{index + 1 + (links.current_page -1) * links.per_page  }}
             </th>
@@ -96,8 +97,11 @@
                 </td>
             </tr>
         </tr>
-        <tr v-else colspan="5" class="px-6  text-yellow-800 rounded-lg bg-yellow-50 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            <span class="font-medium"> Tidak ada data user..</span>
+        </template>
+        <template v-else>
+        <tr colspan="5" class="px-6  text-yellow-800 rounded-lg bg-yellow-50 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <span class="font-medium text-center"> Tidak ada data user..</span>
         </tr>
+        </template>
     </tbody>
 </table>

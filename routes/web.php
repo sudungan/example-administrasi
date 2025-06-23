@@ -23,6 +23,7 @@ Route::middleware(['auth'])->group(function () {
     Route::redirect('majors', 'major');
     Volt::route('majors', 'majors.index')->name('majors.index');
 
+    Route::get('list-role', [UserController::class, 'getListRole'])->name('list-role');
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::post('store-data-user-general', [UserController::class, 'storeDataUserGeneral']);
     Route::get('user/{userId}', [UserController::class, 'showUser'])->name('user');
