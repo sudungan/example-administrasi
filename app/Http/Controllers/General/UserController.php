@@ -126,7 +126,7 @@ class UserController extends Controller
             $listRole = $roles->toArray();
 
             return response()->json([
-                'message'   => 'get List Rol Successfuly',
+                'message'   => 'get List Role Successfuly',
                 'data'      => $listRole
             ]);
         } catch (\Exception $error) {

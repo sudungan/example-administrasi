@@ -6,6 +6,7 @@ use Livewire\Attributes\{On, Url};
 use Livewire\Component;
 use App\Models\{Role, AdditionRole};
 use App\Helpers\MainRole;
+use Illuminate\Database\Eloquent\Collection;
 
 use Livewire\{WithPagination};
 
@@ -17,15 +18,21 @@ class Index extends Component
     public $role_id = null;
     public $name = "";
     public $edit = false;
+    public $listRole = [];
     public $createSuccess = false;
-    public $selectedRoleId = null;
     public $currentView = "table";
+    public ?AdditionRole $editingAdditionRole = null;
 
     #[Url]
     public ?string $search = '';
 
     public function mount() {
         $this->checkRole();
+        $this->getRole();
+    }
+
+    public function getRole() {
+        $this->listRole = Role::with('additionRole')->get();
     }
 
     public function checkRole() {
@@ -48,9 +55,9 @@ class Index extends Component
         $this->dispatch('success-created-notification', currentView: 'table');
     }
 
-    public function editRole($idRole) {
-        $this->edit = true;
-        $this->selectedRoleId = $idRole;
+    public function editAddition(AdditionRole $additionRole) {
+        $this->editingAdditionRole = $additionRole;
+        $this->getRole();
     }
 
     #[On('close-edited')]
@@ -87,8 +94,8 @@ class Index extends Component
             $query = $query->latest();
 
         return view('livewire.roles.index', [
-             'mainRole'  => MainRole::mainRole,
-            'listRole' => $query->paginate(5)
+                'mainRole'  => MainRole::role,
+                'listRole' => $query->paginate(5)
         ]);
     }
 

@@ -66,7 +66,7 @@
 
     <script type="module">
           const { createApp, ref, toRefs, reactive, onMounted, watch } = Vue
-        import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
+        // import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
         import pagination from '/js/components/paginate.js';
         import formUserDetail from '/js/components/formUserDetail.js';
         import inputPassword from '/js/components/inputPassword.js';

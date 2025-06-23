@@ -11,10 +11,11 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="https://unpkg.com/vuejs-paginate@latest"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.10.0/axios.min.js"></script>
 <link rel="stylesheet" href="{{ asset('/css/style.css') }}">
 <link rel="stylesheet" href="{{ asset('/css/alpine.css') }}">
 <script src="{{ asset('/js/helper.js') }}"></script>
+<script src="{{ asset('/js/alpine/dataRole.js') }}"></script>
 
 
 <link rel="preconnect" href="https://fonts.bunny.net">

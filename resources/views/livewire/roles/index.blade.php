@@ -168,7 +168,7 @@ x-init="
                                 <span class="flex gap-2 bg-blue-100 text-blue-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-blue-400 border border-blue-400">
                                     {{ $item->name }}
                                     <div class="gap-2 flex">
-                                        <button type="button" wire:click="editRole( {{ $item->id }} )" class="text-gray-600 dark:text-gray-500 cursor-pointer">
+                                        <button type="button" wire:click="editAddition( {{ $item->id }} )" class="text-gray-600 dark:text-gray-500 cursor-pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                             </svg>
@@ -180,11 +180,15 @@ x-init="
                                         </button>
                                     </div>
                                 </span>
+                                 @if ($editingAdditionRole)
+                                    {{ __('KESINI') }}
+                                @endif
                                 @empty
                                     <span class=" text-yellow-800 rounded-lg py-4 font-medium text-gray-900"> jabatan tambahan belum tersedia..</span>
                                 @endforelse
                             </th>
                         </tr>
+
                     @empty
                         <th scope="row" class="px-6  text-yellow-800 rounded-lg bg-yellow-50 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             <span class="font-medium"> Tidak ada data jabatan..</span>
@@ -192,13 +196,12 @@ x-init="
                     @endforelse
                 </tbody>
             </table>
-            {{ $listRole->links() }}
         </div>
 
-        <div x-show="currentView =='edit'">
-            {{ __('EDIT') }}
+
+        <div x-show="currentView ==='edit' ">
+            <livewire:roles.edit />
         </div>
-        {{-- <livewire:roles.edit :idRole="$selectedRoleId" /> --}}
 </div>
 
 

@@ -1,9 +1,6 @@
 <?php
 
-use App\Http\Controllers\General\{
-    ClassroomController,
-    UserController,
-};
+use App\Http\Controllers\General\{ ClassroomController, RoleController, UserController};
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -17,8 +14,11 @@ Route::view('dashboard', 'dashboard')
 
 Route::middleware(['auth'])->group(function () {
     Route::get('classrooms', [ClassroomController::class, 'index'])->name('classrooms');
-    Route::redirect('roles', 'roles');
-    Volt::route('roles', 'roles.index')->name('roles.index');
+
+    // ROUTE FOR ROLES
+    Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::get('getListUser', [RoleController::class, 'getListRole'])->name('getListUser');
+    // getListRole
 
     Route::redirect('majors', 'major');
     Volt::route('majors', 'majors.index')->name('majors.index');
