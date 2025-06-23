@@ -85,6 +85,7 @@
                 const userId = ref(0)
                 const perPage = ref(1);
                 const currentView = ref('table')
+                const isLoading = ref(false)
                 const user = ref({ userId: '', roleId: '',  name: '', address: ''  });
                 const listRole = ref([{id: 1, name: 'kepala-sekolah'},{id: 2, name: 'admin'},{id: 3, name: 'guru'}, {id: 4, name: 'siswa'}, {id: 5, name: 'orang-tua'}])
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
@@ -170,13 +171,13 @@
                             'password': dataUserGeneral.password,
                             'role_id': dataUserGeneral.role_id
                         }
-
-
+                        isLoading.value = true;
                         let result = await axios.post('/store-data-user-general', sendData);
                         // userId.value = result.data.data.user_id;
                         // roleId.value = result.data.data.role_id
                         // currentView.value = 'create-user-detail';
                         currentView.value = 'table';
+                        isLoading.value = false;
                         resetField()
                         successNotification(result.data.message) // meggunakan swal successNotifaction dari js/helper
 
@@ -232,7 +233,7 @@
                 return {
                     deleteConfirm, editUser,listRole,users, getListUser,
                     links, search,searchUser, perPage, page,errors, roleId,
-                    userId, fieldLabels,
+                    userId, fieldLabels, isLoading,
                     storeDataUserGeneral, dataUserGeneral, user, currentView,
                     showFormCreate, showFormEdit, showDetailUser, showTable,
                     closeCreateForm,
