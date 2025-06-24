@@ -17,23 +17,25 @@ class DatabaseSeeder extends Seeder
     {
           $faker = Faker::create();
 
-        foreach (MainRole::mainRole as $key => $value) {
+        foreach (MainRole::role as $key => $value) {
             Role::create([
                 'name'  => $key
             ]);
         }
-        User::factory()->create([
+        $user = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => bcrypt('password'),
             'role_id'   => 1,
         ]);
 
+        $user->roles()->attach($user['role_id']);
+
          for ($index = 0; $index < 14; $index++) {
             User::create([
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
-                'role_id' => rand(1, 4), // Angka antara 1 dan 4
+                'role_id' => rand(3, 5), // Angka antara 1 dan 4
                 'password' => bcrypt('password'), // default password
             ]);
         }

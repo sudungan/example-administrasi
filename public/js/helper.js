@@ -31,6 +31,35 @@ function cancelConfirmation(message, callback) {
     })
 }
 
+function deleteConfirmation(message, callback) {
+    console.log(message)
+    Swal.fire({
+        title: message,
+        // text: 'Data ini akan dihapus dan tidak bisa dikembalikan!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        callback(result)
+    });
+}
+
+function swalLoading(message, callback) {
+    const loading = Swal.fire({
+        title: 'Please wait...',
+        text: message || 'Processing data',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+            callback();
+        }
+    });
+    return loading;
+}
+
 function tester() {
 console.log('runing');
 }

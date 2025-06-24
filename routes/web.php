@@ -17,7 +17,9 @@ Route::middleware(['auth'])->group(function () {
 
     // ROUTE FOR ROLES
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
-    Route::get('getListUser', [RoleController::class, 'getListRole'])->name('getListUser');
+    Route::get('listRole', [RoleController::class, 'getListRole'])->name('listRole');
+    Route::post('store-role', [RoleController::class, 'store'])->name('store-role');
+    Route::delete('addition-role/{roleId}', [RoleController::class, 'deleteAdditionRole'])->name('addition-role');
     // getListRole
 
     Route::redirect('majors', 'major');

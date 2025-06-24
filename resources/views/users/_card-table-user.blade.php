@@ -100,8 +100,9 @@
         </template>
         <template v-else>
         <tr colspan="5" class="px-6  text-yellow-800 rounded-lg bg-yellow-50 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            <span class="font-medium text-center"> Tidak ada data user..</span>
+            <span class="font-medium text-center p-4 mb-4 text-sm text-yellow-800"> Tidak ada data user..</span>
         </tr>
+            {{-- <span class="font-medium p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300">Warning alert!</span> Change a few things up and try submitting again. --}}
         </template>
     </tbody>
 </table>
