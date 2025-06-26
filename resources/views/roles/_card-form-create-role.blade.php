@@ -46,9 +46,7 @@
                                 </svg>
                             </template>
 
-                            <span x-show="isLoading">Process...</span>
-                            <span x-show="!isLoading">Simpan</span>
-                            {{-- <span x-text="isLoading ? 'Process...' : 'Simpan'"></span> --}}
+                            <span x-text="isLoading ? 'Process...' : 'Simpan'"></span>
                         </button>
                         <button
                             :disabled="isLoading"

@@ -41,7 +41,7 @@ class RoleController extends Controller
 
             return response()->json([
                 'message'   => 'Addition role created.'
-            ]);
+            ], HttpCode::CREATED);
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
@@ -69,7 +69,7 @@ class RoleController extends Controller
             $additionRole = AdditionRole::findOrFail($roleId);
             $additionRole->delete();
             return response()->json([
-                'message'   => 'jabatan tambahan berhasil dihapus'
+                'message'   => 'addition role berhasil dihapus'
             ], HttpCode::OK);
         } catch (\Exception $error) {
             return response()->json([

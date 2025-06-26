@@ -26,7 +26,7 @@
                             <td class="px-2 py-4">
                                 <template x-if="role.addition_role.length > 0">
                                     <template x-for="addition in role.addition_role">
-                                        <div class="inline-flex gap-2">
+                                        <div class="inline-flex mb-2">
                                             <span class="gap-2 inline-flex bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm me-2 dark:bg-gray-700 dark:text-gray-400 border border-gray-500">
                                                 <p x-text="addition.name" class="me-2"></p>
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="cursor-pointer size-3 text-gray-900 dark:text-gray-400">

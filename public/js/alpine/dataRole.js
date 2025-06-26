@@ -77,10 +77,10 @@ const dataRole =()=> {
                 }
                 this.isLoading = true;
                 let result = await axios.post('store-role', sendDataRole);
-                this.closeCreateForm()
                 this.isLoading = false
-                this.currentView = 'table'
                 this.resetField()
+                this.closeCreateForm()
+                this.currentView = 'table'
                 if (result) {
                     console.log(result);
                 }
@@ -102,10 +102,11 @@ const dataRole =()=> {
                 if(!result.isConfirmed) {
                     return
                 }
-            await swalLoading('Menghapus Data Role',async (result)=> {
+            await swalLoading('Menghapus Addition Role..',async (result)=> {
                 try {
                     let result = await axios.delete(`/addition-role/${additionId}`)
-                    console.log(result.data.message)
+                    successNotification(result.data.message)
+                    this.getDataRole()
                 } catch (error) {
                     console.log(error)
                 }
