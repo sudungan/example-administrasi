@@ -16,7 +16,6 @@
                 </button>
             </div>
             <div
-                x-transition.duration.500ms
                 x-show="currentView === 'table'"
                 class="relative shadow-md sm:rounded-lg">
                 @include('roles._card-table-role')
@@ -24,7 +23,7 @@
 
             {{-- form create data role --}}
             <div
-                  x-transition.duration.600ms
+                x-transition.duration.600ms
                 x-cloak
                 x-show="currentView === 'create'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">

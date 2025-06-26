@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdditionRole;
 use Illuminate\Http\Request;
-use App\Models\{Role, User};
+use App\Models\{Role, User, AdditionRole};
 use App\Exceptions\ForbiddenTransactionException;
 use Illuminate\Support\Facades\{Hash, Validator};
 use App\Helpers\{HttpCode, MainRole};
@@ -18,11 +17,13 @@ class RoleController extends Controller
     public function store(Request $request) {
         try {
             $validator = Validator::make($request->all(), [
-                'name' => ['required', 'string', 'max:255', 'min:3'],
+                'name' => ['required', 'string', 'max:255', 'min:3', 'max:255', 'unique:' . AdditionRole::class],
                 'role_id' => 'required',
             ], [
+                'name.required'  => 'Nama Jabatan tambahan harus diisi..',
                 'name.min'  => 'Nama user minimal 3 karakter',
-                'role_id.string'  => 'tet',
+                'name.unique'  => 'Nama Jabatan sudah dipakai',
+                'role_id.required'  => 'Jabatan utama wajib dipilih..',
             ]);
 
             if ($validator->fails()) {
@@ -39,7 +40,7 @@ class RoleController extends Controller
             ]);
 
             return response()->json([
-                'message'   => 'created addition-role successfully'
+                'message'   => 'Addition role created.'
             ]);
         } catch (\Exception $error) {
             return response()->json([
@@ -64,6 +65,16 @@ class RoleController extends Controller
     }
 
     public function deleteAdditionRole($roleId) {
-        $additionRole = AdditionRole::findOrFail($roleId);
+        try {
+            $additionRole = AdditionRole::findOrFail($roleId);
+            $additionRole->delete();
+            return response()->json([
+                'message'   => 'jabatan tambahan berhasil dihapus'
+            ], HttpCode::OK);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ]);
+        }
     }
 }

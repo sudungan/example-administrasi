@@ -31,7 +31,7 @@ function cancelConfirmation(message, callback) {
     })
 }
 
-function deleteConfirmation(message, callback) {
+function confirmDelete(message, callback) {
     console.log(message)
     Swal.fire({
         title: message,
