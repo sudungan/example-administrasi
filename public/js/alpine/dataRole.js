@@ -1,17 +1,16 @@
 const dataRole =()=> {
     return {
-        listRole: [],
-        additionRole: {role_id: '', name: ''},
-        currentView: 'table',
+        listRole: [], // state tempat menampung seluruh data list role
+        additionRole: {role_id: '', name: ''}, // state tempat menampung data object baru
+        originalAdditionRole: {id: '',role_id: '', name: ''}, // state tempat orignal atau clone data objek
+        changedFields: {}, // state tempat menampung data dari field yang nilainya berubah
         errors: { role_id: '', name: ''},
+        currentView: 'table',
         isLoading: false,
         isValid: true,
         fieldLabels: { name: 'Nama', role_id: 'Jabatan'},
         init() {
             this.getDataRole();
-            this.$watch('additionRole.role_id', (value)=> { // melakukan watch reaktif
-                if (value != '') { this.errors.role_id = '' }
-            })
         },
         async getDataRole() {
             try {
@@ -97,14 +96,14 @@ const dataRole =()=> {
             }
         },
 
-        async deleteConfirmation(additionId) {
+        async deleteConfirmation(additionRoleId) {
             confirmDelete('Yakin dihapus?', async (result)=>{
                 if(!result.isConfirmed) {
                     return
                 }
             await swalLoading('Menghapus Addition Role..',async (result)=> {
                 try {
-                    let result = await axios.delete(`/addition-role/${additionId}`)
+                    let result = await axios.delete(`/addition-role/${additionRoleId}`)
                     successNotification(result.data.message)
                     this.getDataRole()
                 } catch (error) {
@@ -112,6 +111,61 @@ const dataRole =()=> {
                 }
             });
             })
+        },
+
+        async editAdditionRole(additionRoleId) {
+            try {
+                const result = await axios.get(`edit-addition-role/${additionRoleId}`);
+                this.currentView = 'edit'
+                this.additionRole = result.data.data
+                this.originalAdditionRole = { ...this.additionRole}; // spread mengisi data objek
+                console.log('ini dari edit', this.originalAdditionRole)
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        closeEditFormAdditionRole() {
+            const isChanged =
+                this.additionRole.role_id !== this.originalAdditionRole.role_id ||
+                this.additionRole.name !== this.originalAdditionRole.name;
+
+                isChanged
+                ? cancelConfirmation('Yakin membatalkan?', result =>  result.isConfirmed && (this.currentView = 'table'))
+                : this.currentView = 'table';
+        },
+        changeDataRole(event) {
+            const field = event.target.id;
+            const value = event.target.value;
+            const originalValue = this.originalAdditionRole[field];
+            value !== originalValue ?  this.changedFields[field] = value :  delete this.changedFields[field];
+        },
+
+        async updateAdditionRole() {
+            try {
+                let additionRoleUpdate = {
+                    id: this.additionRole.id,
+                    role_id: this.changedFields.role_id || this.additionRole.role_id,
+                    name: this.changedFields.name || this.additionRole.name
+                }
+                this.isLoading = true;
+                const result = await axios.put(`/update-addition-role/${additionRoleUpdate.id}`, additionRoleUpdate);
+                this.isLoading = false;
+                this.resetErrors()
+                this.currentView = 'table';
+                successNotification(result.data.message)
+                await this.getDataRole()
+
+            } catch (error) {
+                console.log('Status:', error.response.status);
+                console.log('Response:', error.response);
+                if (error.response && error.response.status === 422) {
+                    let responseErrors = error.response.data.errors;
+                    for (let key in responseErrors) {
+                        this.errors[key] = responseErrors[key][0];
+                    }
+                    this.isLoading = false
+                }
+            }
         },
     }
 }
