@@ -17,3 +17,5 @@ const dataMajor =()=> {
         }
     }
 }
+
+export default dataMajor;

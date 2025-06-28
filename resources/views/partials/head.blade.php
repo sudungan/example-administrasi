@@ -15,8 +15,9 @@
 <link rel="stylesheet" href="{{ asset('/css/style.css') }}">
 <link rel="stylesheet" href="{{ asset('/css/alpine.css') }}">
 <script src="{{ asset('/js/helper.js') }}"></script>
-<script src="{{ asset('/js/alpine/dataRole.js') }}"></script>
-<script src="{{ asset('/js/alpine/dataMajor.js') }}"></script>
+{{-- <script src="{{ asset('/js/alpine/dataRole.js') }}"></script>
+<script src="{{ asset('/js/alpine/dataMajor.js') }}"></script> --}}
+<script type="module" src="{{ asset('/js/alpine/assetUsingAlpine.js') }}"></script>
 
 
 <link rel="preconnect" href="https://fonts.bunny.net">

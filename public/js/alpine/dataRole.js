@@ -186,3 +186,5 @@ const dataRole =()=> {
         },
     }
 }
+
+export default dataRole;

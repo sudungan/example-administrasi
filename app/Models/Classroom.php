@@ -11,4 +11,8 @@ class Classroom extends Model
     public function teacher() { // relasi untuk menjadikan wali kelas
         return $this->belongsTo(User::class, 'id');
     }
+
+    public function major() {
+        return $this->belongsTo(Major::class);
+    }
 }

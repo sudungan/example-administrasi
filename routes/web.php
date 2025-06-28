@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\General\{ ClassroomController, RoleController, UserController};
-use App\Http\Controllers\Kurikulum\MajorController;
+use App\Http\Controllers\General\{RoleController, UserController};
+use App\Http\Controllers\Kurikulum\{MajorController, ClassroomController};
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -16,7 +16,8 @@ Route::view('dashboard', 'dashboard')
 Route::middleware(['auth'])->group(function () {
 
     // ROUTE FOR CLASSROOMS
-    Route::get('classrooms', [ClassroomController::class, 'index'])->name('classrooms');
+    Route::get('classrooms', [ClassroomController::class, 'index'])->name('classrooms.index');
+    Route::get('get-list-classroom', [ClassroomController:: class, 'getListClassroom'])->name('get-list-classroom');
 
     // ROUTE FOR ROLES
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
