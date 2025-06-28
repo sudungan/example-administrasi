@@ -5,7 +5,7 @@ namespace App\Http\Controllers\General;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\{Role, User, AdditionRole};
-use App\Exceptions\ForbiddenTransactionException;
+use App\Exceptions\ConflictException;
 use Illuminate\Support\Facades\{Hash, Validator};
 use App\Helpers\{HttpCode, MainRole};
 class RoleController extends Controller
@@ -67,15 +67,29 @@ class RoleController extends Controller
 
     public function deleteAdditionRole($additionRoleId) {
         try {
+            // user memiliki role tambahan
+            $usersHasAdditionRole = User::whereHas('additionRoles', function($query)use($additionRoleId) {
+                $query->where('addition_role_id', $additionRoleId);
+            })->count();
+
+            if ($usersHasAdditionRole) {
+               throw new ConflictException('jabatan tambahan sedang digunakan', [
+                'addition_role_id'  => 'Tidak dapat dihapus karena masih digunakan'
+               ]);
+            }
+
             $additionRole = AdditionRole::findOrFail($additionRoleId);
             $additionRole->delete();
             return response()->json([
                 'message'   => 'addition role berhasil dihapus'
             ], HttpCode::OK);
+            
+        } catch(ConflictException $exception) {
+             return $exception->render(request());
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
-            ]);
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 

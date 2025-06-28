@@ -103,11 +103,15 @@ const dataRole =()=> {
                 }
             await swalLoading('Menghapus Addition Role..',async (result)=> {
                 try {
-                    let result = await axios.delete(`/addition-role/${additionRoleId}`)
+                    let result = await axios.delete(`/delete-addition-role/${additionRoleId}`)
                     successNotification(result.data.message)
                     this.getDataRole()
                 } catch (error) {
-                    console.log(error)
+                    if (error.response && error.response.status == 409) {
+                            swalNotificationConflict(error.response.data.message)
+                    }else {
+
+                    }
                 }
             });
             })
@@ -156,8 +160,6 @@ const dataRole =()=> {
                 await this.getDataRole()
 
             } catch (error) {
-                console.log('Status:', error.response.status);
-                console.log('Response:', error.response);
                 if (error.response && error.response.status === 422) {
                     let responseErrors = error.response.data.errors;
                     for (let key in responseErrors) {

@@ -8,6 +8,7 @@ class HttpCode {
     public const BAD_REQUEST = 400;
     public const UN_AUTHORIZED = 401;
     public const FORBIDDEN = 403;
+    public const CONFLICT = 409;
     public const TOO_MANY_REQUEST = 429;
     public const UNPROCESABLE_CONTENT = 422;
     public const INTERNAL_SERVER_ERROR = 500;

@@ -32,10 +32,8 @@ function cancelConfirmation(message, callback) {
 }
 
 function confirmDelete(message, callback) {
-    console.log(message)
     Swal.fire({
         title: message,
-        // text: 'Data ini akan dihapus dan tidak bisa dikembalikan!',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -58,6 +56,14 @@ function swalLoading(message, callback) {
         }
     });
     return loading;
+}
+
+function swalNotificationConflict(message) {
+    Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: message,
+    });
 }
 
 function tester() {

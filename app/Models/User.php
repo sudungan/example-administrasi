@@ -59,7 +59,11 @@ class User extends Authenticatable
     }
 
     public function roles() { // role tambahan
-        return $this->belongsToMany(Role::class)->withTimestamps();
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function additionRoles() { // user memiliki banyak role tambahan
+        return $this->belongsToMany(AdditionRole::class);
     }
 
     public function detailUser() {
