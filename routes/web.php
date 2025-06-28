@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\General\{ ClassroomController, RoleController, UserController};
+use App\Http\Controllers\Kurikulum\MajorController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -13,6 +14,8 @@ Route::view('dashboard', 'dashboard')
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
+
+    // ROUTE FOR CLASSROOMS
     Route::get('classrooms', [ClassroomController::class, 'index'])->name('classrooms');
 
     // ROUTE FOR ROLES
@@ -24,9 +27,11 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('delete-addition-role/{additionRoleId}', [RoleController::class, 'deleteAdditionRole'])->name('delete-addition-role');
     // getListRole
 
-    Route::redirect('majors', 'major');
-    Volt::route('majors', 'majors.index')->name('majors.index');
+    // ROUTE FOR MAJORS
+    Route::get('majors', [MajorController::class, 'index'])->name('majors.index');
+    Route::get('list-major', [MajorController::class, 'getListMajor'])->name('list-major');
 
+    // ROUTE FOR USERS
     Route::get('list-role', [UserController::class, 'getListRole'])->name('list-role');
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::post('store-data-user-general', [UserController::class, 'storeDataUserGeneral']);

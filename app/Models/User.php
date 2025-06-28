@@ -54,15 +54,13 @@ class User extends Authenticatable
             ->implode('');
     }
 
-    public function role() { // role utama
+    // role utama
+    public function role() {
         return $this->belongsTo(Role::class);
     }
 
-    public function roles() { // role tambahan
-        return $this->belongsToMany(Role::class);
-    }
-
-    public function additionRoles() { // user memiliki banyak role tambahan
+    // user memiliki banyak role tambahan
+    public function additionRoles() {
         return $this->belongsToMany(AdditionRole::class);
     }
 

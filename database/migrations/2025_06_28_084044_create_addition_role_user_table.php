@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(AdditionRole::class);
             $table->foreignIdFor(User::class);
-            // $table->foreignId('addition_role_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            //  $table->foreignId('addition_role_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             // $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });

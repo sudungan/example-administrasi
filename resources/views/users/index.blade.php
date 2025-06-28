@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Pengguna')" appName="Example Administrasi">
-    <div id="app" class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl" wire:ignore>
+    <div id="app" class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         @include('partials.settings-heading')
 
         <div class="relative h-full flex-1 overflow-hidden rounded-xl">

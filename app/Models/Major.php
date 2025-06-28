@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Major extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'slug', 'user_id', 'initial'];
 
     public function headMajor() {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function classrooms() {
