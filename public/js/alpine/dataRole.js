@@ -92,6 +92,8 @@ const dataRole =()=> {
                         this.errors[key] = responseErrors[key][0];
                     }
                     this.isLoading = false
+                }else {
+                    swalInternalServerError(error.response.data.message) // http code 500
                 }
             }
         },
@@ -110,7 +112,7 @@ const dataRole =()=> {
                     if (error.response && error.response.status == 409) {
                             swalNotificationConflict(error.response.data.message)
                     }else {
-
+                        swalInternalServerError(error.response.data.message) // http code 500
                     }
                 }
             });
@@ -125,7 +127,7 @@ const dataRole =()=> {
                 this.originalAdditionRole = { ...this.additionRole}; // spread mengisi data objek
                 console.log('ini dari edit', this.originalAdditionRole)
             } catch (error) {
-                console.log(error)
+               swalInternalServerError(error.response.data.message) // http code 500
             }
         },
         closeEditFormAdditionRole() {
@@ -160,13 +162,26 @@ const dataRole =()=> {
                 await this.getDataRole()
 
             } catch (error) {
+                if (error.response && error.response.status == 409) {
+                        this.isLoading = false
+                        this.resetErrors();
+                        this.currentView = 'table'
+                        swalNotificationConflict(error.response.data.message)
+                }
+
                 if (error.response && error.response.status === 422) {
                     let responseErrors = error.response.data.errors;
                     for (let key in responseErrors) {
                         this.errors[key] = responseErrors[key][0];
                     }
                     this.isLoading = false
+                }else {
+                    swalInternalServerError(error.response.data.message) // http code 500
                 }
+
+
+
+
             }
         },
     }

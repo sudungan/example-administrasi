@@ -66,6 +66,10 @@ function swalNotificationConflict(message) {
     });
 }
 
+function swalInternalServerError(message) {
+
+}
+
 function tester() {
 console.log('runing');
 }

@@ -83,7 +83,7 @@ class RoleController extends Controller
             return response()->json([
                 'message'   => 'addition role berhasil dihapus'
             ], HttpCode::OK);
-            
+
         } catch(ConflictException $exception) {
              return $exception->render(request());
         } catch (\Exception $error) {
@@ -131,6 +131,16 @@ class RoleController extends Controller
                 ], HttpCode::UNPROCESABLE_CONTENT);
             }
 
+            $usersHasAdditionRole = User::whereHas('additionRoles', function($query)use($additionRoleId) {
+                $query->where('addition_role_id', $additionRoleId);
+            })->count();
+
+            if ($usersHasAdditionRole) {
+               throw new ConflictException('jabatan tambahan sedang digunakan', [
+                'addition_role_id'  => 'Tidak dapat dihapus karena masih digunakan'
+               ]);
+            }
+
             $validated = $validator->validated();
             $additionRole = AdditionRole::findOrFail($additionRoleId);
             $additionRole->update([
@@ -141,6 +151,8 @@ class RoleController extends Controller
             return response()->json([
                 'message'   => 'Jabatan berhasil diupdate'
             ], HttpCode::OK);
+        } catch(ConflictException $exception) {
+             return $exception->render(request());
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
