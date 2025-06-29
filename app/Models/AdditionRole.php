@@ -15,6 +15,6 @@ class AdditionRole extends Model
     }
 
     public function userAdditionRoles() {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'addition_role_user', 'addition_role_id', 'user_id');
     }
 }

@@ -80,9 +80,6 @@ const dataRole =()=> {
                 this.resetField()
                 this.closeCreateForm()
                 this.currentView = 'table'
-                if (result) {
-                    console.log(result);
-                }
                 successNotification(result.data.message)
                 this.getDataRole()
             } catch (error) {

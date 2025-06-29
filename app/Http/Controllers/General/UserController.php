@@ -15,7 +15,7 @@ class UserController extends Controller
 
     public function index() {
         return view('users.index', [
-            'listRole'  => MainRole::role,
+            'listRole'  => MainRole::item,
         ]);
     }
 
@@ -115,8 +115,8 @@ class UserController extends Controller
         try {
             $rolesUsed = User::whereHas('role', function ($query) {
                 $query->whereIn('role_id', [
-                    MainRole::role['admin'],
-                    MainRole::role['kepala-sekolah']
+                    MainRole::item['admin'],
+                    MainRole::item['kepala-sekolah']
                 ]);
             })->pluck('role_id')->unique()->toArray();
 

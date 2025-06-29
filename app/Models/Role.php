@@ -11,4 +11,8 @@ class Role extends Model
     public function additionRole() {
         return $this->hasMany(AdditionRole::class);
     }
+
+    public function user() {
+        return $this->hasMany(User::class);
+    }
 }

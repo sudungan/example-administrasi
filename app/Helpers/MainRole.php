@@ -3,7 +3,7 @@
 namespace App\Helpers;
 
 class MainRole {
-    public const role = [
+    public const item = [
         'kepala-sekolah'    => 1,
         'admin'             => 2,
         'guru'              => 3,
