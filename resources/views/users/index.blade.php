@@ -45,6 +45,7 @@
                 v-show="currentView === 'detail'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
                 @include('users._card-detail-user')
+                {{-- @include('users._card-detail-user-example') --}}
             </div>
 
             {{-- card table data user --}}
@@ -86,6 +87,7 @@
                 const perPage = ref(1);
                 const currentView = ref('table')
                 const isLoading = ref(false)
+                const cardUserDetail = ref({ general:false,  profile: false })
                 const user = ref({ userId: '', roleId: '',  name: '', address: ''  });
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
                 const errors = reactive({ name: '', email: '', password: '', role_id: '', message: '' })
@@ -100,6 +102,20 @@
                     } catch (error) {
                         console.log(error)
                     }
+                }
+                const backToPreviousPage = () => {
+                    currentView.value = 'table'
+                    cardUserDetail.value.general = false
+                    cardUserDetail.value.profile = false
+
+                }
+                const btnShowDetailProfile =()=> {
+                    cardUserDetail.value.profile = !cardUserDetail.value.profile
+                    cardUserDetail.value.general = false
+                }
+                const btnShowDataGeneral =()=> {
+                    cardUserDetail.value.general = !cardUserDetail.value.general
+                    cardUserDetail.value.profile = false
                 }
                 const showFormCreate = () => currentView.value = 'create'
                 const showFormEdit = () => currentView.value = 'edit'
@@ -245,7 +261,8 @@
                 return {
                     deleteConfirm, editUser,listRole,users, getListUser,
                     links, search,searchUser, perPage, page,errors, roleId,
-                    userId, fieldLabels, isLoading,
+                    userId, fieldLabels, isLoading, backToPreviousPage,
+                    btnShowDetailProfile, btnShowDataGeneral, cardUserDetail,
                     storeDataUserGeneral, dataUserGeneral, user, currentView,
                     showFormCreate, showFormEdit, showDetailUser, showTable,
                     closeCreateForm,

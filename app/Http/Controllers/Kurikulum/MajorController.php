@@ -65,8 +65,6 @@ class MajorController extends Controller
                 ], HttpCode::UNPROCESABLE_CONTENT);
             }
 
-            // mengecek bila user_id sudah dipakai untuk menjadi kepala jurusan
-
             $validated = $validator->validated();
             
             // membuat slug 

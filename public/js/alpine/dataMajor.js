@@ -3,9 +3,9 @@ const dataMajor =()=> {
         listMajor: [],
         currentView: 'table',
         isLoading: false,
-        major: {name: '', teacher_id: ''},
+        major: {name: '', user_id: ''},
         errors: {name: '', user_id: ''},
-        fieldLabels: { name: 'Nama Jurusan', teacher_id: 'Kanidat kepala Jurusan'},
+        fieldLabels: { name: 'Nama Jurusan', user_id: 'Kanidat kepala Jurusan'},
         listTeacher: [],
         isValid: false,
         init() {
@@ -29,6 +29,8 @@ const dataMajor =()=> {
             this.listTeacher = result.data.data;
         },
         closeCreateForm() {
+            this.resetErrors()
+            this.resetField()
             this.currentView = 'table'
         }, 
           resetField() {
@@ -61,7 +63,7 @@ const dataMajor =()=> {
 
                 let sendMajor = {
                     name: this.major.name,
-                    user_id: this.major.teacher_id,
+                    user_id: this.major.user_id,
                 }
                 this.isLoading = true;
                 const result = await axios.post('/store-major', sendMajor)
@@ -82,7 +84,6 @@ const dataMajor =()=> {
                     swalInternalServerError(error.response.data.message) // http code 500
                 }
             }
-           
         }
     }
 }

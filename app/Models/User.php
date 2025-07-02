@@ -61,7 +61,7 @@ class User extends Authenticatable
 
     // user memiliki banyak role tambahan
     public function additionRoles() {
-        return $this->belongsToMany(AdditionRole::class, 'addition_role_user', 'user_id', 'addition_role_id');
+        return $this->belongsToMany(AdditionRole::class, 'addition_role_user', 'user_id', 'addition_role_id')->withTimestamps();
     }
 
     public function detailUser() {
