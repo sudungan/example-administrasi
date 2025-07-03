@@ -8,6 +8,7 @@ class DetailUser extends Model
 {
     protected $table = 'detail_user';
     protected $fillable = [
+        'user_id',
         'password',
         'address',
         'first_name',
@@ -20,6 +21,14 @@ class DetailUser extends Model
     ];
 
     public function userDetail() {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function major() {
+        return $this->belongsTo(Major::class);
+    }
+
+    public function classroom() {
+        return $this->belongsTo(Classroom::class);
     }
 }

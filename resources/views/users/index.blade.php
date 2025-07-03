@@ -90,15 +90,31 @@
                 const cardUserDetail = ref({ general:false,  profile: false })
                 const user = ref({ userId: '', roleId: '',  name: '', address: ''  });
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
+                const dataUserProfile = ref({ 
+                    first_name: '', last_name: '', address: '', phone_number: '', 
+                    status: '', place_of_birth: '', date_of_birth: '', nis: '',
+                    user: {}, 
+                    classroom: {}, 
+                    major: {}
+                })
                 const errors = reactive({ name: '', email: '', password: '', role_id: '', message: '' })
                 const fieldLabels = { name: 'Nama', email: 'Email', password: 'Password',  role_id: 'Jabatan' };
                 const { name, email, password, role_id } = toRefs(dataUserGeneral);
 
-                const showDetailUser = async(id) => {
+                const showDetailProfile = async(userId) => {
                     try {
-                        const result = await axios.get('user/' + id);
+                        let result = await axios.get(`/user-profile-by/${userId}`)
+                        dataUserProfile.value = result.data.data;
+                    } catch (error) {
+                        console.log(error)
+                    }
+                }
+                const showDetailUser = async(userId) => {
+                    try {
+                        const result = await axios.get('user/' + userId);
                         user.value = result.data.data
                         currentView.value = 'detail'
+                        await showDetailProfile(userId)
                     } catch (error) {
                         console.log(error)
                     }
@@ -261,7 +277,7 @@
                 return {
                     deleteConfirm, editUser,listRole,users, getListUser,
                     links, search,searchUser, perPage, page,errors, roleId,
-                    userId, fieldLabels, isLoading, backToPreviousPage,
+                    userId, fieldLabels, isLoading, backToPreviousPage, dataUserProfile,
                     btnShowDetailProfile, btnShowDataGeneral, cardUserDetail,
                     storeDataUserGeneral, dataUserGeneral, user, currentView,
                     showFormCreate, showFormEdit, showDetailUser, showTable,

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\General;
 
+use App\Helpers\HttpCode;
 use App\Helpers\MainRole;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\{AdditionRole, Role, User};
+use App\Models\{AdditionRole, Role, User, DetailUser};
 use Illuminate\Validation\{ValidationException, Rules};
 use Illuminate\Support\Facades\{Hash, Validator};
 use Illuminate\Database\Eloquent\Builder;
@@ -70,6 +71,22 @@ class UserController extends Controller
             'message'   => $th->getMessage()
         ]);
        }
+    }
+
+    public function getProfileUserBy($userId) {
+        try{
+            $user = DetailUser::where('user_id', $userId)->with(['userDetail', 'classroom:id,name','major:id,name'])->first();
+            
+            return response()->json([
+                'message'   => 'get user profile successfully',
+                'data'      => $user
+            ], HttpCode::OK);
+
+        }catch(\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ]);
+        }
     }
 
     public function storeDataUserGeneral(Request $request) {
