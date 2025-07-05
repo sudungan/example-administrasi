@@ -9,20 +9,20 @@
             <form @submit.prevent="storeMajor" class="space-y-4">
                 <div class="grid gap-2 mb-4 grid-cols-1">
                      <div class="col-span-2 sm:col-span-1">
-                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Jabatan Tambahan</label>
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Jurusan</label>
                         <input
                             type="text"
                             x-model="major.name"
                             id="name"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="type addition role here.."
+                            placeholder="type major name here.."
                         >
                         <template x-if="errors.name">
                             <p x-text="errors.name" class="mt-1 text-sm text-red-600 dark:text-red-500"></p>
                         </template>
                     </div>
                     <div class="col-span-2 sm:col-span-1">
-                        <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jabatan Tambahan/ addition Role</label>
+                        <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kepala Jurusan</label>
                         <select x-model="major.user_id" id="user_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
                             <option value="">Select Teacher</option>
                             <template x-for="teacher in listTeacher" :key="teacher.id">
@@ -33,7 +33,7 @@
                             <p x-text="errors.user_id" class="mt-1 text-sm text-red-600 dark:text-red-500"></p>
                         </template>
                     </div>
-                   
+
                     <div class="relative flex mt-6 gap-4">
                         <button
                         type="submit"

@@ -13,12 +13,13 @@ use Illuminate\Support\Facades\DB;
 class MajorController extends Controller
 {
     public function index() {
-        return view('majors.index');
+        // return view('majors.with-alpine.index');
+        return view('majors.with-vue.index');
     }
 
     public function getListMajor() {
         try {
-            $majors = Major::with('user:id,name')->get();
+            $majors = Major::with('headMajor:id,name')->get();
             return response()->json([
                 'message'   => 'get list major successfully',
                 'data'      => $majors
@@ -66,8 +67,8 @@ class MajorController extends Controller
             }
 
             $validated = $validator->validated();
-            
-            // membuat slug 
+
+            // membuat slug
             $slug = Str::slug($validated['name'], '-');
 
             // membuat inisial nama jurusan
@@ -78,7 +79,7 @@ class MajorController extends Controller
 
             // mengambil data kepala jurusan berbentuk objek
             $kepalaAJurusan = additionRole::query()->select('id')->where('name', 'kepala jurusan')->firstOrFail();
-            
+
             Major::create([
                 'name'      => $validated['name'],
                 'user_id'   => $validated['user_id'],
@@ -87,14 +88,56 @@ class MajorController extends Controller
             ]);
 
             $user = User::findOrFail($validated['user_id']); // mengambil object dari user_id
-            
+
             // melakukan create many to many melalui relasi additionRoles
-            $user->additionRoles()->attach($kepalaAJurusan['id']); 
+            $user->additionRoles()->attach($kepalaAJurusan['id']);
 
             return response()->json([
                 'message'   => 'User created successfully',
              ], HttpCode::CREATED);
 
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getMajorBy($majorId) {
+        try {
+            $major = Major::select('id', 'name', 'slug', 'user_id', 'initial')->with('headMajor:id,name')->findOrFail($majorId);
+            return response()->json([
+                'message'   => 'get major successfully',
+                'data'      => $major,
+           ]);
+
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function updateMajor(Request $request, $majorId) {
+        try {
+            dd($request);
+            return response()->json([
+                'message'   => ''
+            ], HttpCode::OK);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'  => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function deleteMajor($majorId) {
+        try {
+            $major = Major::with('headMajor')->findOrFail($majorId);
+
+            return response()->json([
+                'message'   => 'delete major successfully'
+            ], HttpCode::OK);
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()

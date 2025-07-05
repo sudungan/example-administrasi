@@ -28,12 +28,13 @@
                 @include('majors._card-form-create')
             </div>
 
-            {{-- <div
+            <div
                 x-cloak
+                x-transition.duration.600ms
                 x-show="currentView === 'edit'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                    @include('roles._card-form-edit-additionRole')
-            </div> --}}
+                    @include('majors._card-form-edit')
+            </div>
 
         </div>
     </div>

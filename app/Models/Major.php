@@ -10,8 +10,8 @@ class Major extends Model
 
     protected $fillable = ['name', 'slug', 'user_id', 'initial'];
 
-    public function user() {
-        return $this->belongsTo(User::class, 'user_id');
+    public function headMajor() {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function classrooms() {

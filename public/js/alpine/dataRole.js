@@ -100,19 +100,19 @@ const dataRole =()=> {
                 if(!result.isConfirmed) {
                     return
                 }
-            await swalLoading('Menghapus Addition Role..',async (result)=> {
-                try {
-                    let result = await axios.delete(`/delete-addition-role/${additionRoleId}`)
-                    successNotification(result.data.message)
-                    this.getDataRole()
-                } catch (error) {
-                    if (error.response && error.response.status == 409) {
-                            swalNotificationConflict(error.response.data.message)
-                    }else {
-                        swalInternalServerError(error.response.data.message) // http code 500
+                await swalLoading('Menghapus Addition Role..',async (result)=> {
+                    try {
+                        let result = await axios.delete(`/delete-addition-role/${additionRoleId}`)
+                        successNotification(result.data.message)
+                        this.getDataRole()
+                    } catch (error) {
+                        if (error.response && error.response.status == 409) {
+                                swalNotificationConflict(error.response.data.message)
+                        }else {
+                            swalInternalServerError(error.response.data.message) // http code 500
+                        }
                     }
-                }
-            });
+                });
             })
         },
 
@@ -175,13 +175,9 @@ const dataRole =()=> {
                 }else {
                     swalInternalServerError(error.response.data.message) // http code 500
                 }
-
-
-
-
             }
         },
     }
 }
 
-export default dataRole;
+// export default dataRole;
