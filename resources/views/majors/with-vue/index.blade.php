@@ -36,7 +36,7 @@
         </div>
     </div>
     <script type="module">
-        const { createApp, ref, toRefs, onMounted, reactive, watch } = Vue
+        const { createApp, ref, toRefs, onMounted, reactive, watch, computed } = Vue
         createApp({
             setup() {
                 const message = ref('Hello vue!')
@@ -107,26 +107,43 @@
                         let result = await axios.get(`edit-major/${majorId}`);
                         currentView.value = 'edit';
                         editDataMajor.value = result.data.data;
-                        Object.assign(editDataMajor, result.data.data)
+                        Object.assign(editDataMajor, result.data.data) // memberi data ke object
                         currentMajor.value = {...editDataMajor.value} // menyalin data
                     } catch (error) {
-                        console.log(error)
+                        console.log('data error',error)
                     }
                 }
+
                 watch(editDataMajor,(newValue)=> {
                     isDirty.value = JSON.stringify(newValue) !== JSON.stringify(currentMajor.value)
                     }, { deep: true }
                 );
-                const updateMajor = async(majorId)=> {
 
-                }
-                function closeEditForm () {
-                 if (isDirty.value) {
-                        cancelConfirmation('Yakin membatalkan?', (result) => {
-                        if (result.isConfirmed) {
-                            resetField()
+                const isChanged = computed(()=> {
+                    return JSON.stringify(editDataMajor.value) !== JSON.stringify(currentMajor.value)
+                });
+
+                const updateMajor = async(majorId)=> {
+                     isLoading.value = true;
+                    if (!isChanged.value) {
+                        setTimeout(() => {
+                            isLoading.value = false;
+                            successNotification('nothing changed!')
                             currentView.value = 'table'
-                        }
+                        }, 500);
+                        return
+                    }
+
+                    
+                }
+
+                function closeEditForm () {
+                    if (isDirty.value) {
+                        cancelConfirmation('Yakin membatalkan?', (result) => {
+                            if (result.isConfirmed) {
+                                resetField()
+                                currentView.value = 'table'
+                            }
                         })
                     } else {
                         currentView.value = 'table'
