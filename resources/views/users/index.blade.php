@@ -66,8 +66,7 @@
     </div>
 
     <script type="module">
-          const { createApp, ref, toRefs, reactive, onMounted, watch } = Vue
-        // import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
+        const { createApp, ref, toRefs, reactive, onMounted, watch } = Vue
         import pagination from '/js/components/paginate.js';
         import formUserDetail from '/js/components/formUserDetail.js';
         import inputPassword from '/js/components/inputPassword.js';
@@ -90,11 +89,11 @@
                 const cardUserDetail = ref({ general:false,  profile: false })
                 const user = ref({ userId: '', roleId: '',  name: '', address: ''  });
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
-                const dataUserProfile = ref({ 
-                    first_name: '', last_name: '', address: '', phone_number: '', 
+                const dataUserProfile = ref({
+                    first_name: '', last_name: '', address: '', phone_number: '',
                     status: '', place_of_birth: '', date_of_birth: '', nis: '',
-                    user: {}, 
-                    classroom: {}, 
+                    user: {},
+                    classroom: {},
                     major: {}
                 })
                 const errors = reactive({ name: '', email: '', password: '', role_id: '', message: '' })

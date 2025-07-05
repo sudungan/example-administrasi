@@ -19,7 +19,7 @@ class MajorController extends Controller
 
     public function getListMajor() {
         try {
-            $majors = Major::with('headMajor:id,name')->get();
+            $majors = Major::with('headMajor')->get();
             return response()->json([
                 'message'   => 'get list major successfully',
                 'data'      => $majors
@@ -93,7 +93,7 @@ class MajorController extends Controller
             $user->additionRoles()->attach($kepalaAJurusan['id']);
 
             return response()->json([
-                'message'   => 'User created successfully',
+                'message'   => 'Major created successfully',
              ], HttpCode::CREATED);
 
         } catch (\Exception $error) {
@@ -134,9 +134,9 @@ class MajorController extends Controller
     public function deleteMajor($majorId) {
         try {
             $major = Major::with('headMajor')->findOrFail($majorId);
-
+            $major->delete();
             return response()->json([
-                'message'   => 'delete major successfully'
+                'message'   => 'Major deleted successfully'
             ], HttpCode::OK);
         } catch (\Exception $error) {
             return response()->json([
