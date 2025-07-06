@@ -45,7 +45,7 @@
                 type="button"
                 class="cursor-pointer flex items-center justify-between w-full p-5 rounded-b-xl font-medium rtl:text-right text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3">
             <span class="dark:text-gray-400 text-gray-600">Detail Profile </span>
-            <svg :class="{'rotate-180': cardUserDetail.profile, 'rotate-0': !cardUserDetail.profile}" class="w-3 h-3 transition-transform shrink-0" viewBox="0 0 10 6">
+            <svg :class="{'rotate-180': cardUserDetail.profile, 'rotate-0': ! cardUserDetail.profile}" class="w-3 h-3 transition-transform shrink-0" viewBox="0 0 10 6">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
             </svg>
             </button>

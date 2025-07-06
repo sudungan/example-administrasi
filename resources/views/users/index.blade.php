@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Pengguna')" appName="Example Administrasi">
-    <div id="app" class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
+    <div id="app" wire:ignore class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         @include('partials.settings-heading')
 
         <div class="relative h-full flex-1 overflow-hidden rounded-xl">
@@ -86,7 +86,7 @@
                 const perPage = ref(1);
                 const currentView = ref('table')
                 const isLoading = ref(false)
-                const cardUserDetail = ref({ general:false,  profile: false })
+                const cardUserDetail = reactive({ general:false,  profile: false })
                 const user = ref({ userId: '', roleId: '',  name: '', address: ''  });
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
                 const dataUserProfile = ref({
@@ -104,8 +104,9 @@
                     try {
                         let result = await axios.get(`/user-profile-by/${userId}`)
                         dataUserProfile.value = result.data.data;
+                        // console.log('data-user-profile', dataUserProfile)
                     } catch (error) {
-                        console.log(error)
+                        // console.log('error-data-user-profile', error)
                     }
                 }
                 const showDetailUser = async(userId) => {
@@ -125,12 +126,12 @@
 
                 }
                 const btnShowDetailProfile =()=> {
-                    cardUserDetail.value.profile = !cardUserDetail.value.profile
-                    cardUserDetail.value.general = false
+                    cardUserDetail.profile = ! cardUserDetail.profile
+                    cardUserDetail.general = false
                 }
                 const btnShowDataGeneral =()=> {
-                    cardUserDetail.value.general = !cardUserDetail.value.general
-                    cardUserDetail.value.profile = false
+                    cardUserDetail.general = !cardUserDetail.general
+                    cardUserDetail.profile = false
                 }
                 const showFormCreate = () => currentView.value = 'create'
                 const showFormEdit = () => currentView.value = 'edit'
