@@ -120,8 +120,8 @@
                 }
                 const backToPreviousPage = () => {
                     currentView.value = 'table'
-                    cardUserDetail.value.general = false
-                    cardUserDetail.value.profile = false
+                    cardUserDetail.general = false
+                    cardUserDetail.profile = false
 
                 }
                 const btnShowDetailProfile =()=> {

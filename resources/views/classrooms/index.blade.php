@@ -1,9 +1,9 @@
 <x-layouts.app :title="__('Classroom')">
-    <div id="app" class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
+    <div id="classroom-app" class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         @include('partials.settings-heading')
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
             <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                @{{ listClassroom }}
+                @{{message}}
                 {{-- <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" /> --}}
             </div>
             <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
@@ -41,6 +41,6 @@
                     message, listClassroom
                 }
             }
-        }).mount('#app')
-</script>
+        }).mount('#classroom-app')
+    </script>
 </x-layouts.app>

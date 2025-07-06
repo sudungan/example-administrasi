@@ -114,6 +114,7 @@
                     }
                 }
 
+                // melihat perubahan pada object editDataMajor
                 watch(editDataMajor,(newValue)=> {
                     isDirty.value = JSON.stringify(newValue) !== JSON.stringify(currentMajor.value)
                     }, { deep: true }
@@ -124,17 +125,22 @@
                 });
 
                 const updateMajor = async(majorId)=> {
-                     isLoading.value = true;
-                    if (!isChanged.value) {
-                        setTimeout(() => {
-                            isLoading.value = false;
-                            successNotification('nothing changed!')
-                            currentView.value = 'table'
-                        }, 500);
-                        return
-                    }
+                    try {
+                        isLoading.value = true;
+                       if (!isChanged.value) {
+                           setTimeout(() => {
+                               isLoading.value = false;
+                               successNotification('nothing changed!')
+                               currentView.value = 'table'
+                           }, 500);
+                           return
+                       }
 
-                    
+                    // proses ambil data
+                    // kirim ke backend
+                    } catch (error) {
+                        // menangkap error
+                    }
                 }
 
                 function closeEditForm () {
@@ -160,9 +166,19 @@
                                 successNotification(result.data.message)
                                 getListMajor()
                             } catch (error) {
-                                console.log('error:', error)
                                 if (error.response && error.response.status == 409) {
-                                        swalNotificationConflict(error.response.data.message)
+                                    isLoading.value = false
+                                    resetErrors();
+                                    currentView.value = 'table'
+                                    swalNotificationConflict(error.response.data.message)
+                                }
+
+                                if (error.response && error.response.status === 422) {
+                                    let responseErrors = error.response.data.errors;
+                                    for (let key in responseErrors) {
+                                        errors[key] = responseErrors[key][0];
+                                    }
+                                    isLoading.value = false
                                 }else {
                                     swalInternalServerError(error.response.data.message) // http code 500
                                 }

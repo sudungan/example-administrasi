@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Kurikulum;
 
 use Illuminate\Http\Request;
-use App\Models\{AdditionRole, Major, User};
+use App\Models\{AdditionRole, Classroom, Major, User};
 use App\Http\Controllers\Controller;
 use App\Helpers\{HttpCode, MainRole};
 use Illuminate\Support\Facades\Validator;
+use App\Exceptions\ConflictException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\Catch_;
 
 class MajorController extends Controller
 {
@@ -133,11 +135,21 @@ class MajorController extends Controller
 
     public function deleteMajor($majorId) {
         try {
-            $major = Major::with('headMajor')->findOrFail($majorId);
-            $major->delete();
+            $majorHasClassroom = Major::where('id', $majorId)->whereHas('classrooms')->exists();
+
+            if ($majorHasClassroom) {
+                throw new ConflictException('jurusan sudah digunakan', [
+                'major_id'  => 'Tidak dapat dihapus karena masih digunakan'
+                ]);
+            }
+                Major::find($majorId)->delete();
+
             return response()->json([
                 'message'   => 'Major deleted successfully'
             ], HttpCode::OK);
+
+        } catch(ConflictException $exception) {
+            return $exception->render(request());
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()

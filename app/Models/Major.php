@@ -15,6 +15,6 @@ class Major extends Model
     }
 
     public function classrooms() {
-        return $this->hasMany(Classroom::class);
+        return $this->hasMany(Classroom::class , 'major_id');
     }
 }
