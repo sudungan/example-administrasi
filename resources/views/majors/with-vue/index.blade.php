@@ -86,7 +86,7 @@
 
                 const getListMajor = async ()=> {
                     try {
-                        const result = await axios.get('list-major');
+                        const result = await axios.get('/list-major');
                         listMajor.value = result.data.data;
                     } catch (error) {
                         console.log(error)
@@ -95,10 +95,10 @@
 
                 const getListTeacher = async()=> {
                     try {
-                        let result = await axios.get('list-get-teacher')
+                        let result = await axios.get('/list-get-teacher')
                         listTeacher.value = result.data.data
                     } catch (error) {
-                        console.log(error)
+                        console.log('error',error)
                     }
                 }
 
@@ -133,13 +133,28 @@
                                successNotification('nothing changed!')
                                currentView.value = 'table'
                            }, 500);
-                           return
-                       }
+                            return
+                        }
 
-                    // proses ambil data
-                    // kirim ke backend
+                        // kirim ke backend
+                        let result = await axios.put(`/update-major/${editDataMajor.id}`, editDataMajor.value);
+                        isLoading.value = false
+                        resetField()
+                        resetErrors()
+                        closeCreateForm()
+                        currentView.value = 'table'
+                        successNotification(result.data.message)
+                        getListMajor()
                     } catch (error) {
-                        // menangkap error
+                        if (error.response && error.response.status === 422) {
+                            let responseErrors = error.response.data.errors;
+                            for (let key in responseErrors) {
+                                errors[key] = responseErrors[key][0];
+                            }
+                            isLoading.value = false
+                        }else {
+                            swalInternalServerError(error.response.data.message) // http code 500
+                        }
                     }
                 }
 
@@ -148,10 +163,12 @@
                         cancelConfirmation('Yakin membatalkan?', (result) => {
                             if (result.isConfirmed) {
                                 resetField()
+                                 resetErrors();
                                 currentView.value = 'table'
                             }
                         })
                     } else {
+                        resetErrors();
                         currentView.value = 'table'
                     }
                 }
@@ -166,6 +183,7 @@
                                 successNotification(result.data.message)
                                 getListMajor()
                             } catch (error) {
+                                console.log('error', error)
                                 if (error.response && error.response.status == 409) {
                                     isLoading.value = false
                                     resetErrors();
@@ -206,7 +224,6 @@
                             'name': major.name,
                             'user_id': major.user_id,
                         }
-                        console.log(sendMajor);
 
                         isLoading.value = true;
                         const result = await axios.post('/store-major', sendMajor)

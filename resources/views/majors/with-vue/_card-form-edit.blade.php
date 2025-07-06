@@ -30,7 +30,7 @@
                                 @{{errors.name}}
                             </p>
                     </div>
-                    <div class="relative flex mt-6 gap-4">
+                    <div class="relative flex mt-6 gap-2">
                         <button
                             :disabled="isLoading"
                             type="submit"
