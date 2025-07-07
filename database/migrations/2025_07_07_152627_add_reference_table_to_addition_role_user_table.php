@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\{AdditionRole, User, };
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('addition_role_user', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(AdditionRole::class);
-            $table->foreignIdFor(User::class);
-            $table->timestamps();
+        Schema::table('addition_role_user', function (Blueprint $table) {
+            $table->string('reference_table')->after('reference_id');
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('addition_role_user');
+        Schema::table('addition_role_user', function (Blueprint $table) {
+            //
+        });
     }
 };

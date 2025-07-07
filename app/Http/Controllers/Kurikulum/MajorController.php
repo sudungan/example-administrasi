@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Kurikulum;
 
 use Illuminate\Http\Request;
-use App\Models\{AdditionRole, Classroom, Major, User};
+use App\Models\{AdditionRole, Major, User};
 use App\Http\Controllers\Controller;
 use App\Helpers\{HttpCode, MainRole};
 use Illuminate\Support\Facades\Validator;
 use App\Exceptions\ConflictException;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -69,30 +70,15 @@ class MajorController extends Controller
 
             $validated = $validator->validated();
 
-            // membuat slug
-            $slug = Str::slug($validated['name'], '-');
-
-            // membuat inisial nama jurusan
-            $initial = Str::of($validated['name'])
-                        ->explode(' ')
-                        ->filter(fn ($word) => !in_array(Str::lower($word), ['dan', 'dari', 'ke', 'di']))
-                        ->map(fn (string $name)=> Str::of($name)->substr(0,1))->implode('');
-
-            // mengambil data kepala jurusan berbentuk objek
-            $kepalaAJurusan = additionRole::query()->select('id')->where('name', 'kepala jurusan')->firstOrFail();
-
-            Major::create([
+            $major = Major::create([
                 'name'      => $validated['name'],
                 'user_id'   => $validated['user_id'],
-                'initial'   => $initial,
-                'slug'      => $slug,
+                'initial'   => $this->generateInitial($validated['name']),
+                'slug'      => $this->generateSlug($validated['name']),
             ]);
 
-            $user = User::findOrFail($validated['user_id']); // mengambil object dari user_id
-
             // melakukan create many to many melalui relasi additionRoles
-
-            $user->additionRoles()->attach($kepalaAJurusan['id']);
+            $this->attachHeadMajorRelation($major);
 
             return response()->json([
                 'message'   => 'Major created successfully',
@@ -122,15 +108,15 @@ class MajorController extends Controller
 
     public function updateMajor(Request $request, Major $major) {
         try {
+
             $validator = Validator::make($request->all(), [
-                'user_id' => ['required', 'unique:' . Major::class],
+                'user_id' => 'required',
                 'name' => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/'],
             ], [
                 'name.unique'  => 'Nama Jurusan sudah digunakan..',
                 'name.min'  => 'Nama user minimal 3 karakter',
                 'name.regex'   => 'Nama Jurusan hanya boleh berisi huruf dan spasi.',
                 'user_id.required'=> 'Nama Kepala Jurusan wajib dipilih',
-                'user_id.unique'=> 'Nama Kepala Jurusan sudah dipakai',
             ]);
 
             if ($validator->fails()) {
@@ -142,25 +128,14 @@ class MajorController extends Controller
 
             $validated = $validator->validate();
 
-            $initial = $this->generateInitial($validated['name']); // melakukan generateInitial
-
-            // ambil id kepala jurusan
-            $kepalaAJurusan = additionRole::query()->select('id')->where('name', 'kepala jurusan')->firstOrFail();
-
-            $slug = $this->generateSlug($validated['name']);  // melakukan generateSlug
-
             $major->update([
                 'name'  => $validated['name'],
                 'user_id'   => $validated['user_id'],
-                'initial'   => $initial,
-                'slug'      => $slug,
+                'initial'   => $this->generateInitial($validated['name']),
+                'slug'      => $this->generateSlug($validated['name']),
             ]);
 
-            $user = User::findOrFail($validated['user_id']); // mengambil data user
-
-            // masih harus ada perbaikan
-            $user->additionRoles()->detach($kepalaAJurusan['id']); // mengambil user_id untuk detach
-            $user->additionRoles()->attach($kepalaAJurusan['id']);
+            $this->syncHeadMajorRelation($major);
 
             return response()->json([
                 'message'   => 'Major updated successfully..'
@@ -180,12 +155,7 @@ class MajorController extends Controller
                     'major_id' => 'Tidak dapat dihapus karena masih digunakan'
                 ]);
             }
-
-            DB::table('addition_role_user')
-                ->where([
-                    ['user_id', '=', $major->user_id],
-                    ['addition_role_id', '=', AdditionRole::where('name', 'kepala jurusan')->value('id')],
-                ]) ->delete();
+            $this->detachRelationMajor($major);
 
             $major->delete();
 
@@ -211,5 +181,40 @@ class MajorController extends Controller
 
     private function generateSlug(string $text) {
         return Str::slug($text, '-');
+    }
+
+    private function getHeadMajor() {
+        return AdditionRole::where('name', 'kepala jurusan')->value('id');
+    }
+
+    private function syncHeadMajorRelation($major) {
+        DB::table('addition_role_user')->where('reference_id', $major['id'])->update([
+            'addition_role_id'  => $this->getHeadMajor(),
+            'user_id'  => $major['user_id'],
+            'reference_table'  => $major->getTable(),
+            'reference_id'  => $major['id'],
+            'created_at'    => Carbon::now(),
+            'updated_at'    => Carbon::now(),
+        ]);
+    }
+
+    private function attachHeadMajorRelation($major) {
+        DB::table('addition_role_user')->insert([
+            'addition_role_id'  => $this->getHeadMajor(),
+            'user_id'  => $major['user_id'],
+            'reference_table'  => $major->getTable(),
+            'reference_id'  => $major['id'],
+            'created_at'    => Carbon::now(),
+            'updated_at'    => Carbon::now(),
+        ]);
+    }
+
+    private function detachRelationMajor($major) {
+        DB::table('addition_role_user')
+            ->where([
+                ['user_id', '=', $major['user_id']],
+                ['addition_role_id', '=', $this->getHeadMajor()],
+            ])
+            ->orWhere('reference_id', $major['id'])->delete();
     }
 }
