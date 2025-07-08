@@ -16,6 +16,8 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(AdditionRole::class);
             $table->foreignIdFor(User::class);
+            $table->unsignedBigInteger('reference_id');
+            $table->string('reference_table');
             $table->timestamps();
         });
     }

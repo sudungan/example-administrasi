@@ -7,7 +7,7 @@ use App\Models\{AdditionRole, Major, User};
 use App\Http\Controllers\Controller;
 use App\Helpers\{HttpCode, MainRole};
 use Illuminate\Support\Facades\Validator;
-use App\Exceptions\ConflictException;
+use App\Exceptions\{ConflictException, NotFoundException};
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -48,17 +48,43 @@ class MajorController extends Controller
         }
     }
 
+    public function getHeadMajorById() {
+         try {
+            $headMajorById = AdditionRole::where('slug', 'kepala-jurusan')->value('id');
+                if (!$headMajorById) {
+                    throw new NotFoundException(
+                    'Kepala Jurusan belum tersedia',
+                    ['addition_role_id' => ['Jabatan Kepala Jurusan belum tersedia.']],
+                    HttpCode::NOT_FOUND
+                );
+            }
+
+            return response()->json([
+                'message'   => 'get head-major by successfully',
+                'data'      => $headMajorById
+            ], HttpCode::OK);
+        } catch(NotFoundException $error) {
+             return $error->render(request());
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ]);
+        }
+    }
+
     public function storeMajor(Request $request) {
         try {
              $validator = Validator::make($request->all(), [
-                'user_id' => ['required', 'unique:' . Major::class],
-                'name' => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/','unique:' . Major::class],
+                'user_id'                   => ['required', 'unique:' . Major::class],
+                'addition_role_id'          => 'required',
+                'name'                      => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/','unique:' . Major::class],
             ], [
-                'name.unique'  => 'Nama Jurusan sudah digunakan..',
-                'name.min'  => 'Nama user minimal 3 karakter',
-                'name.regex'   => 'Nama Jurusan hanya boleh berisi huruf dan spasi.',
-                'user_id.required'=> 'Nama Kanidat wajib dipilih',
-                'user_id.unique'=> 'Nama Kanidat wajib dipakai'
+                'name.unique'           => 'Nama Jurusan sudah digunakan..',
+                'name.min'              => 'Nama user minimal 3 karakter',
+                'name.regex'            => 'Nama Jurusan hanya boleh berisi huruf dan spasi.',
+                'user_id.required'      => 'Nama Kanidat wajib dipilih',
+                'user_id.unique'        => 'Nama Kanidat wajib dipakai',
+                'addition_role_id'      => 'Jabatan Kepala Jurusan Belum ada',
             ]);
 
             if ($validator->fails()) {
@@ -184,7 +210,7 @@ class MajorController extends Controller
     }
 
     private function getHeadMajor() {
-        return AdditionRole::where('name', 'kepala jurusan')->value('id');
+        return AdditionRole::where('slug', 'kepala-jurusan')->value('id');
     }
 
     private function syncHeadMajorRelation($major) {

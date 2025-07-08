@@ -8,6 +8,8 @@ use App\Models\{Role, User, AdditionRole};
 use App\Exceptions\ConflictException;
 use Illuminate\Support\Facades\{Hash, Validator};
 use App\Helpers\{HttpCode, MainRole};
+use Illuminate\Support\Str;
+
 class RoleController extends Controller
 {
     public function index() {
@@ -36,8 +38,9 @@ class RoleController extends Controller
 
             $validated = $validator->validated();
             AdditionRole::create([
-                'name'  => $validated['name'],
-                'role_id'   => $validated['role_id']
+                'name'      => $validated['name'],
+                'role_id'   => $validated['role_id'],
+                'slug'      => Str::slug($validated['name'])
             ]);
 
             return response()->json([
@@ -145,7 +148,8 @@ class RoleController extends Controller
             $additionRole = AdditionRole::findOrFail($additionRoleId);
             $additionRole->update([
                 'role_id'   => $validated['role_id'],
-                'name'  => $validated['name'],
+                'name'      => $validated['name'],
+                'slug'      => Str::slug($validated['name'])
             ]);
 
             return response()->json([

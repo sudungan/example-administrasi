@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('addtion_role', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('slug');
             $table->foreignId('role_id')
                 ->constrained()
                 ->onUpdate('cascade')

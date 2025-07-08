@@ -27,6 +27,7 @@
                                 @{{teacher.name}}
                             </option>
                         </select>
+                        <input type="hidden" v-model="headMajorById">
                             <p v-if="errors.user_id" class="mt-1 text-sm text-red-600 dark:text-red-500"> @{{errors.user_id}} </p>
                     </div>
 

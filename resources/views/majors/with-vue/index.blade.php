@@ -8,10 +8,22 @@
                     v-show="currentView === 'table'"
                     @click="showFormCreate"
                     type="button"
+                    :disabled="disableButton"
+                    :class="{ 'opacity-50 cursor-not-allowed': disableButton }"
                     class="text-white mb-2 inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center text-xs dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     <svg class="me-1 ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
                     Jurusan
                 </button>
+                <div v-if="errors.addition_role_id" class="flex items-center p-2 mb-2 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-100 w-full" role="alert">
+                    <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                    </svg>
+                    <span class="sr-only">Info</span>
+                    <div>
+                           <a class="hover:underline" href="{{route('roles.index')}}" wire:navigate>Jabatan Tambahan</a> <span class="font-medium font-extrabold dark:text-yellow-600 text-yellow-400">@{{ errors.addition_role_id }}</span> Belum ada..
+                    </div>
+                </div>
+
             </div>
             <div
                 v-show="currentView === 'table'"
@@ -41,10 +53,13 @@
             setup() {
                 const message = ref('Hello vue!')
                 const listMajor = ref([])
+                const headMajorById = ref(null)
+                const disableButton = ref(false)
+                const errorHeadMajor = ref("")
                 const listTeacher = ref([])
                 const currentView = ref("table")
                 const isLoading = ref(false)
-                const errors = reactive({ name: '', user_id: '' })
+                const errors = reactive({ name: '', user_id: '',  addition_role_id: '' })
                 const isDirty = ref(false)
                 const fieldLabels = { name: 'Nama', user_id: 'Kepala Jurusan' }
                 const major = reactive({ name: '', user_id: '' })
@@ -100,6 +115,38 @@
                     } catch (error) {
                         console.log('error',error)
                     }
+                }
+
+                const getHeadMajorById = async()=> {
+                     try {
+                        let result = await axios.get('get-head-major-by-Id')
+                        headMajorById.value = result.data.data
+
+                    } catch (error) {
+                        if (error.response && error.response.status === 404) {
+                            let responseErrors = error.response.data.errors;
+                            disableButton.value = true
+                            for (let key in responseErrors) {
+                                errors[key] = responseErrors[key][0];
+                                  generateMessageError(errors[key])
+                            }
+                        }
+                        if (error.response && error.response.status === 422) {
+                            let responseErrors = error.response.data.errors;
+                            for (let key in responseErrors) {
+                                errors[key] = responseErrors[key][0];
+                            }
+                            isLoading.value = false
+                        }else {
+                            console.log(error)
+                            // swalInternalServerError(error.response.data.message) // http code 500
+                        }
+                    }
+                }
+
+                const generateMessageError = (text)=> {
+                    let word = text.split(" ")
+                    errors.addition_role_id = word.slice(1, -2).join(" ");
                 }
 
                 const editMajor = async (majorId)=> {
@@ -223,6 +270,7 @@
                         let sendMajor = {
                             'name': major.name,
                             'user_id': major.user_id,
+                            'addition_role_id': headMajorById.value
                         }
 
                         isLoading.value = true;
@@ -248,12 +296,14 @@
                 }
                 onMounted( async()=> {
                     await getListMajor()
+                    await getHeadMajorById()
                     await getListTeacher()
                 });
                 return {
                     currentView, listMajor, isLoading, errors, fieldLabels, major, message,
                     showFormCreate, closeCreateForm, editMajor, deleteConfirmation, storeMajor,
-                    listTeacher, updateMajor, closeEditForm, editDataMajor,
+                    listTeacher, updateMajor, closeEditForm, editDataMajor, headMajorById, errorHeadMajor,
+                    disableButton, generateMessageError,
                 }
             }
         }).mount('#app')

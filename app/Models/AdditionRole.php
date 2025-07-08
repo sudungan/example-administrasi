@@ -8,7 +8,7 @@ class AdditionRole extends Model
 {
     protected $table = 'addtion_role';
 
-    protected $fillable = ['name', 'role_id'];
+    protected $fillable = ['name', 'slug', 'role_id'];
 
     public function role() {
         return $this->belongsTo(Role::class);

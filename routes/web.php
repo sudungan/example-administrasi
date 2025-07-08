@@ -33,6 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('list-major', [MajorController::class, 'getListMajor'])->name('list-major');
     Route::get('edit-major/{majorId}', [MajorController::class, 'getMajorBy'])->name('edit-major');
     Route::get('list-get-teacher', [MajorController::class, 'getListTeacher'])->name('list-get-teacher');
+    Route::get('get-head-major-by-Id', [MajorController::class, 'getHeadMajorById'])->name('get-head-major-by-Id');
     Route::post('store-major', [MajorController::class, 'storeMajor'])->name('store-major');
     Route::put('update-major/{major}', [MajorController::class, 'updateMajor'])->name('update-major');
     Route::delete('delete-major/{major}', [MajorController::class, 'deleteMajor'])->name('delete-major');
