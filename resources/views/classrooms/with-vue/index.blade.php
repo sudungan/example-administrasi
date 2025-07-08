@@ -26,11 +26,18 @@
 
             </div>
 
-            {{-- card-table --}}
+            {{-- card-table-classroom --}}
             <div
                 v-show="currentView === 'table'"
                 class="relative shadow-md sm:rounded-lg">
                 @include('classrooms.with-vue._card-table-classroom')
+            </div>
+
+            {{-- card-detail-classroom --}}
+            <div
+                v-show="currentView === 'detail'"
+                class="relative shadow-md sm:rounded-lg">
+                @include('classrooms.with-vue._card-detail-classroom')
             </div>
         </div>
     </div>
@@ -40,7 +47,7 @@
             setup() {
                 const message = ref('Hello Vue!')
                 const listClassroom = ref([])
-                const classroom = reactive({
+                const detailClassroom = reactive({
                     id: null, name: '', teacher_id: null, major_id: null, teacher: {}, major: {}, students: []
                 })
                 const currentView = ref("table")
@@ -57,7 +64,6 @@
                     try {
                         const result = await axios.get('/list-classroom');
                         listClassroom.value = result.data.data
-                        console.log('data kelas:', listClassroom.value)
                     } catch (error) {
                         console.log(error)
                     }
@@ -74,14 +80,24 @@
                 async function showClassrrom(classroomId) {
                     try {
                         let result = await axios.get(`classroom-by/${classroomId}`);
-                         console.log('data: ', result.data.data)
+                        currentView.value = 'detail'
+                        let dataClassroom = result.data.data
+
+                        detailClassroom.id= dataClassroom.id
+                        detailClassroom.name = dataClassroom.name
+                        detailClassroom.teacher_id = dataClassroom.teacher_id
+                        detailClassroom.major_id = dataClassroom.major_id
+                        detailClassroom.teacher = dataClassroom.teacher
+                        detailClassroom.major = dataClassroom.major
+                        detailClassroom.students = dataClassroom.students
+                        console.log('data kelas: ', dataClassroom.students)
                     } catch (error) {
-                        console.log(error)
+                        console.log('error:',error)
                     }
                 }
                 return {
                     currentView, disableButton, showFormCreate, listClassroom, deleteConfirmation,
-                    showClassrrom, classroom, showDetailClassroom,
+                    showClassrrom, detailClassroom,
                 }
             }
         }).mount('#app')
