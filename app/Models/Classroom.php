@@ -9,10 +9,14 @@ class Classroom extends Model
     protected $fillable = ['name', 'teacher_id', 'major_id'];
 
     public function teacher() { // relasi untuk menjadikan wali kelas
-        return $this->belongsTo(User::class, 'id');
+        return $this->belongsTo(User::class, 'teacher_id', 'id');
     }
 
     public function major() {
-        return $this->belongsTo(Major::class);
+        return $this->belongsTo(Major::class, 'major_id', 'id');
+    }
+
+    public function students() {
+        return $this->hasMany(User::class);
     }
 }

@@ -18,7 +18,7 @@ Route::middleware(['auth'])->group(function () {
     // ROUTE FOR CLASSROOMS
     Route::get('classrooms', [ClassroomController::class, 'index'])->name('classrooms.index');
     Route::get('get-list-classroom', [ClassroomController:: class, 'getListClassroom'])->name('get-list-classroom');
-
+    Route::get('get-classroom-by/{classroomId}', [ClassroomController::class, 'getClassroomBy'])->name('get-classroom-by');
     // ROUTE FOR ROLES
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('listRole', [RoleController::class, 'getListRole'])->name('listRole');

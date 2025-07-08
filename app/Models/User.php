@@ -56,7 +56,7 @@ class User extends Authenticatable
 
     // role utama
     public function role() {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class, 'role_id', 'id');
     }
 
     // user memiliki banyak role tambahan
@@ -66,5 +66,9 @@ class User extends Authenticatable
 
     public function detailUser() {
         return $this->hasOne(detailUser::class);
+    }
+
+    public function classroom() {
+        return $this->belongsTo(Classroom::class, 'classroom_id', 'id');
     }
 }
