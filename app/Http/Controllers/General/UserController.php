@@ -15,9 +15,7 @@ class UserController extends Controller
 {
 
     public function index() {
-        return view('users.index', [
-            'listRole'  => MainRole::item,
-        ]);
+        return view('users.with-vue.index');
     }
 
     public function searchUser() {
@@ -34,12 +32,12 @@ class UserController extends Controller
             return response()->json([
                 'data'  => $user,
                 'message'  => 'get data successfully'
-            ]);
+            ], HttpCode::OK);
 
         } catch (\Throwable $th) {
             return response()->json([
                 'message'   => $th->getMessage()
-            ]);
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -50,12 +48,12 @@ class UserController extends Controller
             return response()->json([
                 'message'  => 'get all data successfully',
                 'data'     => $users,
-            ]);
+            ], HttpCode::OK);
 
         } catch (\Throwable $th) {
             return response()->json([
                 'mesaage'   => $th->getMessage()
-            ]);
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -65,18 +63,18 @@ class UserController extends Controller
            return response()->json([
             'message'   => 'get user succesfully',
             'data'      => $user
-           ]);
+           ], HttpCode::OK);
        } catch (\Throwable $th) {
         return response()->json([
             'message'   => $th->getMessage()
-        ]);
+        ], HttpCode::INTERNAL_SERVER_ERROR);
        }
     }
 
     public function getProfileUserBy($userId) {
         try{
             $user = DetailUser::where('user_id', $userId)->with(['userDetail', 'classroom:id,name','major:id,name'])->first();
-            
+
             return response()->json([
                 'message'   => 'get user profile successfully',
                 'data'      => $user
@@ -85,7 +83,7 @@ class UserController extends Controller
         }catch(\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
-            ]);
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -107,7 +105,7 @@ class UserController extends Controller
                 return response()->json([
                     'message' => 'Validation failed',
                     'errors' => $validator->errors(),
-                ], 422);
+                ], HttpCode::UNPROCESABLE_CONTENT);
             }
             $validated = $validator->validated();
             $validated['password'] = Hash::make($validated['password']);
@@ -120,11 +118,11 @@ class UserController extends Controller
              return response()->json([
                 'message'   => 'User created successfully',
                 'data'      =>  $dataUser
-             ]);
+             ], HttpCode::CREATED);
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
-            ], 500);
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -145,11 +143,11 @@ class UserController extends Controller
             return response()->json([
                 'message'   => 'get List Role Successfuly',
                 'data'      => $listRole
-            ]);
+            ], HttpCode::OK);
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
-            ]);
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -160,11 +158,11 @@ class UserController extends Controller
             return response()->json([
                 'message'   => 'get all addition role succesfully',
                 'data'      => $additionRole
-            ]);
+            ], HttpCode::OK);
         } catch (\Exception $error) {
            return response()->json([
             'message'   => $error->getMessage()
-           ]);
+           ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -175,11 +173,11 @@ class UserController extends Controller
             return response()->json([
                 'data'  => $additionRole,
                 'message'   => 'addition role get succesfully'
-            ]);
+            ], HttpCode::OK);
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
-            ]);
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -110,7 +110,7 @@
 
                 const getListTeacher = async()=> {
                     try {
-                        let result = await axios.get('/list-get-teacher')
+                        let result = await axios.get('/list-teacher')
                         listTeacher.value = result.data.data
                     } catch (error) {
                         console.log('error',error)
@@ -119,7 +119,7 @@
 
                 const getHeadMajorById = async()=> {
                      try {
-                        let result = await axios.get('get-head-major-by-Id')
+                        let result = await axios.get('/head-major-byId')
                         headMajorById.value = result.data.data
 
                     } catch (error) {

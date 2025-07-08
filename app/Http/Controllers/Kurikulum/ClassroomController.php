@@ -20,7 +20,7 @@ class ClassroomController extends Controller
             return response()->json([
                 'message'   => 'get list classroom successfully',
                 'data'      => $listClassroom
-            ]);
+            ], HttpCode::OK);
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
@@ -36,7 +36,7 @@ class ClassroomController extends Controller
                 'message'   => 'get classroom with students successfully',
                 'data'      => $listClassroom
             ], HttpCode::OK);
-            
+
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()

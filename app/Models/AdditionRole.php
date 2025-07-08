@@ -11,7 +11,7 @@ class AdditionRole extends Model
     protected $fillable = ['name', 'slug', 'role_id'];
 
     public function role() {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class, 'role_id', 'id');
     }
 
     public function userAdditionRoles() {

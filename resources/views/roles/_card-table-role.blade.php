@@ -41,7 +41,8 @@
                                         </div>
                                     </template>
                                 </template>
-                                <template x-if="role.addition_role.length == 0">
+                                {{-- <span x-text="role.addition_role">  </span> --}}
+                                <template x-if="role.addition_role?.length == 0">
                                     <div class="text-sm text-yellow-800" role="alert">
                                         <span class="font-medium">Jabatan tambahan belum tersedia..</span>
                                     </div>

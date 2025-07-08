@@ -49,22 +49,21 @@ class RoleController extends Controller
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
-            ]);
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 
     public function getListRole() {
         try {
-
             $listRole = Role::with('additionRole')->get();
             return response()->json([
                 'message'   => 'get list role successfully',
                 'data'      => $listRole
-            ]);
+            ], HttpCode::OK);
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
-            ]);
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -108,7 +107,7 @@ class RoleController extends Controller
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
-            ]);
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -141,7 +140,7 @@ class RoleController extends Controller
             if ($usersHasAdditionRole) {
                throw new ConflictException('jabatan tambahan sedang digunakan', [
                 'addition_role_id'  => 'Tidak dapat dihapus karena masih digunakan'
-               ]);
+               ], httpCode::CONFLICT);
             }
 
             $validated = $validator->validated();

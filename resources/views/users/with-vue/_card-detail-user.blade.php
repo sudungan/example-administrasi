@@ -32,7 +32,7 @@
         </h2>
         <div v-show="cardUserDetail.general" class="transition-all duration-300 overflow-hidden">
             <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-800 bg-white">
-                @include('users._card-detail-user-general')
+                @include('users.with-vue._card-detail-user-general')
             </div>
         </div>
     </div>
@@ -52,7 +52,7 @@
         </h2>
         <div v-show="cardUserDetail.profile" class="transition-all duration-300 overflow-hidden">
             <div class="p-5 border border-t-0 border-gray-200 dark:border-gray-700 rounded-b-xl dark:bg-gray-800 bg-white">
-            @include('users._card-detail-user-profile')
+            @include('users.with-vue._card-detail-user-profile')
             </div>
         </div>
     </div>

@@ -44,6 +44,7 @@
                     id: null, name: '', teacher_id: null, major_id: null, teacher: {}, major: {}, students: []
                 })
                 const currentView = ref("table")
+                const showDetailClassroom = ()=> currentView.value = 'detail'
                 const disableButton = reactive(false)
                 const errors = reactive({ name: '', teacher_id: '', major_id: '' })
 
@@ -54,7 +55,7 @@
                 });
                 async function getListClassroom() {
                     try {
-                        const result = await axios.get('/get-list-classroom');
+                        const result = await axios.get('/list-classroom');
                         listClassroom.value = result.data.data
                         console.log('data kelas:', listClassroom.value)
                     } catch (error) {
@@ -72,7 +73,7 @@
 
                 async function showClassrrom(classroomId) {
                     try {
-                        let result = await axios.get(`get-classroom-by/${classroomId}`);
+                        let result = await axios.get(`classroom-by/${classroomId}`);
                          console.log('data: ', result.data.data)
                     } catch (error) {
                         console.log(error)
@@ -80,7 +81,7 @@
                 }
                 return {
                     currentView, disableButton, showFormCreate, listClassroom, deleteConfirmation,
-                    showClassrrom, classroom,
+                    showClassrrom, classroom, showDetailClassroom,
                 }
             }
         }).mount('#app')

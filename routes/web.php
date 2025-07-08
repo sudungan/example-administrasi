@@ -17,11 +17,11 @@ Route::middleware(['auth'])->group(function () {
 
     // ROUTE FOR CLASSROOMS
     Route::get('classrooms', [ClassroomController::class, 'index'])->name('classrooms.index');
-    Route::get('get-list-classroom', [ClassroomController:: class, 'getListClassroom'])->name('get-list-classroom');
-    Route::get('get-classroom-by/{classroomId}', [ClassroomController::class, 'getClassroomBy'])->name('get-classroom-by');
+    Route::get('list-classroom', [ClassroomController:: class, 'getListClassroom'])->name('list-classroom');
+    Route::get('classroom-by/{classroomId}', [ClassroomController::class, 'getClassroomBy'])->name('classroom-by');
     // ROUTE FOR ROLES
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
-    Route::get('listRole', [RoleController::class, 'getListRole'])->name('listRole');
+    Route::get('list-role', [RoleController::class, 'getListRole'])->name('list-role');
     Route::post('store-role', [RoleController::class, 'store'])->name('store-role');
     Route::get('edit-addition-role/{additionRoleId}', [RoleController::class, 'editAdditionRole'])->name('edit-addition-role');
     Route::put('update-addition-role/{additionRoleId}', [RoleController::class, 'updateAdditionRole'])->name('update-addition-role');
@@ -32,15 +32,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('majors', [MajorController::class, 'index'])->name('majors.index');
     Route::get('list-major', [MajorController::class, 'getListMajor'])->name('list-major');
     Route::get('edit-major/{majorId}', [MajorController::class, 'getMajorBy'])->name('edit-major');
-    Route::get('list-get-teacher', [MajorController::class, 'getListTeacher'])->name('list-get-teacher');
-    Route::get('get-head-major-by-Id', [MajorController::class, 'getHeadMajorById'])->name('get-head-major-by-Id');
+    Route::get('list-teacher', [MajorController::class, 'getListTeacher'])->name('list-teacher');
+    Route::get('head-major-byId', [MajorController::class, 'getHeadMajorById'])->name('head-major-byId');
     Route::post('store-major', [MajorController::class, 'storeMajor'])->name('store-major');
     Route::put('update-major/{major}', [MajorController::class, 'updateMajor'])->name('update-major');
     Route::delete('delete-major/{major}', [MajorController::class, 'deleteMajor'])->name('delete-major');
 
     // delete-major
     // ROUTE FOR USERS
-    Route::get('list-role', [UserController::class, 'getListRole'])->name('list-role');
+    Route::get('list-role-to-user', [UserController::class, 'getListRole'])->name('list-role-to-user');
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::post('store-data-user-general', [UserController::class, 'storeDataUserGeneral']);
     Route::get('user/{userId}', [UserController::class, 'showUser'])->name('user');

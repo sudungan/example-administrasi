@@ -20,7 +20,7 @@
                 v-cloak
                 v-show="currentView === 'create'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                    @include('users._card-form-create')
+                    @include('users.with-vue._card-form-create')
             </div>
 
             {{-- form create data user detail--}}
@@ -36,7 +36,7 @@
                 v-cloak
                 v-show="currentView === 'edit'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                    @include('users._card-form-edit')
+                    @include('users.with-vue._card-form-edit')
             </div>
 
             {{-- card show data user detail --}}
@@ -44,15 +44,15 @@
                 v-cloak
                 v-show="currentView === 'detail'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                @include('users._card-detail-user')
-                {{-- @include('users._card-detail-user-example') --}}
+                @include('users.with-vue._card-detail-user')
+                {{-- @include('users.with-vue._card-detail-user-example') --}}
             </div>
 
             {{-- card table data user --}}
             <div
                 v-show="currentView === 'table'"
                 class="relative shadow-md sm:rounded-lg">
-                @include('users._card-table-user')
+                @include('users.with-vue._card-table-user')
             </div>
             <div
               v-show="currentView === 'table'"
@@ -243,21 +243,20 @@
                         role_id: ''
                     });
                 }
-                const getListUser = async (dataUser = `list-user?page=${page.value}`) => {
+                const getListUser = async (dataUser=`/list-user?page=${page.value}`)=> {
                     try {
                         const result = await axios.get(dataUser)
                        users.value = result.data.data?.data || []
                        page.value = result.data.data
                        links.value = result.data.data
                     } catch (error) {
-
                         console.log(error)
                     }
                 }
 
                 const getListRole = async ()=> {
                     try {
-                        const result = await axios.get('list-role');
+                        const result = await axios.get('/list-role-to-user');
                         listRole.value =  result.data.data
                     } catch (error) {
                         console.log(error)

@@ -14,10 +14,9 @@ const dataRole =()=> {
         },
         async getDataRole() {
             try {
-                const result = await axios.get('/listRole');
+                const result = await axios.get('/list-role');
                 this.listRole = result.data.data
             } catch (error) {
-                console.log(error)
             }
         },
         showFormCreate() {
