@@ -39,6 +39,13 @@
                 class="relative shadow-md sm:rounded-lg">
                 @include('classrooms.with-vue._card-detail-classroom')
             </div>
+
+            {{-- card-loading-table --}}
+            <div
+                v-show="currentView === 'loading-table'"
+                class="relative shadow-md sm:rounded-lg">
+                @include('classrooms.with-vue._card-loading-table')
+            </div>
         </div>
     </div>
      <script type="module">
@@ -47,10 +54,11 @@
             setup() {
                 const message = ref('Hello Vue!')
                 const listClassroom = ref([])
+                const search = reactive("")
                 const detailClassroom = reactive({
                     id: null, name: '', teacher_id: null, major_id: null, teacher: {}, major: {}, students: []
                 })
-                const currentView = ref("table")
+                const currentView = ref("loading-table")
                 const showDetailClassroom = ()=> currentView.value = 'detail'
                 const disableButton = reactive(false)
                 const errors = reactive({ name: '', teacher_id: '', major_id: '' })
@@ -62,7 +70,9 @@
                 });
                 async function getListClassroom() {
                     try {
+                        currentView.value = 'loading-table'
                         const result = await axios.get('/list-classroom');
+                        currentView.value = 'table'
                         listClassroom.value = result.data.data
                     } catch (error) {
                         console.log(error)
@@ -75,6 +85,10 @@
 
                 function editClassroom(classroomId) {
                     console.log(classroomId)
+                }
+
+                function searchClassroom() {
+
                 }
 
                 async function showClassrrom(classroomId) {
@@ -97,7 +111,7 @@
                 }
                 return {
                     currentView, disableButton, showFormCreate, listClassroom, deleteConfirmation,
-                    showClassrrom, detailClassroom,
+                    showClassrrom, detailClassroom, search, searchClassroom, editClassroom,
                 }
             }
         }).mount('#app')

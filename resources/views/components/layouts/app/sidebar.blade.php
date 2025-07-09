@@ -23,13 +23,13 @@
                     <flux:navlist.item icon="calendar" href="#">Calendar
                 </flux:navlist.item>
 
-                <flux:navlist.group expandable :expanded="false" heading="Administrasi" class="hidden lg:grid">
+                <flux:navlist.group expandable :expanded="false" heading="Administrasi" class="lg:grid">
                     <flux:navlist.item href="#">Presensi Siswa</flux:navlist.item>
                     <flux:navlist.item href="#">Batasan Pelajaran</flux:navlist.item>
                     <flux:navlist.item href="#">Batasan Guru</flux:navlist.item>
                 </flux:navlist.group>
 
-                <flux:navlist.group expandable :expanded="false" heading="Management User" class="hidden lg:grid">
+                <flux:navlist.group expandable :expanded="false" heading="Management User" class="lg:grid">
                     <flux:navlist.item :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>
                         {{__('users')}}
                     </flux:navlist.item>
@@ -37,7 +37,7 @@
                     <flux:navlist.item href="#">Batasan Guru</flux:navlist.item>
                 </flux:navlist.group>
 
-                <flux:navlist.group expandable :expanded="false" heading="Management Kurikulum" class="hidden lg:grid">
+                <flux:navlist.group expandable :expanded="false" heading="Management Kurikulum" class="lg:grid">
                     <flux:navlist.item :href="route('majors.index')" :current="request()->routeIs('majors.index')" wire:navigate> {{__('Jurusan')}} </flux:navlist.item>
                      <flux:navlist.item :href="route('classrooms.index')" :current="request()->routeIs('classrooms.index')" wire:navigate> {{__('Kelas')}} </flux:navlist.item>
                     <flux:navlist.item href="#">Batasan Pelajaran</flux:navlist.item>
