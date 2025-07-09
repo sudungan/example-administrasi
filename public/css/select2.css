@@ -1,0 +1,24 @@
+/* Normal mode */
+.select2-container .select2-selection--single {
+    @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full;
+    @apply focus:ring-primary-500 focus:border-primary-500;
+}
+
+/* Dark mode */
+.dark .select2-container .select2-selection--single {
+    @apply bg-gray-600 border-gray-500 text-white;
+}
+
+/* Placeholder style (optional, mimic Tailwind placeholder) */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    @apply text-sm text-gray-900;
+}
+
+.dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+    @apply text-white;
+}
+
+/* Arrow positioning tweak */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    @apply top-2 right-2;
+}

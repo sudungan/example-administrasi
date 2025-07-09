@@ -70,6 +70,11 @@ function swalInternalServerError(message) {
 
 }
 
+function generateMessageError (text, errorsObj, key) {
+    let word = text.split(" ");
+    errorsObj[key] = word.slice(1, -2).join(" ");
+};
+
 function tester() {
 console.log('runing');
 }

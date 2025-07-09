@@ -18,7 +18,12 @@ Route::middleware(['auth'])->group(function () {
     // ROUTE FOR CLASSROOMS
     Route::get('classrooms', [ClassroomController::class, 'index'])->name('classrooms.index');
     Route::get('list-classroom', [ClassroomController:: class, 'getListClassroom'])->name('list-classroom');
+    Route::get('list-teacher', [ClassroomController::class, 'getListTeachers'])->name('list-teacher');
+    Route::get('list-student', [ClassroomController::class, 'getListStudent'])->name('list-student');
+    Route::get('list-major', [ClassroomController::class, 'getListMajor'])->name('list-major');
+    Route::get('home-rome-teacher-id', [ClassroomController::class, 'getHomeRomeTeacherId'])->name('home-rome-teacher-id');
     Route::get('classroom-by/{classroomId}', [ClassroomController::class, 'getClassroomBy'])->name('classroom-by');
+    Route::post('store-classroom', [ClassroomController::class, 'storeDataClassroom'])->name('store-classroom');
     // ROUTE FOR ROLES
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('list-role', [RoleController::class, 'getListRole'])->name('list-role');
