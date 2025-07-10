@@ -37,6 +37,14 @@
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
                     @include('roles._card-form-edit-additionRole')
             </div>
+
+            {{-- card-loding-table --}}
+             <div
+                x-cloak
+                x-show="currentView === 'loading-table'"
+                class="relative shadow-md sm:rounded-lg">
+                    @include('roles._card-loading-table')
+            </div>
         </div>
     </div>
 </x-layouts.app>

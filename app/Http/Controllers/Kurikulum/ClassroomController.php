@@ -118,13 +118,19 @@ class ClassroomController extends Controller
                 'name'                => ['required', 'max:255'],
                 'teacher_id'          => 'required',
                 'student_ids.*'       => 'required|integer|exists:users,id',
+                'student_ids'         => 'required|array|min:1',
                 'major_id'              => 'required'
             ], [
-                'name.unique'           => 'Nama Kelas sudah digunakan..',
-                'teacher_id.required'   => 'Nama Guru wajib dipilih',
-                'teacher_id.unique'     => 'Nama Guru wajib dipakai',
-                'student_ids.required'  => 'Nama Siswa Harus dipilih..',
-                'major_id.required'     => 'Nama Jurusan Harus dipilih..',
+                'name.unique'               => 'Nama Kelas sudah digunakan..',
+                'name.required'             => 'Nama Kelas harus diisi..',
+                'teacher_id.required'       => 'Nama Guru wajib dipilih',
+                'teacher_id.unique'         => 'Nama Guru wajib dipakai',
+                'student_ids.*.required'    => 'Nama Siswa Harus dipilih..',
+                'student_ids.min'           => 'Minimal satu siswa harus dipilih.',
+                'student_ids.required'      => 'Minimal satu siswa harus dipilih.',
+                'student_ids.*.integer'     => 'ID siswa tidak valid.',
+                'student_ids.*.exists'      => 'Salah satu siswa tidak ditemukan.',
+                'major_id.required'         => 'Nama Jurusan Harus dipilih..',
             ]);
 
             if ($validator->fails()) {

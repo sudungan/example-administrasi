@@ -17,25 +17,39 @@ export default defineComponent({
         }
     },
       setup(props, {emit}) {
+        const selected = ref(null)
         const errors = reactive({})
-        onMounted(()=> {
-            const el = $('#select-multiple')
 
-            el.select2({ width: '100%', placeholder: "Select Student Name",  allowClear: true})
+        onMounted(() => {
+            const el = $(selected.value)
 
-            // Set nilai awal
-            el.val(props.modelValue).trigger('change')
+            el.select2({ width: '100%', placeholder: "Pilih Nama Siswa", allowClear: true })
+
+            // Set nilai awal hanya sekali saat mount
+            el.val(props.modelValue.map(String)).trigger('change')
 
             el.on('change', () => {
-                emit('update:modelValue', el.val() || [])
+                const selectedVal = el.val() || []
+                emit('update:modelValue', selectedVal.map(Number))
             })
-        });
+        })
+
+        watch(() => props.modelValue, (newVal) => {
+            const el = $(selected.value)
+            const currentVal = el.val() || []
+            const newValStr = newVal.map(String)
+
+            if (JSON.stringify(currentVal) !== JSON.stringify(newValStr)) {
+                el.val(newValStr).trigger('change')
+            }
+        })
         return {
-             props
+             selected
         }
     },
     template: `
     <select
+        ref="selected"
         id="select-multiple"
         multiple="multiple"
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500"

@@ -14,8 +14,10 @@ const dataRole =()=> {
         },
         async getDataRole() {
             try {
+                this.currentView = 'loading-table'
                 const result = await axios.get('/list-role');
                 this.listRole = result.data.data
+                this.currentView = 'table'
             } catch (error) {
             }
         },
