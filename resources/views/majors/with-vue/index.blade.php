@@ -31,6 +31,13 @@
                 @include('majors.with-vue._card-table-major')
             </div>
 
+             {{-- card-loading-table --}}
+            <div
+                v-show="currentView === 'loading-table'"
+                class="relative shadow-md sm:rounded-lg">
+                @include('majors.with-vue._card-loading-table')
+            </div>
+
             <div
                 v-cloak
                 v-show="currentView === 'create'"
@@ -57,7 +64,7 @@
                 const disableButton = ref(false)
                 const errorHeadMajor = ref("")
                 const listTeacher = ref([])
-                const currentView = ref("table")
+                const currentView = ref("loading-table")
                 const isLoading = ref(false)
                 const errors = reactive({ name: '', user_id: '',  addition_role_id: '' })
                 const isDirty = ref(false)
@@ -101,8 +108,10 @@
 
                 const getListMajor = async ()=> {
                     try {
+                        currentView.value = 'loading-table'
                         const result = await axios.get('/list-major');
                         listMajor.value = result.data.data;
+                        currentView.value = 'table'
                     } catch (error) {
                         console.log(error)
                     }

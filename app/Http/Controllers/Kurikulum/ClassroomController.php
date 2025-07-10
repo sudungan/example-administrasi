@@ -33,10 +33,19 @@ class ClassroomController extends Controller
     public function getListTeachers() {
         try {
             $listTeacher = User::select('id', 'name')->where('role_id', MainRole::item['guru'])->get();
-             return response()->json([
+
+            if ($listTeacher->isEmpty()) {
+                    throw new NotFoundException(
+                    'Data guru belum tersedia',
+                    ['teacher_id' => ['Data guru belum tersedia.']],
+                    HttpCode::NOT_FOUND
+                );
+            }
+            return response()->json([
                 'message'   => 'get list teacher successfully',
                 'data'      => $listTeacher
             ], HttpCode::OK);
+
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
@@ -71,10 +80,23 @@ class ClassroomController extends Controller
     public function getListStudent() {
         try {
             $listStudent = User::select('id', 'name')->where('role_id', MainRole::item['siswa'])->doesntHave('classroom')->get();
-             return response()->json([
+
+            if ($listStudent->isEmpty()) {
+               throw new NotFoundException(
+                    'Data siswa belum tersedia',
+                    ['student_id' => ['Data siswa belum tersedia.']],
+                    HttpCode::NOT_FOUND
+                );
+            }
+
+            return response()->json([
                 'message'   => 'get list student successfully',
                 'data'      => $listStudent
             ], HttpCode::OK);
+
+
+        } catch(NotFoundException $error) {
+             return $error->render(request());
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
@@ -85,10 +107,23 @@ class ClassroomController extends Controller
     public function getListMajor() {
         try {
             $listMajor = Major::select('id', 'name')->get();
-             return response()->json([
+
+            if($listMajor->isEmpty()) {
+                throw new NotFoundException(
+                    'Data Jurusan belum tersedia',
+                    ['major_id' => ['Data Jurusan belum tersedia.']],
+                    HttpCode::NOT_FOUND
+                );
+            }
+
+            return response()->json([
                 'message'   => 'get list major successfully',
                 'data'      => $listMajor
             ], HttpCode::OK);
+
+
+        } catch(NotFoundException $error) {
+             return $error->render(request());
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
@@ -133,6 +168,7 @@ class ClassroomController extends Controller
                 'major_id.required'         => 'Nama Jurusan Harus dipilih..',
             ]);
 
+
             if ($validator->fails()) {
                 return response()->json([
                     'message' => 'Validation failed',
@@ -142,7 +178,18 @@ class ClassroomController extends Controller
 
             $validated = $validator->validated();
 
-            dd($validated);
+            $classroom = Classroom::create([
+                'major_id'      => $validated['major_id'],
+                'teacher_id'    => $validated['teacher_id'],
+                'name'          => $validated['name']
+            ]);
+
+            // whereIn bisa menampung id lebih dari satu
+            User::whereIn('id', $validated['student_ids'])->update(['classroom_id' => $classroom->id]);
+
+            return response()->json([
+                'message'   => 'created successfully',
+            ], HttpCode::CREATED);
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()

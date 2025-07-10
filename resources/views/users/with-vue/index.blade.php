@@ -204,9 +204,6 @@
                         }
                         isLoading.value = true;
                         let result = await axios.post('/store-data-user-general', sendData);
-                        // userId.value = result.data.data.user_id;
-                        // roleId.value = result.data.data.role_id
-                        // currentView.value = 'create-user-detail';
                         currentView.value = 'table';
                         isLoading.value = false;
                         successNotification(result.data.message) // meggunakan swal successNotifaction dari js/helper

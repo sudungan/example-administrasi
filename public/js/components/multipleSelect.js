@@ -1,4 +1,4 @@
-const { defineComponent, watch, ref, onMounted, reactive } = Vue
+const { defineComponent, watch, ref, onMounted, onBeforeUnmount, reactive } = Vue
 export default defineComponent({
     name: 'multipleSelect', // nama child component
     emits: ['update:modelValue'],
@@ -34,15 +34,36 @@ export default defineComponent({
             })
         })
 
-        watch(() => props.modelValue, (newVal) => {
-            const el = $(selected.value)
-            const currentVal = el.val() || []
-            const newValStr = newVal.map(String)
-
-            if (JSON.stringify(currentVal) !== JSON.stringify(newValStr)) {
-                el.val(newValStr).trigger('change')
-            }
+        onBeforeUnmount(() => {
+        const el = $(selected.value)
+        el.off().select2('destroy')
         })
+
+        // watch(
+        //     () => props.modelValue,
+        //     (newVal) => {
+        //         const el = $(selected.value)
+        //         el.val(newVal.map(String)).trigger('change')
+        //     }
+        // )
+
+        watch(
+            () => props.options,
+            (newOptions) => {
+                const el = $(selected.value)
+                if (!initialized && newOptions.length > 0) {
+                nextTick(() => initSelect2())
+                } else if (initialized) {
+                el.empty()
+                newOptions.forEach((option) => {
+                    el.append(new Option(option.name, option.id))
+                })
+                el.val(props.modelValue.map(String)).trigger('change')
+                }
+            },
+            { deep: true }
+        )
+
         return {
              selected
         }

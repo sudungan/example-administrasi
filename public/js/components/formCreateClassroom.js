@@ -1,4 +1,3 @@
-import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
 const { defineComponent, watch, ref, onMounted, reactive  } = Vue
 import multipleSelect from "./multipleSelect.js"
 export default defineComponent({
@@ -11,61 +10,86 @@ export default defineComponent({
             type: String,
             required: true
         },
+        majors: {
+            type: Array,
+            required: true
+        },
+        teachers: {
+            type: Array,
+            required: true
+        },
+        students: {
+            type: Array,
+            required: true
+        }
+
         // userId: {
         //     type: Number,
         //     required: true
         // }
     },
-    emits: ['backTo'],
+    emits: ['backTo', 'reload'],
     setup(props, {emit}) {
         const classroom = reactive({  name: '',  teacher_id: '',  student_ids: [],  major_id: ''  })
         const errors = ref({})
-        const listMajor = ref([])
-        const listTeacher = ref([])
-        const listStudent = ref([])
+        const childMajors = ref(props.majors)
+        const childTeachers = ref(props.teachers)
+        const childStudents = ref(props.students)
         const isLoading = ref(false)
+        const selected = ref(null)
+        const fieldLabels = { name: 'Nama', teacher_id: 'Guru', major_id: 'Jurusan',  student_ids: 'Siswa' };
 
-        onMounted(async()=> {
-            await getListMajor()
-            await getListTecher()
-            await getListStudent()
+        // melihat perubahan langsung dari props yang dikirim dari parent disimpan ke state childMajors
+        watch(() => props.majors, (newVal) => { childMajors.value = newVal }, { immediate: true });
+
+        // melihat perubahan langsung dari props yang dikirim dari parent disimpan ke state childTeachers
+        watch(() => props.teachers, (newVal) => { childTeachers.value = newVal }, { immediate: true });
+
+        // melihat perubahan langsung dari props yang dikirim dari parent disimpan ke state childStudents
+        watch(() => props.students, (newVal) => { childStudents.value = newVal }, { immediate: true });
+
+        watch(() => classroom.student_ids, (newVal) => {
+            const $el = $(selected.value);
+            const currentVal = $el.val() || [];
+            const newValStr = newVal.map(String);
+            if (JSON.stringify(currentVal) !== JSON.stringify(newValStr)) {
+                $el.val(newValStr).trigger('change');
+            }
         });
 
-        watch(errors, (newVal) => {
-            console.log('errors changed:', newVal)
-        }, { deep: true })
+       onMounted(() => {
+            // melakakan inisialisasi dari refrensi selected ref
+            const $el = $(selected.value);
 
+            // memberi nilai dari properti yang tersedia
+            $el.select2({  width: '100%',   placeholder: "Pilih siswa", allowClear: true });
 
-        async function getListTecher() {
-            try {
-                let result = await axios.get('/list-teacher')
-                listTeacher.value = result.data.data
-            } catch (error) {
-                console.log('error get teacher', error)
-            }
-        }
+            // Set nilai awal
+            $el.val(classroom.student_ids.map(String)).trigger('change');
 
-        async function getListStudent() {
-            try {
-                let result = await axios.get('/list-student')
-                listStudent.value = result.data.data
-                 console.log('data list student', listStudent.value)
-            } catch (error) {
-                console.log('error list student:', error)
-            }
-        }
-
-         async function getListMajor() {
-            try {
-                let result = await axios.get('/list-major')
-                listMajor.value = result.data.data
-            } catch (error) {
-                console.log('error list major', error)
-            }
-        }
+            // Saat user memilih dari Select2
+            $el.on('change', () => {
+                const selectedVal = $el.val() || [];
+                classroom.student_ids = selectedVal.map(Number); // Convert ke angka
+            });
+        });
 
         async function storeClassroom() {
             try {
+                let isValid = true;
+
+                for(let key in classroom) {
+                    const value = classroom[key];
+                    const isEmpty = (Array.isArray(value) && value.length === 0) || (!Array.isArray(value) && !value.toString().trim());
+
+                    if (isEmpty) {
+                        console.log('ada data kosong')
+                        const label = fieldLabels[key] || key;
+                        errors[key] = `${label} tidak boleh kosong`;
+                        isValid = false;
+                    }
+                }
+
                 let sendDataClassroom = {
                     name: classroom.name,
                     teacher_id: classroom.teacher_id,
@@ -75,7 +99,13 @@ export default defineComponent({
                 isLoading.value = true;
                 errors.value = {}
                 let result = await axios.post('/store-classroom', sendDataClassroom)
+                resetFields()
+
+                successNotification(result.data.message)
+
                 isLoading.value = false;
+                emit('reload')
+                emit('backTo', 'table')
             } catch (error) {
                if (error.response?.status === 422) {
                     let responseErrors = error.response.data.errors;
@@ -87,13 +117,42 @@ export default defineComponent({
             }
         }
 
+        function resetFields() {
+            Object.assign(classroom, {
+                name: '',
+                teacher_id: '',
+                major_id: '',
+                student_ids: []
+            });
+        }
+
+        function resetErrors() {
+            errors.value = {}
+        }
+
         const closeCreateForm =()=> {
+            let isAnyFilled = Object.values(classroom).some(value => {
+                if (Array.isArray(value)) return value.length > 0
+                    return value !== ''
+            })
+
+            if (isAnyFilled) {
+                cancelConfirmation('Yakin membatalkan?', (result)=> {
+                    if (result.isConfirmed) {
+                        resetFields();
+                        resetErrors()
+                        emit('backTo', 'table')
+                    }
+                });
+            }
+            resetErrors()
             emit('backTo', 'table')
         }
 
         return {
-            storeClassroom, closeCreateForm, isLoading, classroom, listTeacher, getListTecher,
-            listStudent, getListStudent, errors, listMajor, getListMajor
+            storeClassroom, closeCreateForm, isLoading, classroom,errors,
+            resetFields, resetErrors, fieldLabels, majors: childMajors, teachers: childTeachers,
+            students: childStudents, selected
         }
     },
     template:  `
@@ -123,16 +182,23 @@ export default defineComponent({
 
                             <div class="col-span-2 sm:col-span-1">
                                 <label for="teacher_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Wali Kelas</label>
-                               <select v-model="classroom.teacher_id" id="teacher_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                <select v-model="classroom.teacher_id" id="teacher_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option value="">Select homerome teacher</option>
-                                    <option v-for="teacher in listTeacher" :key="teacher.id" :value="teacher.id">{{teacher.name}}</option>
+                                    <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">{{teacher.name}}</option>
                                 </select>
                                 <p v-if="errors.teacher_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.teacher_id }}</p>
                             </div>
 
                             <div class="col-span-2 sm:col-span-2">
                                 <label for="student_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Siswa</label>
-                                <multiple-select  v-model="classroom.student_ids" :options="listStudent":errors="errors"/>
+                                 <select ref="selected" id="select-multiple"  multiple="multiple"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                >
+                                <option v-for="student in students" :value="student.id" :key="student.id">
+                                        {{ student.name }}
+                                    </option>
+                                </select>
+                                <p v-if="errors.student_ids" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.student_ids }}</p>
                             </div>
 
                             <div class="col-span-2 sm:col-span-2">
@@ -141,7 +207,7 @@ export default defineComponent({
                                 </label>
                                 <select v-model="classroom.major_id" id="major_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option value="">Select Major</option>
-                                    <option v-for="major in listMajor" :key="major.id" :value="major.id">{{major.name}}</option>
+                                    <option v-for="major in majors" :key="major.id" :value="major.id">{{major.name}}</option>
                                 </select>
                                  <p v-if="errors.major_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.major_id }}</p>
                             </div>

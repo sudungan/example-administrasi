@@ -42,12 +42,13 @@
                 v-cloak
                 v-show="currentView === 'create'"
                 class="relative sm:rounded-lg">
-                <form-create-classroom :visable-card="currentView" @back-to="currentView = $event" >
-                </form-create-classroom>
+                <form-create-classroom :visable-card="currentView" :majors="listMajor" :teachers="listTeacher" :students="listStudent"  @back-to="currentView = $event" @reload="handleReloadClassroom" />
+                {{-- </form-create-classroom> --}}
             </div>
         </div>
     </div>
      <script type="module">
+        import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
         const { createApp, ref, reactive, onMounted } = Vue
         import formCreateClassroom from '/js/components/formCreateClassroom.js';
         createApp({
@@ -60,6 +61,9 @@
                 const homeRomeTeacherId = ref(null)
                 const search = reactive("")
                 const isLoading = ref(false)
+                const listMajor = ref([])
+                const listTeacher = ref([])
+                const listStudent = ref([])
                 const detailClassroom = reactive({
                     id: null, name: '', teacher_id: null, major_id: null, teacher: {}, major: {}, students: []
                 })
@@ -73,8 +77,11 @@
                     currentView.value = 'table'
                 }
                 onMounted(async ()=> {
-                    await getListClassroom(),
+                    await getListClassroom()
                     await getHomeRomeTeacherId()
+                    await getListMajor()
+                    await getListTecher()
+                    await getListStudent()
                 });
                 async function getListClassroom() {
                     try {
@@ -87,8 +94,8 @@
                     }
                 }
 
-                function storeClassroom() {
-
+                async function handleReloadClassroom() {
+                    await getListClassroom() // ambil data terbaru
                 }
 
                 function deleteConfirmation(classroomId) {
@@ -152,10 +159,40 @@
                         }
                     }
                 }
+
+                async function getListMajor() {
+                    try {
+                        let result = await axios.get('/list-major')
+                        listMajor.value = result.data.data
+                        console.log('Parent - listMajor:', listMajor.value)
+                    } catch (error) {
+                        console.log('error list major', error)
+                    }
+                }
+
+                async function getListTecher() {
+                    try {
+                        let result = await axios.get('/list-teacher')
+                        listTeacher.value = result.data.data
+                    } catch (error) {
+                        console.log('error get teacher', error)
+                    }
+                }
+
+                 async function getListStudent() {
+                    try {
+                        let result = await axios.get('/list-student')
+                        listStudent.value = result.data.data
+                        console.log('data students', listStudent.value)
+                    } catch (error) {
+                        console.log('error list student:', error)
+                    }
+                }
                 return {
                     currentView, disableButton, showFormCreate, listClassroom, deleteConfirmation, isLoading,
-                    showClassrrom, detailClassroom, search, searchClassroom, editClassroom, storeClassroom,
-                    closeCreateForm, homeRomeTeacherId,
+                    showClassrrom, detailClassroom, search, searchClassroom, editClassroom, listTeacher,
+                    closeCreateForm, homeRomeTeacherId,handleReloadClassroom, listMajor, getListMajor,
+                    listStudent, getListStudent,
                 }
             }
         }).mount('#app')
