@@ -22,11 +22,6 @@ export default defineComponent({
             type: Array,
             required: true
         }
-
-        // userId: {
-        //     type: Number,
-        //     required: true
-        // }
     },
     emits: ['backTo', 'reload'],
     setup(props, {emit}) {

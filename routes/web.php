@@ -48,7 +48,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('list-role-to-user', [UserController::class, 'getListRole'])->name('list-role-to-user');
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::post('store-data-user-general', [UserController::class, 'storeDataUserGeneral']);
-    Route::get('user/{userId}', [UserController::class, 'showUser'])->name('user');
+    Route::get('edit-user-by/{userId}', [UserController::class, 'getEditUserBy'])->name('edit-user-by');
+    Route::put('update-user-by/{userId}', [UserController::class, 'updateUserBy'])->name('update-user-by');
+    Route::get('show-user-by/{userId}', [UserController::class, 'showUser'])->name('show-user-by');
     Route::get('user-profile-by/{userId}', [UserController::class, 'getProfileUserBy'])->name('user-profile-by');
     Route::get('addition-role/{roleId}', [UserController::class, 'getAdditionRole'])->name('addition-role');
     Route::get('list-user', [UserController::class, 'getListUser'])->name('list-user');

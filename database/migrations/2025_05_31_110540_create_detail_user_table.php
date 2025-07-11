@@ -24,8 +24,6 @@ return new class extends Migration
             $table->string('nis')->nullable();
             $table->string('nuptk')->nullable();
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignIdFor(Classroom::class)->nullable();
-            $table->foreignIdFor(Major::class)->nullable();
             $table->timestamps();
         });
     }

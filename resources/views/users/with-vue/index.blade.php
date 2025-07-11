@@ -36,7 +36,14 @@
                 v-cloak
                 v-show="currentView === 'edit'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                    @include('users.with-vue._card-form-edit')
+                    <form-edit-user
+                        :visable-card="currentView"
+                        :user-to="editData"
+                        :provide-role-from="listRole"
+                        :waiting-process="isLoading"
+                        @back-to="currentView = $event"
+                        @reload="toRefreshListUser"
+                    />
             </div>
 
             {{-- card show data user detail --}}
@@ -70,11 +77,13 @@
         import pagination from '/js/components/paginate.js';
         import formUserDetail from '/js/components/formUserDetail.js';
         import inputPassword from '/js/components/inputPassword.js';
+        import formEditUser from '/js/components/formEditUser.js'
         createApp({
             components: {
                 pagination,
                 formUserDetail,
-                inputPassword
+                inputPassword,
+                formEditUser
             },
             setup() {
                 const users = ref([]);
@@ -88,6 +97,7 @@
                 const isLoading = ref(false)
                 const cardUserDetail = reactive({ general:false,  profile: false })
                 const user = ref({ userId: '', roleId: '',  name: '', address: ''  });
+                const editData = ref({ id: '', name: '',  email: '',  password: '',  role_id: '', classroom_id: ''  })
                 const dataUserGeneral = reactive({ name: '',  email: '',  password: '',  role_id: '' });
                 const dataUserProfile = ref({
                     first_name: '', last_name: '', address: '', phone_number: '',
@@ -111,7 +121,7 @@
                 }
                 const showDetailUser = async(userId) => {
                     try {
-                        const result = await axios.get('user/' + userId);
+                        const result = await axios.get(`/show-user-by/${userId}`);
                         user.value = result.data.data
                         currentView.value = 'detail'
                         await showDetailProfile(userId)
@@ -153,10 +163,11 @@
                     }
                 }
                 const page = ref(1)
-                const editUser = async (id) => {
+                async function btnEditUser(userId) {
                      try {
-                        const result = await axios.get('user/' + id);
-                        user.value = result.data.data
+                        let result = await axios.get(`/edit-user-by/${userId}`);
+                        console.log('data user akan diedit: ',result)
+                        editData.value = result.data.data
                         currentView.value = 'edit'
                     } catch (error) {
                         console.log(error)
@@ -251,6 +262,10 @@
                     }
                 }
 
+                async function toRefreshListUser() {
+                    await getListUser()
+                }
+
                 const getListRole = async ()=> {
                     try {
                         const result = await axios.get('/list-role-to-user');
@@ -271,7 +286,7 @@
                     await getListRole()
                 })
                 return {
-                    deleteConfirm, editUser,listRole,users, getListUser,
+                    deleteConfirm, btnEditUser, editData, toRefreshListUser, listRole, users, getListUser,
                     links, search,searchUser, perPage, page,errors, roleId,
                     userId, fieldLabels, isLoading, backToPreviousPage, dataUserProfile,
                     btnShowDetailProfile, btnShowDataGeneral, cardUserDetail,

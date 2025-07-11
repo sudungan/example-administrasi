@@ -71,9 +71,29 @@ class UserController extends Controller
        }
     }
 
+    public function getEditUserBy($userId) {
+        try {
+           $user = User::with(['role', 'detail'])->where('id', $userId)->first();
+
+           return response()->json([
+            'message'   => 'get user succesfully',
+            'data'      => $user
+           ], HttpCode::OK);
+       } catch (\Exception $th) {
+        return response()->json([
+            'message'   => $th->getMessage()
+        ], HttpCode::INTERNAL_SERVER_ERROR);
+       }
+    }
+
+    public function updateUserBy($userId) {
+        // next to do continue update
+        dd($userId);
+    }
+
     public function getProfileUserBy($userId) {
         try{
-            $user = User::where('id', $userId)->with(['detail', 'classroom:id,name','major:id,name'])->first();
+            $user = User::where('id', $userId)->with(['detail', 'classroom:id,name'])->first();
 
             return response()->json([
                 'message'   => 'get user profile successfully',

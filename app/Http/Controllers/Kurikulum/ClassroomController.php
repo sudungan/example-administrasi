@@ -84,7 +84,7 @@ class ClassroomController extends Controller
             if ($listStudent->isEmpty()) {
                throw new NotFoundException(
                     'Data siswa belum tersedia',
-                    ['student_id' => ['Seluruh Siswa sudah memiliki kelas']],
+                    ['student_id' => ['User siswa belum tersedia..']],
                     HttpCode::NOT_FOUND
                 );
             }
