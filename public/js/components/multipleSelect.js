@@ -39,14 +39,6 @@ export default defineComponent({
         el.off().select2('destroy')
         })
 
-        // watch(
-        //     () => props.modelValue,
-        //     (newVal) => {
-        //         const el = $(selected.value)
-        //         el.val(newVal.map(String)).trigger('change')
-        //     }
-        // )
-
         watch(
             () => props.options,
             (newOptions) => {

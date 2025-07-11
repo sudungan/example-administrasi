@@ -104,7 +104,7 @@
                     try {
                         let result = await axios.get(`/user-profile-by/${userId}`)
                         dataUserProfile.value = result.data.data;
-                        // console.log('data-user-profile', dataUserProfile)
+                        console.log('data-user-profile', result)
                     } catch (error) {
                         // console.log('error-data-user-profile', error)
                     }

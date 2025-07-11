@@ -59,7 +59,7 @@ class UserController extends Controller
 
     public function showUser(Request $request, $userId) {
        try {
-           $user = User::with(['role', 'detailUser'])->where('id', $userId)->first();
+           $user = User::with(['role', 'detail'])->where('id', $userId)->first();
            return response()->json([
             'message'   => 'get user succesfully',
             'data'      => $user
@@ -73,7 +73,7 @@ class UserController extends Controller
 
     public function getProfileUserBy($userId) {
         try{
-            $user = DetailUser::where('user_id', $userId)->with(['userDetail', 'classroom:id,name','major:id,name'])->first();
+            $user = User::where('id', $userId)->with(['detail', 'classroom:id,name','major:id,name'])->first();
 
             return response()->json([
                 'message'   => 'get user profile successfully',
@@ -110,6 +110,9 @@ class UserController extends Controller
             $validated = $validator->validated();
             $validated['password'] = Hash::make($validated['password']);
             $user = User::create($validated);
+
+            DetailUser::create(['user_id' => $user->id]);
+
             $dataUser = [
                 'role_id'   => $user->role_id,
                 'user_id'   => $user->id

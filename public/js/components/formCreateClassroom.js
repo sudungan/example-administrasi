@@ -39,15 +39,16 @@ export default defineComponent({
         const selected = ref(null)
         const fieldLabels = { name: 'Nama', teacher_id: 'Guru', major_id: 'Jurusan',  student_ids: 'Siswa' };
 
-        // melihat perubahan langsung dari props yang dikirim dari parent disimpan ke state childMajors
+        // melihat perubahan langsung dari props.majors yang dikirim dari parent disimpan ke state childMajors
         watch(() => props.majors, (newVal) => { childMajors.value = newVal }, { immediate: true });
 
-        // melihat perubahan langsung dari props yang dikirim dari parent disimpan ke state childTeachers
+        // melihat perubahan langsung dari props.teachers yang dikirim dari parent disimpan ke state childTeachers
         watch(() => props.teachers, (newVal) => { childTeachers.value = newVal }, { immediate: true });
 
-        // melihat perubahan langsung dari props yang dikirim dari parent disimpan ke state childStudents
+        // melihat perubahan langsung dari props.students yang dikirim dari parent disimpan ke state childStudents
         watch(() => props.students, (newVal) => { childStudents.value = newVal }, { immediate: true });
 
+        // melihat perubahan select2 multiple dari classroom.students_ids
         watch(() => classroom.student_ids, (newVal) => {
             const $el = $(selected.value);
             const currentVal = $el.val() || [];

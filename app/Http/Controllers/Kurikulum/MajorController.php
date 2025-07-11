@@ -22,10 +22,12 @@ class MajorController extends Controller
     public function getListMajor() {
         try {
             $majors = Major::with('headMajor')->get();
+
             return response()->json([
                 'message'   => 'get list major successfully',
                 'data'      => $majors
             ], HttpCode::OK);
+
         } catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
@@ -37,11 +39,21 @@ class MajorController extends Controller
         try {
 
             $teachers = User::select('id', 'name')->where('role_id', MainRole::item['guru'])->get();
+             if ($teachers->isEmpty()) {
+                 throw new NotFoundException(
+                    'Guru belum tersedia',
+                    ['teacher_id' => ['Guru belum tersedia.']],
+                    HttpCode::NOT_FOUND
+                );
+             }
             return response()->json([
                 'message'   => 'get List Teachers successfully',
                 'data'      => $teachers
             ], HttpCode::OK);
-        } catch (\Exception $error) {
+
+        } catch(NotFoundException $error) {
+             return $error->render(request());
+        }catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
             ], HttpCode::INTERNAL_SERVER_ERROR);

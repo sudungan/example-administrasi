@@ -24,6 +24,25 @@
                     </div>
                 </div>
 
+                 <div v-if="errors.teacher_id" class="flex items-center p-2 mb-2 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-100 w-full" role="alert">
+                    <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                    </svg>
+                    <span class="sr-only">Info</span>
+                    <div>
+                           <a class="hover:underline" href="{{route('users.index')}}" wire:navigate>Check Kembali, </a> <span class="font-medium font-extrabold dark:text-yellow-600 text-yellow-400">@{{ errors.teacher_id }}</span>
+                    </div>
+                </div>
+
+                <div v-if="listMajor.length == 0" class="flex items-center p-2 mb-2 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-100 w-full" role="alert">
+                    <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                    </svg>
+                    <span class="sr-only">Info</span>
+                    <div>
+                        <span class="font-medium font-extrabold dark:text-yellow-600 text-yellow-400">Jurusan belum ada</span>
+                    </div>
+                </div>
             </div>
             <div
                 v-show="currentView === 'table'"
@@ -110,8 +129,8 @@
                     try {
                         currentView.value = 'loading-table'
                         const result = await axios.get('/list-major');
-                        listMajor.value = result.data.data;
                         currentView.value = 'table'
+                        listMajor.value = result.data.data;
                     } catch (error) {
                         console.log(error)
                     }
@@ -122,7 +141,16 @@
                         let result = await axios.get('/list-teacher')
                         listTeacher.value = result.data.data
                     } catch (error) {
-                        console.log('error',error)
+                        if (error.response && error.response.status === 404) {
+                            let responseErrors = error.response.data.errors;
+                            disableButton.value = true
+                            for (let key in responseErrors) {
+                                errors[key] = responseErrors[key][0];
+                                  generateMessageError(errors[key])
+                            }
+                        }else {
+                            swalInternalServerError(error.response.message)
+                        }
                     }
                 }
 
@@ -137,6 +165,7 @@
                             disableButton.value = true
                             for (let key in responseErrors) {
                                 errors[key] = responseErrors[key][0];
+                                console.log('testing', errors[key])
                                   generateMessageError(errors[key])
                             }
                         }
@@ -144,6 +173,7 @@
                             let responseErrors = error.response.data.errors;
                             for (let key in responseErrors) {
                                 errors[key] = responseErrors[key][0];
+                                 console.log('testing', errors[key])
                             }
                             isLoading.value = false
                         }else {

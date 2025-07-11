@@ -70,11 +70,17 @@ function swalInternalServerError(message) {
 
 }
 
-function generateMessageError (text, errorsObj, key) {
+function generateMessageError (text, errors, key) {
     let word = text.split(" ");
-    errorsObj[key] = word.slice(1, -2).join(" ");
+     errors[key] = word.slice(1, -2).join(" ");
+    console.log('error', errors[key])
+
 };
 
 function tester() {
 console.log('runing');
+}
+
+function resetFields(target, defaultValues) {
+    Object.assign(target, JSON.parse(JSON.stringify(defaultValues)));
 }

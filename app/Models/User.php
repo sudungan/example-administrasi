@@ -64,7 +64,7 @@ class User extends Authenticatable
         return $this->belongsToMany(AdditionRole::class, 'addition_role_user', 'user_id', 'addition_role_id')->withTimestamps();
     }
 
-    public function detailUser() {
+    public function detail() {
         return $this->hasOne(detailUser::class);
     }
 

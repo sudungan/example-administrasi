@@ -14,13 +14,13 @@ return new class extends Migration
     {
         Schema::create('detail_user', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('address');
-            $table->string('phone_number');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('address')->nullable();
+            $table->string('phone_number')->nullable();
             $table->string('status')->default('active');
-            $table->string('place_of_birth');
-            $table->string('date_of_birth');
+            $table->string('place_of_birth')->nullable();
+            $table->string('date_of_birth')->nullable();
             $table->string('nis')->nullable();
             $table->string('nuptk')->nullable();
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
