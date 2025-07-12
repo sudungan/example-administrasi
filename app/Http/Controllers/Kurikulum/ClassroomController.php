@@ -200,4 +200,18 @@ class ClassroomController extends Controller
     public function updateClassroom(Request $request, $classroomId) {
         dd($classroomId);
     }
+
+    public function getEditClassroomBy($classroomId) {
+        try {
+            $classroom = Classroom::where('id', $classroomId)->with(['major', 'teacher', 'students'])->first();
+            return response()->json([
+                'message'   => 'get classrrom successfully',
+                'data'      => $classroom
+            ], HttpCode::OK);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
 }

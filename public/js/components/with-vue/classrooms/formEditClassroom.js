@@ -1,54 +1,97 @@
 import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
-const { defineComponent, watch, ref, onMounted  } = Vue
+const { defineComponent, watch, ref, onMounted, reactive  } = Vue
+import multipleSelect from "../../multipleSelect.js"
 export default defineComponent({
-    name: 'editClassroom',
-    components: {},
+    name: 'formEditClassroom',
+    components: {
+        multipleSelect
+    },
      props: {
         visableCard: {
             type: String,
-            required: true
+            required: true,
+             default: () => ({})
         },
         majors: {
             type: Array,
-            required: true
+            required: true,
+             default: () => ({})
         },
         teachers: {
             type: Array,
-            required: true
+            required: true,
+             default: () => ({})
         },
         students: {
             type: Array,
-            required: true
+            required: true,
+             default: () => ({})
         },
         classroom: {
             type: Object,
-            required: true
+            required: true,
+            default: () => ({})
+        },
+        waitingProcess: {
+            type: Boolean,
+            required: true,
+             default: () => ({})
         }
     },
     emit: ['backTo', 'reload'],
     setup(props, {emit}) {
+            const childClassroom = ref({...props.classroom})
             const childMajors = ref(props.majors)
             const childTeachers = ref(props.teachers)
             const childStudents = ref(props.students)
-            const childClassroom = ref(props.classroom)
             const errors = reactive({ id: '', name: '', password: '', email: '', role_id: ''  })
-
             // state menampung data classroom yang akan diupdate
             const editclassroom = reactive({ id: '', name: '', student_ids: [], major_id: '', teacher_id: '' })
+
+            const localProcesing = ref(props.waitingProcess)
+            const isLoading = ref(false)
+
 
             const fieldLabels = { name: 'Nama', teacher_id: 'Guru', major_id: 'Jurusan',  student_ids: 'Siswa' };
 
             // melihat perubahan langsung dari props.majors yang dikirim dari parent disimpan ke state childMajors
-            watch(() => props.majors, (newVal) => { Object.assign(childMajors, newVal) }, { immediate: true })
+            watch(() => props.majors, (newVal) => { childMajors, newVal }, { immediate: true })
 
             // melihat perubahan langsung dari props.teachers yang dikirim dari parent disimpan ke state childTeachers
-            watch(() => props.teachers, (newVal) => { Object.assign(childTeachers, newVal) }, { immediate: true })
+            watch(() => props.teachers, (newVal) => { childTeachers, newVal }, { immediate: true })
 
             // melihat perubahan langsung dari props.students yang dikirim dari parent disimpan ke state childStudents
             watch(() => props.students, (newVal) => { childStudents.value = newVal }, { immediate: true });
 
             // melihat perubahan langsung dari props.students yang dikirim dari parent disimpan ke state childStudents
-            watch(() => props.classroom, (newVal) => { editclassroom.value = newVal }, { immediate: true });
+            watch(() => props.classroom, (newVal) => { Object.assign(editclassroom, newVal)  }, { immediate: true });
+
+              // melihat perubahan select2 multiple dari classroom.students_ids
+    //     watch(() => classroom.student_ids, (newVal) => {
+    //         const $el = $(selected.value);
+    //         const currentVal = $el.val() || [];
+    //         const newValStr = newVal.map(String);
+    //         if (JSON.stringify(currentVal) !== JSON.stringify(newValStr)) {
+    //             $el.val(newValStr).trigger('change');
+    //         }
+    //     });
+
+    //    onMounted(() => {
+    //         // melakakan inisialisasi dari refrensi selected ref
+    //         const $el = $(selected.value);
+
+    //         // memberi nilai dari properti yang tersedia
+    //         $el.select2({  width: '100%',   placeholder: "Pilih siswa", allowClear: true });
+
+    //         // Set nilai awal
+    //         $el.val(classroom.student_ids.map(String)).trigger('change');
+
+    //         // Saat user memilih dari Select2
+    //         $el.on('change', () => {
+    //             const selectedVal = $el.val() || [];
+    //             classroom.student_ids = selectedVal.map(Number); // Convert ke angka
+    //         });
+    //     });
 
             async function updateClassroom(classroomId) {
                 try {
@@ -60,7 +103,7 @@ export default defineComponent({
                         major_id: editclassroom.major_id,
                         teacher_id: editclassroom.teacher_id
                     }
-                    let result = axios. get(`/update-classroom-by/${sendUpdateClassroom.id}`, sendUpdateClassroom);
+                    let result = axios. get(`/update-classroom-by/${classroomId}`, sendUpdateClassroom);
                     emit('reload')
 
                 } catch (error) {
@@ -80,6 +123,7 @@ export default defineComponent({
         return {
             updateClassroom, btnEditClassroom, editclassroom, btnCancelUpdate, fieldLabels, errors,
             majors: childMajors, students: childStudents, teachers: childTeachers, classroom: childClassroom,
+            isLoading: localProcesing,
         }
     },
     template: `

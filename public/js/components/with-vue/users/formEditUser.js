@@ -36,6 +36,7 @@ export default defineComponent({
         const localErors = ref(props.displays)
         const editUser = reactive({ id: '', name: '', password: '', email: '', role_id: '' })
         const errors = reactive({ id: '', name: '', password: '', email: '', role_id: ''  })
+        const isLoading = ref(false)
 
         // melihat perubahan langsung dari props.user yang dikirim dari parent disimpan ke state localUser
         watch(() => props.userTo, (newVal) => { Object.assign(editUser, newVal) }, { immediate: true })
