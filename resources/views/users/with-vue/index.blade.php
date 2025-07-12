@@ -23,12 +23,21 @@
                     @include('users.with-vue._card-form-create')
             </div>
 
+              {{-- card-loading-table --}}
+            <div
+                v-show="currentView === 'loading-table'"
+                class="relative shadow-md sm:rounded-lg">
+               <loading-table-user />
+            </div>
+
             {{-- form create data user detail--}}
             <div
                 v-cloak
                 v-show="currentView === 'create-user-detail'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                <form-user-detail :role-id="roleId" :user-id="userId"/>
+                <form-user-detail
+                    :role-id="roleId"
+                    :user-id="userId"/>
             </div>
 
             {{-- form edit data user general--}}
@@ -41,6 +50,7 @@
                         :user-to="editData"
                         :provide-role-from="listRole"
                         :waiting-process="isLoading"
+                        :displays="errors"
                         @back-to="currentView = $event"
                         @reload="toRefreshListUser"
                     />
@@ -78,12 +88,14 @@
         import formUserDetail from '/js/components/formUserDetail.js';
         import inputPassword from '/js/components/inputPassword.js';
         import formEditUser from '/js/components/formEditUser.js'
+        import loadingTableUser from '/js/components/loadingTableUser.js';
         createApp({
             components: {
                 pagination,
                 formUserDetail,
                 inputPassword,
-                formEditUser
+                formEditUser,
+                loadingTableUser
             },
             setup() {
                 const users = ref([]);
@@ -166,7 +178,6 @@
                 async function btnEditUser(userId) {
                      try {
                         let result = await axios.get(`/edit-user-by/${userId}`);
-                        console.log('data user akan diedit: ',result)
                         editData.value = result.data.data
                         currentView.value = 'edit'
                     } catch (error) {
@@ -253,10 +264,12 @@
                 }
                 const getListUser = async (dataUser=`/list-user?page=${page.value}`)=> {
                     try {
+                        currentView.value = 'loading-table'
                         const result = await axios.get(dataUser)
-                       users.value = result.data.data?.data || []
-                       page.value = result.data.data
-                       links.value = result.data.data
+                        currentView.value = 'table'
+                        users.value = result.data.data?.data || []
+                        page.value = result.data.data
+                        links.value = result.data.data
                     } catch (error) {
                         console.log(error)
                     }

@@ -15,6 +15,10 @@ export default defineComponent({
             type: Object,
             required: true,
         },
+        displays: {
+            type: Object,
+            required: true
+        },
         provideRoleFrom: {
             type: Object,
             required: true
@@ -24,16 +28,20 @@ export default defineComponent({
             required: true
         }
     },
-    emit: ['backTo'],
+    emit: ['backTo', 'reload'],
     setup(props, {emit}){
         const localUser = ref({...props.userTo})
         const localProcesing = ref(props.waitingProcess)
         const localListRole = ref(props.provideRoleFrom)
+        const localErors = ref(props.displays)
         const editUser = reactive({ id: '', name: '', password: '', email: '', role_id: '' })
         const errors = reactive({ id: '', name: '', password: '', email: '', role_id: ''  })
 
         // melihat perubahan langsung dari props.user yang dikirim dari parent disimpan ke state localUser
         watch(() => props.userTo, (newVal) => { Object.assign(editUser, newVal) }, { immediate: true })
+
+        // melihat perubahan langsung dari props.displays yang dikirim dari parent disimpan ke state localErors
+        watch(() => props.displays, (newVal) => { Object.assign(errors, newVal) }, { immediate: true })
 
         // melihat perubahan langsung dari props.provideRoleFrom yang dikirim dari parent disimpan ke state localListRole
         watch(() => props.provideRoleFrom, (newVal) => { localListRole.value = newVal }, { immediate: true });
@@ -48,21 +56,63 @@ export default defineComponent({
                     password: editUser.password,
                     role_id: editUser.role_id
                 }
-                console.log('data yang mau diupdate', sendDataUpdate)
                 let result = await axios.put(`/update-user-by/${userId}`, sendDataUpdate)
-                localProcesing.value = true
-                result.data.data;
+                localProcesing.value = false
+                successNotification(result.data.message)
+                emit('reload')
                 emit('backTo', 'table')
             } catch (error) {
-                console.log('error', error);
+                // catch error UNPROCESABLE_CONTENT
+                if (error.response && error.response.status === 422) {
+                    localProcesing.value = false;
+                    let responseErrors = error.response.data.errors;
+                    for (let key in responseErrors) {
+                        errors[key] = responseErrors[key][0];
+                    }
+                }
+
+                // catch error CONFLICT
+                if(error.response && error.response.status === 409) {
+                    localProcesing.value = false;
+                    emit('backTo', 'table');
+                    swalNotificationWarning(error.response.data.message);
+                }else {
+                    swalInternalServerError(error.response.message);
+                }
             }
         }
 
-        function btnConfirmCancel(userId) {
-            emit('backTo', 'table')
+        function resetErrors() {
+            Object.assign(errors, {
+                name: '',
+                role_id: '',
+                password: '',
+                email: ''
+            })
         }
+
+        function btnConfirmCancel() {
+            if (isUserChanged()) {
+                cancelConfirmation('Yakin membatalkan?', (result) => {
+                    if (result.isConfirmed) {
+                        resetErrors()
+                        emit('reload')
+                        emit('backTo', 'table');
+                    }
+                });
+            } else {
+                resetErrors()
+                emit('reload')
+                emit('backTo', 'table');
+            }
+        }
+
+        function isUserChanged() {
+            return JSON.stringify(localUser.value) !== JSON.stringify(props.userTo)
+        }
+
         return {
-            userTo: localUser, listRole: localListRole, isLoading: localProcesing, editUser, errors, updateUser, btnConfirmCancel
+            userTo: localUser, listRole: localListRole, isLoading: localProcesing, editUser, errors, resetErrors, updateUser, btnConfirmCancel
         }
     },
     template: `

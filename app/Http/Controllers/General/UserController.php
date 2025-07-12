@@ -7,9 +7,10 @@ use App\Helpers\MainRole;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\{AdditionRole, Role, User, DetailUser};
-use Illuminate\Validation\{ValidationException, Rules};
+use Illuminate\Validation\{ValidationException, Rules, Rule};
 use Illuminate\Support\Facades\{Hash, Validator};
 use Illuminate\Database\Eloquent\Builder;
+use App\Exceptions\{ConflictException, NotFoundException};
 
 class UserController extends Controller
 {
@@ -86,9 +87,55 @@ class UserController extends Controller
        }
     }
 
-    public function updateUserBy($userId) {
-        // next to do continue update
-        dd($userId);
+    public function updateUserBy(Request $request, $userId) {
+        try {
+            $user = User::find($userId);
+            $validator = Validator::make($request->all(), [
+                'name' => ['required', 'string', 'max:255', 'min:3'],
+                'email' => "required|string|email|max:255|unique:users,email,{$user->id}",
+                'password' => ['required', 'string', 'min:8'],
+                'role_id' => 'required',
+            ], [
+                'name.min'  => 'Nama user minimal 3 karakter',
+                'password.string'  => 'tet',
+                'password.min'  => 'Password minimal 8 karakter',
+                'password.required'  => 'Password harus diisi..',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], HttpCode::UNPROCESABLE_CONTENT);
+            }
+
+            if($user->classroom()->exists() || $user->additionRoles()->exists()) {
+                throw new ConflictException('Jabatan User sudah terhubung ke data lain', [
+                    'user_id' => 'User sudah terhubung data lain'
+                ]);
+            }
+            $validated = $validator->validated();
+            $validated['password'] = Hash::make($validated['password']);
+            $user->update($validated);
+
+            DetailUser::create(['user_id' => $user->id]);
+
+            $dataUser = [
+                'role_id'   => $user->role_id,
+                'user_id'   => $user->id
+            ];
+
+             return response()->json([
+                'message'   => 'User updated successfully',
+                'data'      =>  $dataUser
+             ], HttpCode::OK);
+        } catch(ConflictException $exception) {
+            return $exception->render(request());
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function getProfileUserBy($userId) {

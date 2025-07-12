@@ -66,6 +66,14 @@ function swalNotificationConflict(message) {
     });
 }
 
+function swalNotificationWarning(message) {
+     Swal.fire({
+        icon: "warning",
+        title: "Oops...",
+        text: message,
+    });
+}
+
 function swalInternalServerError(message) {
 
 }
