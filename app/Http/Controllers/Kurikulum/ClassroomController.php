@@ -196,4 +196,8 @@ class ClassroomController extends Controller
             ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function updateClassroom(Request $request, $classroomId) {
+        dd($classroomId);
+    }
 }

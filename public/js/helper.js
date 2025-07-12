@@ -89,6 +89,8 @@ function tester() {
 console.log('runing');
 }
 
-function resetFields(target, defaultValues) {
-    Object.assign(target, JSON.parse(JSON.stringify(defaultValues)));
-}
+function resetFields(target) {
+    Object.assign(target, forEach( index => {
+        target[index] = ''
+    })
+)}

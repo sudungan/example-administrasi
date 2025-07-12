@@ -87,8 +87,8 @@
         import pagination from '/js/components/paginate.js';
         import formUserDetail from '/js/components/formUserDetail.js';
         import inputPassword from '/js/components/inputPassword.js';
-        import formEditUser from '/js/components/formEditUser.js'
-        import loadingTableUser from '/js/components/loadingTableUser.js';
+        import formEditUser from '/js/components/with-vue/users/formEditUser.js'
+        import loadingTableUser from '/js/components/with-vue/users/loadingTableUser.js';
         createApp({
             components: {
                 pagination,
@@ -313,7 +313,6 @@
 
                 onMounted( async ()=> {
                     await getListUser(),
-                    await getListRole(),
                     await getListRole()
                 })
                 return {

@@ -1,5 +1,5 @@
 const { defineComponent, watch, ref, onMounted, reactive  } = Vue
-import multipleSelect from "./multipleSelect.js"
+import multipleSelect from "../../multipleSelect.js"
 export default defineComponent({
     name: 'formCreateClassroom', // nama child component
     components: {
@@ -146,7 +146,7 @@ export default defineComponent({
         }
 
         return {
-            storeClassroom, closeCreateForm, isLoading, classroom,errors,
+            storeClassroom, closeCreateForm, isLoading, classroom, errors,
             resetFields, resetErrors, fieldLabels, majors: childMajors, teachers: childTeachers,
             students: childStudents, selected
         }

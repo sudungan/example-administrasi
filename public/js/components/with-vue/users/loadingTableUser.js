@@ -1,4 +1,4 @@
-import baseLoadingTable from "./baseLoadingTable.js"
+import baseLoadingTable from "../../baseLoadingTable.js"
 const { defineComponent } = Vue
 export default defineComponent({
     name: 'loadingTableUser', // nama child component

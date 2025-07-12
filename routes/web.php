@@ -24,6 +24,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('home-rome-teacher-id', [ClassroomController::class, 'getHomeRomeTeacherId'])->name('home-rome-teacher-id');
     Route::get('classroom-by/{classroomId}', [ClassroomController::class, 'getClassroomBy'])->name('classroom-by');
     Route::post('store-classroom', [ClassroomController::class, 'storeDataClassroom'])->name('store-classroom');
+    Route::put('update-classroom-by/{classroomId}', [ClassroomController::class, 'updateClassroom'])->name('');
+
     // ROUTE FOR ROLES
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('list-role', [RoleController::class, 'getListRole'])->name('list-role');
@@ -31,7 +33,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('edit-addition-role/{additionRoleId}', [RoleController::class, 'editAdditionRole'])->name('edit-addition-role');
     Route::put('update-addition-role/{additionRoleId}', [RoleController::class, 'updateAdditionRole'])->name('update-addition-role');
     Route::delete('delete-addition-role/{additionRoleId}', [RoleController::class, 'deleteAdditionRole'])->name('delete-addition-role');
-    // getListRole
 
     // ROUTE FOR MAJORS
     Route::get('majors', [MajorController::class, 'index'])->name('majors.index');
@@ -43,7 +44,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('update-major/{major}', [MajorController::class, 'updateMajor'])->name('update-major');
     Route::delete('delete-major/{major}', [MajorController::class, 'deleteMajor'])->name('delete-major');
 
-    // delete-major
     // ROUTE FOR USERS
     Route::get('list-role-to-user', [UserController::class, 'getListRole'])->name('list-role-to-user');
     Route::get('users', [UserController::class, 'index'])->name('users.index');

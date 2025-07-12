@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('Kelas')">
-    <div id="app"  wire:ignore  class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
+    <div wire:ignore  class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
          @include('partials.classrooms-heading')
-         <div class="relative h-full flex-1 overflow-hidden rounded-xl">
+         <div id="app" class="relative h-full flex-1 overflow-hidden rounded-xl">
             {{-- button add --}}
             <div class="flex gap-4">
                 <button
@@ -23,7 +23,8 @@
                            <a class="hover:underline" href="{{route('users.index')}}" wire:navigate>Check Kembali, </a><span class="font-medium font-extrabold dark:text-yellow-600 text-yellow-400">@{{ errors.student_id }}</span>
                     </div>
                 </div>
-                <div v-show="listClassroom.length == 0" class="flex items-center p-2 mb-2 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-100 w-full" role="alert">
+                <div
+                    v-show="listClassroom.length == 0" class="flex items-center p-2 mb-2 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-100 w-full" role="alert">
                     <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
                     </svg>
@@ -53,6 +54,7 @@
                 v-show="currentView === 'loading-table'"
                 class="relative shadow-md sm:rounded-lg">
                 @include('classrooms.with-vue._card-loading-table')
+
             </div>
 
             {{-- card-form-create --}}
@@ -60,7 +62,14 @@
                 v-cloak
                 v-show="currentView === 'create'"
                 class="relative sm:rounded-lg">
-                <form-create-classroom :visable-card="currentView" :majors="listMajor" :teachers="listTeacher" :students="listStudent"  @back-to="currentView = $event" @reload="handleReloadClassroom" />
+                <form-create-classroom
+                    :visable-card="currentView"
+                    :majors="listMajor"
+                    :teachers="listTeacher"
+                    :students="listStudent"
+                    @back-to="currentView = $event"
+                    @reload="handleReloadClassroom"
+                />
                 {{-- </form-create-classroom> --}}
             </div>
         </div>
@@ -68,7 +77,7 @@
      <script type="module">
         import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
         const { createApp, ref, reactive, onMounted } = Vue
-        import formCreateClassroom from '/js/components/formCreateClassroom.js';
+        import formCreateClassroom from '/js/components/with-vue/classrooms/formCreateClassroom.js';
         createApp({
             components: {
                 formCreateClassroom
@@ -85,6 +94,7 @@
                 const detailClassroom = reactive({
                     id: null, name: '', teacher_id: null, major_id: null, teacher: {}, major: {}, students: []
                 })
+                
                 const currentView = ref("loading-table")
                 const showDetailClassroom = ()=> currentView.value = 'detail'
                 const disableButton = ref(false)
@@ -120,7 +130,13 @@
                     console.log(classroomId)
                 }
 
-                function editClassroom(classroomId) {
+                function btnEditClassroom(classroomId) {
+                    try {
+                        let result = axios.get(`/classroom-by/${$classroomId}`)
+
+                    } catch (error) {
+
+                    }
                     console.log(classroomId)
                 }
 
@@ -203,7 +219,7 @@
                         listStudent.value = result.data.data
                         console.log('data students', listStudent.value)
                     } catch (error) {
-                         if (error.response && error.response.status === 404) {
+                        if (error.response && error.response.status === 404) {
                             let responseErrors = error.response.data.errors;
                             disableButton.value = true
                             for (let key in responseErrors) {
@@ -211,12 +227,17 @@
                                   generateMessageError(errors[key])
                             }
                         }
+                        if (error.response && error.response.status == 409) {
+                            disableButton.value = true
+                        }else {
+                            swalInternalServerError(error.response.data.message) // http code 500
+                        }
 
                     }
                 }
                 return {
                     currentView, disableButton, showFormCreate, listClassroom, deleteConfirmation, isLoading,
-                    showClassrrom, detailClassroom, search, searchClassroom, editClassroom, listTeacher,
+                    showClassrrom, detailClassroom, search, searchClassroom, btnEditClassroom, listTeacher,
                     closeCreateForm, homeRomeTeacherId,handleReloadClassroom, listMajor, getListMajor,
                     listStudent, getListStudent, errors,
                 }
