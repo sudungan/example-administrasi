@@ -185,8 +185,26 @@
                     }
                  }
 
-                function deleteConfirm(id) {
-                    console.log(id)
+                function deleteConfirm(userId) {
+                     confirmDelete('Yakin dihapus?', async (result)=>{
+                        if(!result.isConfirmed) {
+                            return
+                        }
+                        await swalLoading('Menghapus Data Jurusan..',async (result)=> {
+                            try {
+                                let result = await axios.delete(`/delete-user/${userId}`)
+                                successNotification(result.data.message)
+                                getListUser()
+                            } catch (error) {
+                                if (error.response && error.response.status == 409) {
+                                    currentView.value = 'table'
+                                    swalNotificationWarning(error.response.data.message)
+                                }else {
+                                    swalInternalServerError(error.response.data.message) // http code 500
+                                }
+                            }
+                        });
+                    })
                 }
 
                 const searchUser = async () => {

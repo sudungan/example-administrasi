@@ -56,7 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('list-user', [UserController::class, 'getListUser'])->name('list-user');
     Route::get('search-user', [UserController::class, 'searchUser'])->name('search-user');
     Route::get('select-addition-role/{roleId}', [UserController::class, 'getSelectedRole'])->name('select-addition-role');
-
+    Route::delete('delete-user/{userId}', [UserController::class, 'deleteUser'])->name('delete-user');
 
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');

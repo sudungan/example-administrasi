@@ -251,4 +251,27 @@ class UserController extends Controller
         }
     }
 
+    public function deleteUser($userId) {
+        try {
+            $user = User::findorFail($userId);
+            
+            if ($user->classroom()->exists() || $user->additionRoles()->exists()) {
+              throw new ConflictException('User sudah terhubung ke data lain', [
+                    'user_id' => 'User sudah terhubung data lain'
+                ], HttpCode::CONFLICT);
+            }
+
+            $user->delete();
+
+            return response()->json([
+                'message'   => 'User deleted successfully'
+            ], HttpCode::OK);
+        } catch(ConflictException $exception) {
+            return $exception->render(request());
+        }catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
 }
