@@ -39,7 +39,8 @@
 
                 <flux:navlist.group expandable :expanded="false" heading="Management Kurikulum" class="lg:grid">
                     <flux:navlist.item :href="route('majors.index')" :current="request()->routeIs('majors.index')" wire:navigate> {{__('Jurusan')}} </flux:navlist.item>
-                     <flux:navlist.item :href="route('classrooms.index')" :current="request()->routeIs('classrooms.index')" wire:navigate> {{__('Kelas')}} </flux:navlist.item>
+                    <flux:navlist.item :href="route('classrooms.index')" :current="request()->routeIs('classrooms.index')" wire:navigate> {{__('Kelas')}} </flux:navlist.item>
+                    <flux:navlist.item :href="route('subjects.index')" :current="request()->routeIs('subjects.index')" wire:navigate> {{__('Mata Pelajaran')}} </flux:navlist.item>
                     <flux:navlist.item href="#">Batasan Pelajaran</flux:navlist.item>
                     <flux:navlist.item href="#">Batasan Guru</flux:navlist.item>
                 </flux:navlist.group>

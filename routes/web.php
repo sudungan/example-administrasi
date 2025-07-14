@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\General\{RoleController, UserController};
-use App\Http\Controllers\Kurikulum\{MajorController, ClassroomController};
+use App\Http\Controllers\Kurikulum\{
+    MajorController, ClassroomController, SubjectController
+};
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -14,6 +16,10 @@ Route::view('dashboard', 'dashboard')
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
+    // ROUTE FOR SUBJECT
+    Route::get('subjects', [SubjectController::class, 'index'])->name('subjects.index');
+    Route::post('store-subject', [SubjectController::class, 'storeSubject'])->name('store-subject');
+    Route::get('list-subject', [SubjectController::class, 'getListSubject'])->name('list-subject');
 
     // ROUTE FOR CLASSROOMS
     Route::get('classrooms', [ClassroomController::class, 'index'])->name('classrooms.index');
