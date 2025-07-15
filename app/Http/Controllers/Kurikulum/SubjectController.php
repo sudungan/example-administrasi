@@ -28,6 +28,6 @@ class SubjectController extends Controller
     }
 
     public function storeSubject(Request $request) {
-        dd($request);
+        dd($request->all());
     }
 }

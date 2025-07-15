@@ -17,6 +17,28 @@ export default function subjectApp () {
             const listTeacher = ref([])
             const listClassroom = ref([])
             const showFormCreate =()=> currentView.value = 'create'
+            const baseColour = ref([
+                { id:'1', item:'blue'}, { id:'2', item:'gray'}, { id:'3', item:'red'}, { id:'4', item:'green'}, { id:'5', item:'yellow'},
+                { id:'6', item:'indigo'}, { id:'7', item:'purple'}, { id:'8', item:'pink'}, { id:'9', item:'lime'}, { id:'10', item:'indigo'},
+                { id:'11', item:'rose'}, { id:'12', item:'cyan'}, { id:'13', item:'emerald'}, { id:'14', item:'violet'}, { id:'15', item:'sky'},
+            ])
+
+            const baseCssColour = {
+                blue: '#3b82f6',
+                gray: '#6b7280',
+                red: '#ef4444',
+                green: '#10b981',
+                yellow: '#facc15',
+                indigo: '#6366f1',
+                purple: '#8b5cf6',
+                pink: '#ec4899',
+                lime: '#84cc16',
+                rose: '#f43f5e',
+                cyan: '#06b6d4',
+                emerald: '#10b981',
+                violet: '#8b5cf6',
+                sky: '#0ea5e9'
+            }
 
             onMounted(async ()=>{
                 await getListSubject()
@@ -57,16 +79,17 @@ export default function subjectApp () {
             }
             return {
                 message, currentView, showFormCreate, listSubject, getListSubject, listTeacher, listClassroom,
-                getListClassroom, getListTeacher
+                getListClassroom, getListTeacher, baseColour, baseCssColour
              }
         },
         template: `
             <div class="flex gap-2">
+
                 <button
                     v-show="currentView === 'table'"
                     @click="showFormCreate"
                     type="button"
-                    class="px-3 py-2 flex w-auto text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    class="text-white mb-2 inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center text-xs dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
                     Mata Pelajaran
                 </button>
@@ -104,6 +127,9 @@ export default function subjectApp () {
 
                <form-create-subject
                     :visable-card="currentView"
+                    :teachers="listTeacher"
+                    :classrooms="listClassroom"
+                    :provide-colour="baseColour"
                     @back-to="currentView = $event"
                />
             </div>
