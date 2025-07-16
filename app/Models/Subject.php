@@ -8,7 +8,7 @@ class Subject extends Model
 {
     protected $table = 'subjects';
 
-    protected $fillable = ['user_id', 'classroom_id', 'name', 'total_jp', 'colour'];
+    protected $fillable = ['name', 'user_id', 'classroom_id', 'jumlah_jp', 'colour'];
 
     public function classroom() {
         return $this->belongsTo(Classroom::class, 'classroom_id', 'id');

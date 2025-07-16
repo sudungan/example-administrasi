@@ -1,4 +1,4 @@
-const { defineComponent, ref, watch } = Vue
+const { defineComponent, ref, watch, computed } = Vue
 export default defineComponent({
     name: 'dataTableSubject', // nama child component
     props: {
@@ -6,10 +6,6 @@ export default defineComponent({
             type: Array,
             required: true
         },
-        // error: {
-        //     type: String,
-        //     default: ''
-        // }
         visableCard: {
             type: String,
             required: true
@@ -17,10 +13,29 @@ export default defineComponent({
     },
     setup(props) {
         const localListSubject = ref([])
+        const colorMap = {
+            blue: 'bg-blue-100 text-blue-800 border border-blue-400 dark:text-blue-400 dark:bg-blue-900',
+            gray: 'bg-gray-100 text-gray-800 border border-gray-400 dark:text-gray-400 dark:bg-gray-900',
+            red: 'bg-red-100 text-red-800 border border-red-400 dark:text-red-400 dark:bg-red-900',
+            green: 'bg-green-100 text-green-800 border border-green-400 dark:text-green-400 dark:bg-green-900',
+            yellow: 'bg-yellow-100 text-yellow-800 border border-yellow-400 dark:text-yellow-400 dark:bg-yellow-900',
+            indigo: 'bg-indigo-100 text-indigo-800 border border-indigo-400 dark:text-indigo-400 dark:bg-indigo-900',
+            purple: 'bg-purple-100 text-purple-800 border border-purple-400 dark:text-purple-400 dark:bg-purple-900',
+            pink: 'bg-pink-100 text-pink-800 border border-pink-400 dark:text-pink-400 dark:bg-pink-900',
+            lime: 'bg-lime-100 text-lime-800 border border-lime-400 dark:text-lime-400 dark:bg-lime-900',
+            rose: 'bg-rose-100 text-rose-800 border border-rose-400 dark:text-rose-400 dark:bg-rose-900',
+            cyan: 'bg-cyan-100 text-cyan-800 border border-cyan-400 dark:text-cyan-400 dark:bg-cyan-900',
+            emerald: 'bg-emerald-100 text-emerald-800 border border-emerald-400 dark:text-emerald-400 dark:bg-emerald-900',
+            violet: 'bg-violet-100 text-violet-800 border border-violet-400 dark:text-violet-400 dark:bg-violet-900',
+            sky: 'bg-sky-100 text-sky-800 border border-sky-400 dark:text-sky-400 dark:bg-sky-900'
+        }
+        function getBadgeClass(colour) {
+            return colorMap[colour] || 'bg-gray-100 text-gray-800 border border-gray-400'
+        }
 
         watch(() => props.data, (newVal) => { localListSubject.value = [...newVal] }, { immediate: true });
         return {
-            localListSubject
+            localListSubject, getBadgeClass
         }
     },
     template: `
@@ -48,16 +63,22 @@ export default defineComponent({
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" class="px-6 py-3">
-                            Product name
+                           #
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Color
+                            Nama Pelajaran
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Category
+                            Guru
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Price
+                            Kelas
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                           Jumlah JP
+                        </th>
+                         <th scope="col" class="px-6 py-3">
+                           Warna
                         </th>
                         <th scope="col" class="px-6 py-3">
                             Action
@@ -65,23 +86,33 @@ export default defineComponent({
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            Apple MacBook Pro 17"
-                        </th>
-                        <td class="px-6 py-4">
-                            Silver
-                        </td>
-                        <td class="px-6 py-4">
-                            Laptop
-                        </td>
-                        <td class="px-6 py-4">
-                            $2999
-                        </td>
-                        <td class="px-6 py-4">
-                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                        </td>
-                    </tr>
+                    <template v-if="data.length > 0">
+                        <tr v-for="(subject , index) in data" :key="subject.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ index + 1 }}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{ subject.name }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ subject.teacher?.name }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ subject.classroom?.name }}-{{subject.classroom?.major.initial}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ subject.jumlah_jp }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <span :class="getBadgeClass(subject.colour)" class="text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm">
+                                    {{ subject.colour }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                            </td>
+                        </tr>
+                     </template>
                 </tbody>
             </table>
         </div>

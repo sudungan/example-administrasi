@@ -58,6 +58,10 @@ export default function subjectApp () {
                 }
             }
 
+            async function refreshListSubject() {
+                getListSubject()
+            }
+
             async function getListTeacher() {
                 try {
                     let result = await axios.get('list-teacher');
@@ -79,7 +83,7 @@ export default function subjectApp () {
             }
             return {
                 message, currentView, showFormCreate, listSubject, getListSubject, listTeacher, listClassroom,
-                getListClassroom, getListTeacher, baseColour, baseCssColour
+                getListClassroom, getListTeacher, baseColour, refreshListSubject, baseCssColour
              }
         },
         template: `
@@ -116,7 +120,6 @@ export default function subjectApp () {
                <data-table-subject
                     :visable-card="currentView"
                     :data="listSubject"
-                    @backTo="currentView = $event"
                 />
             </div>
 
@@ -130,6 +133,7 @@ export default function subjectApp () {
                     :teachers="listTeacher"
                     :classrooms="listClassroom"
                     :provide-colour="baseColour"
+                    @reload="refreshListSubject"
                     @back-to="currentView = $event"
                />
             </div>

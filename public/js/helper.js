@@ -90,7 +90,13 @@ console.log('runing');
 }
 
 function resetFields(target) {
-    Object.assign(target, forEach( index => {
-        target[index] = ''
-    })
-)}
+    // Object.assign(target, forEach(index => {
+    //     target[index] = ''
+    // })
+
+
+// )
+ Object.keys(target).forEach(key => {
+        target[key] = '';
+    });
+}

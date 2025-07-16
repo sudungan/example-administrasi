@@ -19,10 +19,11 @@ export default defineComponent({
             required: true
         }
     },
-    emit: ['backTo'],
+    emit: ['backTo', 'reload'],
     setup(props, {emit}) {
-        const subject = reactive({ name: '', teacher_id: '', classroom_id: '', colour: '', jumlah_jp: '' })
-        const errors = reactive({ name: '', teacher_id: '', classroom_id: '', colour: '', jumlah_jp: '' })
+        const subject = reactive({ name: '', user_id: '', classroom_id: '', colour: '', jumlah_jp: '' })
+        const fieldLabels = { name: 'Nama', user_id: 'Guru', classroom_id: 'Kelas', colour: 'Warna', jumlah_jp: 'Jumlah Jam Pelajaran' }
+        const errors = reactive({ name: '', user_id: '', classroom_id: '', colour: '', jumlah_jp: '' })
         const localTeacher = ref(props.teachers)
         const localClassroom = ref(props.classrooms)
         const localColours = ref(props.provideColour)
@@ -33,7 +34,7 @@ export default defineComponent({
             }
             let color = subject.colour
             return [
-                `bg-${color}-100`, `dark:bg-${color}-900`, `dark:text-${color}-300`, `text-${color}-800`,  `border`,  `border-${color}-400`,  'text-xs',  'font-medium', 'me-2',  'px-2.5', 'py-0.5','rounded-sm'
+                `bg-${color}-100`, `dark:bg-${color}-900`, `dark:text-${color}-300`, `text-${color}-800`,  `border`,  `border-${color}-400`,  'text-xs',  'font-medium', 'mb-2', 'me-2',  'px-2.5', 'py-0.5','rounded-sm'
             ]
         })
 
@@ -63,25 +64,47 @@ export default defineComponent({
         // melihat perubahan langsung dari props.classrooms yang dikirim dari parent disimpan ke state localColours
         watch(() => props.provideColour, (newVal) => { localColours.value = newVal }, { immediate: true });
         const closeCreateForm =()=> {
+            resetFields(subject);
+            resetFields(errors);
             emit('backTo', 'table')
         }
 
         async function storeSubject() {
             try {
+                let isValid = true;
+                for (let key in subject) {
+                    if (!subject[key].toString().trim()) {
+                        let label  = fieldLabels[key] || key;
+                            errors[key] = `${label} tidak boleh kosong`;
+                            isValid = false;
+                    }else {
+                        errors[key] = '';
+                    }
+                }
+
+                if (!isValid) return // jika tidak valid / tidak terisi beberapa field akan kembali
+
                 let sendDataSubject = {
                     name: subject.name,
-                    teacher_id: subject.teacher_id,
+                    user_id: subject.user_id,
                     classroom_id: subject.classroom_id,
                     colour: subject.colour,
                     jumlah_jp: subject.jumlah_jp
                 }
                     isLoading.value = true;
+                    console.log('data subject', sendDataSubject)
                 let result = await axios.post(`store-subject`, sendDataSubject)
                     isLoading.value = false;
+                    resetFields(subject);
+                    resetFields(errors);
+                    successNotification(result.data.message)
+                    emit('reload')
+                    emit('backTo', 'table')
             } catch (error) {
-
+                console.log('error dari create subject', error)
             }
         }
+
         return {
             subject, closeCreateForm, storeSubject, errors, isLoading, teachers: localTeacher, classrooms: localClassroom,
             provideColour: localColours, badgeClass, baseCssColour
@@ -113,12 +136,12 @@ export default defineComponent({
                             </div>
 
                             <div class="col-span-2 sm:col-span-1">
-                                <label for="teacher_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Guru</label>
-                                <select v-model="subject.teacher_id" id="teacher_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Guru</label>
+                                <select v-model="subject.user_id" id="user_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option value="">Select guru</option>
                                     <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">{{teacher.name}}</option>
                                 </select>
-                                <p v-if="errors.teacher_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.teacher_id }}</p>
+                                <p v-if="errors.user_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.user_id }}</p>
                             </div>
 
                             <div class="col-span-2 sm:col-span-1">
@@ -129,9 +152,9 @@ export default defineComponent({
                                         v-for="classroom in classrooms"
                                         :key="classroom.id"
                                         :value="classroom.id
-                                        ">{{classroom.name}}</option>
+                                        ">{{classroom.name}}-{{classroom.major.initial}}</option>
                                 </select>
-                                <p v-if="errors.classroom_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.teacher_id }}</p>
+                                <p v-if="errors.classroom_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.user_id }}</p>
                             </div>
 
                             <div class="col-span-2 sm:col-span-1">
@@ -162,6 +185,7 @@ export default defineComponent({
                                     {{colour.item}}
                                     </option>
                                 </select>
+                                <p v-if="errors.colour" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.colour }}</p>
 
                                 <span v-if="subject.colour" :class="badgeClass">
                                     {{ subject.colour }}
