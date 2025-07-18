@@ -88,7 +88,6 @@ export default function subjectApp () {
         },
         template: `
             <div class="flex gap-2">
-
                 <button
                     v-show="currentView === 'table'"
                     @click="showFormCreate"
