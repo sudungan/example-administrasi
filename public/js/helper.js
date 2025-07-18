@@ -78,25 +78,18 @@ function swalInternalServerError(message) {
 
 }
 
-function generateMessageError (text, errors, key) {
-    let word = text.split(" ");
-     errors[key] = word.slice(1, -2).join(" ");
-    console.log('error', errors[key])
-
-};
+// function generateMessageError (text, errors, key) {
+//     let word = text.split(" ");
+//      errors[key] = word.slice(1, -2).join(" ");
+//     console.log('error', errors[key])
+// };
 
 function tester() {
 console.log('runing');
 }
 
 function resetFields(target) {
-    // Object.assign(target, forEach(index => {
-    //     target[index] = ''
-    // })
-
-
-// )
- Object.keys(target).forEach(key => {
+    Object.keys(target).forEach(key => {
         target[key] = '';
     });
 }

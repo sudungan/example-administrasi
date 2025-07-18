@@ -102,6 +102,13 @@ export default defineComponent({
                     emit('backTo', 'table')
             } catch (error) {
                 console.log('error dari create subject', error)
+                if (error.response && error.response.status === 422) {
+                    let responseErrors = error.response.data.errors;
+                    for (let key in responseErrors) {
+                        errors[key] = responseErrors[key][0];
+                    }
+                }
+                 isLoading.value = false;
             }
         }
 
@@ -223,5 +230,4 @@ export default defineComponent({
             </div>
         </div>
     `
-
 })

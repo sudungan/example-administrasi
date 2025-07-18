@@ -6,6 +6,7 @@ use App\Helpers\HttpCode;
 use App\Http\Controllers\Controller;
 use App\Models\Classroom;
 use App\Models\Subject;
+use App\Models\TeacherColour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -34,13 +35,14 @@ class SubjectController extends Controller
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required',
                 'name' => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/'],
-                'user_id'   => ['required'],
+                'user_id'   => ['required', 'unique:' . Subject::class],
                 'classroom_id'  => 'required',
                 'jumlah_jp'  => 'required',
                 'colour'    => 'required'
                 ], [
                 'name.min'  => 'Nama user minimal 3 karakter',
                 'name.regex'   => 'Nama Jurusan hanya boleh berisi huruf dan spasi.',
+                'user_id.unique'  => 'Nama guru sudah digunakan dalam pelajaran ini..',
                 'user_id.required'=> 'Nama Kepala Jurusan wajib dipilih',
                 'classroom_id.required'   => 'Kelas harus dipilih',
                 'jumlah_jp.required' => 'Total Jam Pelajaran wajib dipilih..',
@@ -56,12 +58,19 @@ class SubjectController extends Controller
 
             $validated = $validator->validate();
 
+
             $subject = Subject::create([
                 'name'          =>  $validated['name'],
                 'user_id'       =>  $validated['user_id'],
                 'classroom_id'  =>  $validated['classroom_id'],
                 'colour'        =>  $validated['colour'],
                 'jumlah_jp'     =>  $validated['jumlah_jp']
+            ]);
+
+            TeacherColour::create([
+                'user_id'   =>$validated['user_id'],
+                'subject_id'    => $subject->id,
+                'colour'        => $validated['colour']
             ]);
 
             return response()->json(

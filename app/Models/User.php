@@ -71,4 +71,8 @@ class User extends Authenticatable
     public function classroom() {
         return $this->belongsTo(Classroom::class, 'classroom_id', 'id');
     }
+
+    public function subjectColour() {
+        return $this->hasOne(TeacherColour::class);
+    }
 }

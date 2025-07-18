@@ -66,10 +66,10 @@ export default defineComponent({
                            #
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Nama Pelajaran
+                            Nama Guru
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Guru
+                            Nama Pelajaran
                         </th>
                         <th scope="col" class="px-6 py-3">
                             Kelas
