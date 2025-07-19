@@ -62,6 +62,10 @@ export default function stateClassroom() {
                 }
             }
 
+            async function refreshListClassrooom() {
+                await getListClassroom()
+            }
+
             async function getListStudent() {
                 try {
                     let result = await axios.get('/list-student')
@@ -79,7 +83,8 @@ export default function stateClassroom() {
                     if (error.response && error.response.status == 409) {
                         disableButton.value = true
                     }else {
-                        swalInternalServerError(error.response.data?.message) // http code 500
+                        console.log('error terakhir:', error)
+                        // swalInternalServerError(error.response.data?.message) // http code 500
                     }
 
                 }
@@ -88,7 +93,7 @@ export default function stateClassroom() {
             return {
                 listClassroom, listMajor, listTeacher, editClassroom, currentView, disableButton,
                 listStudent, showFormCreate, homeRomeTeacherId, getListClassroom, getListMajor, getListTecher,
-                getListStudent,
+                getListStudent, refreshListClassrooom, isLoading,
             }
         },
         template: `
@@ -130,7 +135,21 @@ export default function stateClassroom() {
         </div>
 
         <!-- komponent untuk form-create-classroom -->
-
+        <div
+            v-cloak
+            v-show="currentView === 'create'"
+            class="relative sm:rounded-lg">
+                <form-create-classroom
+                    :visable-card="currentView"
+                    :majors="listMajor"
+                    :teachers="listTeacher"
+                    :waiting-process="isLoading"
+                    :students="listStudent"
+                    :classroom="editClassroom"
+                    @back-to="currentView = $event"
+                    @reload="refreshListClassrooom"
+                />
+        </div>
         <!-- komponent untuk form-edit-classroom -->
 
         <!-- komponent untuk form-create-subject -->

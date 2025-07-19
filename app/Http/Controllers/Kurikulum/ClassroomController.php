@@ -79,7 +79,7 @@ class ClassroomController extends Controller
 
     public function getListStudent() {
         try {
-            $listStudent = User::select('id', 'name')->where('role_id', MainRole::item['siswa'])->doesntHave('classroom')->get();
+            $listStudent = User::select('id', 'name')->where('role_id', MainRole::item['siswa'])->with('classroom')->get();
 
             if ($listStudent->isEmpty()) {
                throw new NotFoundException(
@@ -149,11 +149,12 @@ class ClassroomController extends Controller
 
     public function storeDataClassroom(Request $request) {
         try {
-             $validator = Validator::make($request->all(), [
+            $validator = Validator::make($request->all(), [
                 'name'                => ['required', 'max:255'],
                 'teacher_id'          => 'required',
                 'student_ids.*'       => 'required|integer|exists:users,id',
                 'student_ids'         => 'required|array|min:1',
+                'student_ids.*'       => 'required|integer|exists:classrooms,id',
                 'major_id'              => 'required'
             ], [
                 'name.unique'               => 'Nama Kelas sudah digunakan..',
@@ -168,7 +169,18 @@ class ClassroomController extends Controller
                 'major_id.required'         => 'Nama Jurusan Harus dipilih..',
             ]);
 
+            $validator->after(function ($validator) use ($request) {
+                $students = User::with('classroom')->whereIn('id', $request->get('student_ids'))->get();
 
+                foreach ($students as $student) {
+                    if ($student->classroom_id !== null) {
+                        $validator->errors()->add(
+                            'student_ids',
+                            "{$student->name} sudah tergabung dalam kelas {$student->classroom->name}."
+                        );
+                    }
+                }
+            });
             if ($validator->fails()) {
                 return response()->json([
                     'message' => 'Validation failed',
