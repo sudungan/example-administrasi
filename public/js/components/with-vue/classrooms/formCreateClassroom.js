@@ -103,12 +103,9 @@ export default defineComponent({
                     major_id: classroom.major_id
                 }
                 childIsLoading.value = true;
-                errors.value = {}
                 let result = await axios.post('/store-classroom', sendDataClassroom)
                 resetFields(classroom)
-
                 successNotification(result.data.message)
-
                 childIsLoading.value = false;
                 emit('reload')
                 emit('backTo', 'table')
@@ -116,6 +113,7 @@ export default defineComponent({
                if (error.response?.status === 422) {
                     let responseErrors = error.response.data.errors;
                     for (let key in responseErrors) {
+                        console.log('errors', responseErrors[key])
                          errors.value[key] = responseErrors[key].join('<br>');
                     }
                }

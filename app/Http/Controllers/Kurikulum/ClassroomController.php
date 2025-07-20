@@ -151,7 +151,7 @@ class ClassroomController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name'                => ['required', 'max:255'],
-                'teacher_id'          => 'required',
+                'teacher_id'          => 'required|unique:classrooms,id',
                 'student_ids.*'       => 'required|integer|exists:users,id',
                 'student_ids'         => 'required|array|min:1',
                 'student_ids.*'       => 'required|integer|exists:classrooms,id',
@@ -169,6 +169,7 @@ class ClassroomController extends Controller
                 'major_id.required'         => 'Nama Jurusan Harus dipilih..',
             ]);
 
+            // mengecek user student yang sudah terdaftar dikelas lain
             $validator->after(function ($validator) use ($request) {
                 $students = User::with('classroom')->whereIn('id', $request->get('student_ids'))->get();
 
@@ -181,6 +182,16 @@ class ClassroomController extends Controller
                     }
                 }
             });
+
+            // mengecek user guru yang sudah terdaftar dikelas lain sebagai wali kelas
+             $validator->after(function ($validator) use ($request) {
+                $classroom = Classroom::where('teacher_id', $request->get('teacher_id'))->first();
+                $validator->errors()->add(
+                    'teacher_id',
+                    "{$classroom->teacher->name} sudah menjadi wali kelas {$classroom->name}."
+                );
+            });
+
             if ($validator->fails()) {
                 return response()->json([
                     'message' => 'Validation failed',

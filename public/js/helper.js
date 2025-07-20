@@ -100,7 +100,4 @@ function resetFields(target) {
             target[key] = '';
         }
     });
-    // Object.keys(target).forEach(key => {
-    //     target[key] = '';
-    // });
 }
