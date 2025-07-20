@@ -89,7 +89,18 @@ console.log('runing');
 }
 
 function resetFields(target) {
-    Object.keys(target).forEach(key => {
-        target[key] = '';
+     Object.keys(target).forEach(key => {
+        const value = target[key];
+
+        if (Array.isArray(value)) {
+            target[key] = [];
+        } else if (typeof value === 'object' && value !== null) {
+            target[key] = {};
+        } else {
+            target[key] = '';
+        }
     });
+    // Object.keys(target).forEach(key => {
+    //     target[key] = '';
+    // });
 }

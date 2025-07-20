@@ -30,7 +30,7 @@ export default defineComponent({
     emits: ['backTo', 'reload'],
     setup(props, {emit}) {
         const classroom = reactive({  name: '',  teacher_id: '',  student_ids: [],  major_id: ''  })
-        const errors = ref({})
+        const errors = reactive({})
         const childMajors = ref(props.majors)
         const childTeachers = ref(props.teachers)
         const childStudents = ref(props.students)
@@ -86,7 +86,6 @@ export default defineComponent({
                     const isEmpty = (Array.isArray(value) && value.length === 0) || (!Array.isArray(value) && !value.toString().trim());
 
                     if (isEmpty) {
-                        console.log('ada data kosong')
                         const label = fieldLabels[key] || key;
                         errors[key] = `${label} tidak boleh kosong`;
                         isValid = false;
@@ -106,7 +105,7 @@ export default defineComponent({
                 childIsLoading.value = true;
                 errors.value = {}
                 let result = await axios.post('/store-classroom', sendDataClassroom)
-                resetFields()
+                resetFields(classroom)
 
                 successNotification(result.data.message)
 
@@ -124,19 +123,6 @@ export default defineComponent({
             }
         }
 
-        function resetFields() {
-            Object.assign(classroom, {
-                name: '',
-                teacher_id: '',
-                major_id: '',
-                student_ids: []
-            });
-        }
-
-        function resetErrors() {
-            errors.value = {}
-        }
-
         const closeCreateForm =()=> {
             let isAnyFilled = Object.values(classroom).some(value => {
                 if (Array.isArray(value)) return value.length > 0
@@ -145,20 +131,23 @@ export default defineComponent({
 
             if (isAnyFilled) {
                 cancelConfirmation('Yakin membatalkan?', (result)=> {
+                    console.log('confirmation:', result.isConfirmed)
                     if (result.isConfirmed) {
-                        resetFields();
-                        resetErrors()
+                        resetFields(classroom); // reset field untuk object classroom
+                        resetFields(errors); // reset field untuk object errors
                         emit('backTo', 'table')
                     }
                 });
+            }else {
+                resetFields(classroom);
+                resetFields(errors);
+                emit('backTo', 'table')
             }
-            resetErrors()
-            emit('backTo', 'table')
         }
 
         return {
             storeClassroom, closeCreateForm, classroom, errors,
-            resetFields, resetErrors, fieldLabels, majors: childMajors, teachers: childTeachers,
+            fieldLabels, majors: childMajors, teachers: childTeachers,
             students: childStudents, selected, waitingProcess: childIsLoading
         }
     },
