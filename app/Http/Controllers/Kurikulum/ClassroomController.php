@@ -150,46 +150,58 @@ class ClassroomController extends Controller
     public function storeDataClassroom(Request $request) {
         try {
             $validator = Validator::make($request->all(), [
-                'name'                => ['required', 'max:255'],
-                'teacher_id'          => 'required|unique:classrooms,id',
+                'name'                => 'required', 'max:255',
+                'teacher_id'          => ['required'],
                 'student_ids.*'       => 'required|integer|exists:users,id',
                 'student_ids'         => 'required|array|min:1',
-                'student_ids.*'       => 'required|integer|exists:classrooms,id',
-                'major_id'              => 'required'
+                'student_ids.*'       => 'required|integer',
+                'major_id'            => 'required'
             ], [
-                'name.unique'               => 'Nama Kelas sudah digunakan..',
                 'name.required'             => 'Nama Kelas harus diisi..',
                 'teacher_id.required'       => 'Nama Guru wajib dipilih',
-                'teacher_id.unique'         => 'Nama Guru wajib dipakai',
                 'student_ids.*.required'    => 'Nama Siswa Harus dipilih..',
                 'student_ids.min'           => 'Minimal satu siswa harus dipilih.',
                 'student_ids.required'      => 'Minimal satu siswa harus dipilih.',
                 'student_ids.*.integer'     => 'ID siswa tidak valid.',
-                'student_ids.*.exists'      => 'Salah satu siswa tidak ditemukan.',
                 'major_id.required'         => 'Nama Jurusan Harus dipilih..',
             ]);
 
             // mengecek user student yang sudah terdaftar dikelas lain
             $validator->after(function ($validator) use ($request) {
                 $students = User::with('classroom')->whereIn('id', $request->get('student_ids'))->get();
+                $major = Major::where('id', $request->get('major_id'))->first();
 
                 foreach ($students as $student) {
                     if ($student->classroom_id !== null) {
                         $validator->errors()->add(
                             'student_ids',
-                            "{$student->name} sudah tergabung dalam kelas {$student->classroom->name}."
+                            "{$student->name} sudah bergabung dikelas {$student->classroom->name}-{$major->initial}."
                         );
                     }
                 }
             });
 
+
             // mengecek user guru yang sudah terdaftar dikelas lain sebagai wali kelas
-             $validator->after(function ($validator) use ($request) {
+            $validator->after(function ($validator) use ($request) {
                 $classroom = Classroom::where('teacher_id', $request->get('teacher_id'))->first();
-                $validator->errors()->add(
-                    'teacher_id',
-                    "{$classroom->teacher->name} sudah menjadi wali kelas {$classroom->name}."
-                );
+                if ($classroom) {
+                    $validator->errors()->add(
+                        'teacher_id',
+                        "{$classroom->teacher->name} sudah menjadi wali kelas {$classroom->name}-{$classroom->major->initial}."
+                    );
+                }
+            });
+
+            // mengecek nama classroom yang terdaftar dijurusan
+            $validator->after(function ($validator) use ($request) {
+                $classroom = Classroom::where('name', $request->get('name'))->where('major_id', $request->get('major_id'))->first();
+                if ($classroom) {
+                    $validator->errors()->add(
+                        'name',
+                        "Nama Kelas {$classroom->name} sudah ada di jurusan {$classroom->major->initial}."
+                    );
+                }
             });
 
             if ($validator->fails()) {

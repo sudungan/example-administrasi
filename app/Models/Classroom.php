@@ -9,7 +9,7 @@ class Classroom extends Model
     protected $fillable = ['name', 'teacher_id', 'major_id'];
 
     public function teacher() { // relasi untuk menjadikan wali kelas
-        return $this->belongsTo(User::class, 'teacher_id', 'id');
+        return $this->belongsTo(User::class);
     }
 
     public function major() {

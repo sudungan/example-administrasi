@@ -113,11 +113,25 @@ export default defineComponent({
                if (error.response?.status === 422) {
                     let responseErrors = error.response.data.errors;
                     for (let key in responseErrors) {
-                        console.log('errors', responseErrors[key])
-                         errors.value[key] = responseErrors[key].join('<br>');
+                        if(key == 'name') {
+                            errors[key] = responseErrors[key][0]
+                            childIsLoading.value = false;
+                        }
+
+                        if (key ==  'teacher_id') {
+                            errors[key] = responseErrors[key][0];
+                            childIsLoading.value = false;
+                        }
+
+                        if (key == 'student_ids') {
+                            errors[key] = responseErrors[key].join('<br>');
+                            childIsLoading.value = false;
+                        }
                     }
+               }else {
+                   childIsLoading.value = false;
+                console.log('error terakhir:', error)
                }
-                childIsLoading.value = false;
             }
         }
 
