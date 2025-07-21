@@ -4,6 +4,7 @@ import formCreateClassroom from './formCreateClassroom.js';
 import loadingTableClassroom from './loadingTableClassroom.js';
 import formEditClassroom from './formEditClassroom.js';
 import dataTableClassroom from './dataTableClassroom.js';
+import cardDetailClassroom from './cardDetailClassroom.js'
 
 export default function stateClassroom() {
     createApp({
@@ -11,7 +12,8 @@ export default function stateClassroom() {
             loadingTableClassroom,
             formCreateClassroom,
             formEditClassroom,
-            dataTableClassroom
+            dataTableClassroom,
+            cardDetailClassroom
         },
         setup() {
             const listClassroom = ref([])
@@ -90,10 +92,27 @@ export default function stateClassroom() {
                 }
             }
 
+            async function getDetailClassroom(classroomId) {
+                try {
+                    const result = await axios.get(`/detail-classroom-by/${classroomId}`)
+                        let dataClassroom = result.data.data
+                        detailClassroom.id= dataClassroom.id
+                        detailClassroom.name = dataClassroom.name
+                        detailClassroom.teacher_id = dataClassroom.teacher_id
+                        detailClassroom.major_id = dataClassroom.major_id
+                        detailClassroom.teacher = dataClassroom.teacher
+                        detailClassroom.major = dataClassroom.major
+                        detailClassroom.students = dataClassroom.students
+                        currentView.value = 'detail'
+                } catch (error) {
+                    console.log('error dari getDetail classroom: ', error)
+                }
+            }
+
             return {
                 listClassroom, listMajor, listTeacher, editClassroom, currentView, disableButton,
                 listStudent, showFormCreate, homeRomeTeacherId, getListClassroom, getListMajor, getListTecher,
-                getListStudent, refreshListClassrooom, isLoading,
+                getListStudent, refreshListClassrooom, isLoading, detailClassroom, getDetailClassroom,
             }
         },
         template: `
@@ -131,6 +150,7 @@ export default function stateClassroom() {
             class="relative shadow-md sm:rounded-lg">
             <data-table-classroom
                 :dataProvide="listClassroom"
+                @show="getDetailClassroom"
             />
         </div>
 
@@ -150,7 +170,12 @@ export default function stateClassroom() {
                     @reload="refreshListClassrooom"
                 />
         </div>
-        <!-- komponent untuk form-edit-classroom -->
+        <!-- komponent untuk card-detail-classroom -->
+            <div
+                v-show="currentView === 'detail'"
+                class="relative shadow-md sm:rounded-lg">
+                <card-detail-classroom :dataProvide="detailClassroom" />
+            </div>
 
         <!-- komponent untuk form-create-subject -->
 

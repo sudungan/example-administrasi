@@ -129,7 +129,7 @@ export default defineComponent({
                         }
                     }
                }else {
-                   childIsLoading.value = false;
+                childIsLoading.value = false;
                 console.log('error terakhir:', error)
                }
             }
@@ -143,7 +143,6 @@ export default defineComponent({
 
             if (isAnyFilled) {
                 cancelConfirmation('Yakin membatalkan?', (result)=> {
-                    console.log('confirmation:', result.isConfirmed)
                     if (result.isConfirmed) {
                         resetFields(classroom); // reset field untuk object classroom
                         resetFields(errors); // reset field untuk object errors

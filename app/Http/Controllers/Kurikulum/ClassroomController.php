@@ -131,7 +131,7 @@ class ClassroomController extends Controller
         }
     }
 
-    public function getClassroomBy($classroomId) {
+    public function getDetailClassroomBy($classroomId) {
         try {
             $listClassroom = Classroom::with(['major', 'teacher', 'students'])->findOrFail($classroomId);
 

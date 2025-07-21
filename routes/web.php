@@ -28,7 +28,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('list-student', [ClassroomController::class, 'getListStudent'])->name('list-student');
     Route::get('list-major', [ClassroomController::class, 'getListMajor'])->name('list-major');
     Route::get('home-rome-teacher-id', [ClassroomController::class, 'getHomeRomeTeacherId'])->name('home-rome-teacher-id');
-    Route::get('classroom-by/{classroomId}', [ClassroomController::class, 'getClassroomBy'])->name('classroom-by');
+    Route::get('detail-classroom-by/{classroomId}', [ClassroomController::class, 'getDetailClassroomBy'])->name('detail-classroom-by');
     Route::get('edit-classroom-by/{classroomId}', [ClassroomController::class, 'getEditClassroomBy'])->name('edit-classroom-by');
     Route::post('store-classroom', [ClassroomController::class, 'storeDataClassroom'])->name('store-classroom');
     Route::put('update-classroom-by/{classroomId}', [ClassroomController::class, 'updateClassroom'])->name('');
