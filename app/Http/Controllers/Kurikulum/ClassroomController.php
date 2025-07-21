@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Kurikulum;
 
-use App\Exceptions\NotFoundException;
 use App\Helpers\{HttpCode, MainRole};
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\{AdditionRole, Classroom, Major, User, };
+use App\Exceptions\{ConflictException, NotFoundException};
 use Illuminate\Support\Facades\Validator;
 
 class ClassroomController extends Controller
@@ -247,6 +247,27 @@ class ClassroomController extends Controller
             return response()->json([
                 'message'   => $error->getMessage()
             ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function deleteClassroomBy(Classroom $classroom) {
+        try {
+            if (Classroom::where('id', $classroom['id'])->whereHas('students')->exists()) {
+               throw new ConflictException('kelas sudah memiliki siswa', [
+                    'classroom_id' => 'Tidak dapat dihapus karena masih digunakan'
+                ]);
+            }
+            $classroom->delete();
+
+            return response()->json([
+                'message'   => 'classroom deleted succesfully',
+            ], HttpCode::OK);
+        } catch(ConflictException $exception) {
+            return $exception->render(request());
+        }catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ]);
         }
     }
 }

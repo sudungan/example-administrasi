@@ -10,92 +10,54 @@ export default defineComponent({
         visableCard: {
             type: String,
             required: true,
-             default: () => ({})
         },
         majors: {
             type: Array,
             required: true,
-             default: () => ({})
         },
         teachers: {
             type: Array,
             required: true,
-             default: () => ({})
         },
         students: {
             type: Array,
             required: true,
-             default: () => ({})
         },
         classroom: {
             type: Object,
             required: true,
-            default: () => ({})
         },
         waitingProcess: {
             type: Boolean,
             required: true,
-             default: () => ({})
         }
     },
     emit: ['backTo', 'reload'],
     setup(props, {emit}) {
-            const childClassroom = ref({...props.classroom})
-            const childMajors = ref(props.majors)
-            const childTeachers = ref(props.teachers)
+            const childMajors = ref([])
+            const childTeachers = ref([]);
             const childStudents = ref(props.students)
             const errors = reactive({ id: '', name: '', password: '', email: '', role_id: ''  })
-            // state menampung data classroom yang akan diupdate
-            const editclassroom = reactive({ id: '', name: '', student_ids: [], major_id: '', teacher_id: '' })
+            const editclassroom = reactive({ id: '', name: '', student_ids: [], major_id: '', teacher_id: '' }) // state menampung data classroom yang akan diupdate
 
             const localProcesing = ref(props.waitingProcess)
             const isLoading = ref(false)
-
-
             const fieldLabels = { name: 'Nama', teacher_id: 'Guru', major_id: 'Jurusan',  student_ids: 'Siswa' };
-
-            // melihat perubahan langsung dari props.majors yang dikirim dari parent disimpan ke state childMajors
-            watch(() => props.majors, (newVal) => { childMajors, newVal }, { immediate: true })
-
-            // melihat perubahan langsung dari props.teachers yang dikirim dari parent disimpan ke state childTeachers
-            watch(() => props.teachers, (newVal) => { childTeachers, newVal }, { immediate: true })
-
-            // melihat perubahan langsung dari props.students yang dikirim dari parent disimpan ke state childStudents
-            watch(() => props.students, (newVal) => { childStudents.value = newVal }, { immediate: true });
 
             // melihat perubahan langsung dari props.students yang dikirim dari parent disimpan ke state childStudents
             watch(() => props.classroom, (newVal) => { Object.assign(editclassroom, newVal)  }, { immediate: true });
 
-              // melihat perubahan select2 multiple dari classroom.students_ids
-    //     watch(() => classroom.student_ids, (newVal) => {
-    //         const $el = $(selected.value);
-    //         const currentVal = $el.val() || [];
-    //         const newValStr = newVal.map(String);
-    //         if (JSON.stringify(currentVal) !== JSON.stringify(newValStr)) {
-    //             $el.val(newValStr).trigger('change');
-    //         }
-    //     });
+            // melihat perubahan langsung dari props.majors yang dikirim dari parent disimpan ke state childMajors
+            watch(() => props.majors, (newVal) => { childMajors.value = newVal }, { immediate: true })
 
-    //    onMounted(() => {
-    //         // melakakan inisialisasi dari refrensi selected ref
-    //         const $el = $(selected.value);
+            // melihat perubahan langsung dari props.teachers yang dikirim dari parent disimpan ke state childTeachers
+            watch(() => props.teachers, (newVal) => {  childTeachers.value = newVal}, { immediate: true })
 
-    //         // memberi nilai dari properti yang tersedia
-    //         $el.select2({  width: '100%',   placeholder: "Pilih siswa", allowClear: true });
-
-    //         // Set nilai awal
-    //         $el.val(classroom.student_ids.map(String)).trigger('change');
-
-    //         // Saat user memilih dari Select2
-    //         $el.on('change', () => {
-    //             const selectedVal = $el.val() || [];
-    //             classroom.student_ids = selectedVal.map(Number); // Convert ke angka
-    //         });
-    //     });
+            // melihat perubahan langsung dari props.students yang dikirim dari parent disimpan ke state childStudents
+            watch(() => props.students, (newVal) => { childStudents.value = newVal }, { immediate: true });
 
             async function updateClassroom(classroomId) {
                 try {
-                    console.log(classroomId);
                     let sendUpdateClassroom = {
                         id: editclassroom.id,
                         name: editclassroom.name,
@@ -103,26 +65,21 @@ export default defineComponent({
                         major_id: editclassroom.major_id,
                         teacher_id: editclassroom.teacher_id
                     }
-                    let result = axios. get(`/update-classroom-by/${classroomId}`, sendUpdateClassroom);
+                    let result = axios.put(`/update-classroom-by/${classroomId}`, sendUpdateClassroom);
                     emit('reload')
 
                 } catch (error) {
 
                 }
             }
-
-            function btnEditClassroom(classroomId) {
-
-            }
-
             const btnCancelUpdate = ()=> {
                 emit('backTo', 'table')
             }
 
 
         return {
-            updateClassroom, btnEditClassroom, editclassroom, btnCancelUpdate, fieldLabels, errors,
-            majors: childMajors, students: childStudents, teachers: childTeachers, classroom: childClassroom,
+            updateClassroom, editclassroom, btnCancelUpdate, fieldLabels, errors,
+            majors: childMajors, students: childStudents, teachers: childTeachers,
             isLoading: localProcesing,
         }
     },
@@ -135,7 +92,7 @@ export default defineComponent({
                 </h3>
             </div>
             <div class="p-4 md:p-5 space-y-4">
-                <form @submit.prevent="updateClassroom(editclassroom.id)" class="space-y-4">
+                <form @submit.prevent="updateClassroom(classroom.id)" class="space-y-4">
                     <div class="grid gap-2 mb-2 grid-cols-2">
                         <div class="col-span-2 sm:col-span-1">
                             <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -143,7 +100,7 @@ export default defineComponent({
                             </label>
                             <input
                                 type="text"
-                                v-model="editclassroom.name"
+                                v-model="classroom.name"
                                 id="name"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                 placeholder="Type classroom name here.."
@@ -153,8 +110,8 @@ export default defineComponent({
 
                         <div class="col-span-2 sm:col-span-1">
                             <label for="teacher_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Wali Kelas</label>
-                            <select v-model="editclassroom.teacher_id" id="teacher_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                <option value="">Select homerome teacher</option>
+                            <select v-model="classroom.teacher_id" id="teacher_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                <option value="">Select homerome teacher </option>
                                 <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">{{teacher.name}}</option>
                             </select>
                             <p v-if="errors.teacher_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.teacher_id }}</p>
@@ -176,7 +133,7 @@ export default defineComponent({
                             <label for="major_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Nama Jurusan
                             </label>
-                            <select v-model="editclassroom.major_id" id="major_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <select v-model="classroom.major_id" id="major_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                 <option value="">Select Major</option>
                                 <option v-for="major in majors" :key="major.id" :value="major.id">{{major.name}}</option>
                             </select>

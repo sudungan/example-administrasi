@@ -23,7 +23,7 @@ export default function stateClassroom() {
             const listTeacher = ref([])
             const listStudent = ref([])
             const detailClassroom = reactive({ id: null, name: '', teacher_id: null, major_id: null, teacher: {}, major: {}, students: [] })
-            const editClassroom = ref({  id: null, name: '', teacher_id: null, major_id: null, teacher: {}, major: {}, students: [] })
+            const editClassroom = reactive({ id: null, name: '', teacher_id: null, major_id: null, teacher: {}, major: {}, students: [] })
             const currentView = ref("loading-table")
             const disableButton = ref(false)
             const errors = reactive({ name: '', teacher_id: '', major_id: '', student_id: '' })
@@ -109,10 +109,22 @@ export default function stateClassroom() {
                 }
             }
 
+            async function getEditClassroom(classroomId) {
+                try {
+                    let result = await axios.get(`/edit-classroom-by/${classroomId}`)
+                    let dataClassroom = result.data.data
+                       Object.assign(editClassroom, dataClassroom)
+                        currentView.value = 'edit'
+                } catch (error) {
+                    console.log('error:', error)
+                }
+            }
+
             return {
                 listClassroom, listMajor, listTeacher, editClassroom, currentView, disableButton,
                 listStudent, showFormCreate, homeRomeTeacherId, getListClassroom, getListMajor, getListTecher,
                 getListStudent, refreshListClassrooom, isLoading, detailClassroom, getDetailClassroom,
+                getEditClassroom,
             }
         },
         template: `
@@ -144,6 +156,7 @@ export default function stateClassroom() {
                 </div>
             </div>
         </div>
+
         <!-- komponent untuk dataTableClassroom -->
         <div
             v-show="currentView === 'table'"
@@ -151,6 +164,8 @@ export default function stateClassroom() {
             <data-table-classroom
                 :dataProvide="listClassroom"
                 @show="getDetailClassroom"
+                @edit="getEditClassroom"
+                @reload="refreshListClassrooom"
             />
         </div>
 
@@ -170,6 +185,7 @@ export default function stateClassroom() {
                     @reload="refreshListClassrooom"
                 />
         </div>
+
         <!-- komponent untuk card-detail-classroom -->
             <div
                 v-show="currentView === 'detail'"
@@ -177,8 +193,21 @@ export default function stateClassroom() {
                 <card-detail-classroom :dataProvide="detailClassroom" />
             </div>
 
-        <!-- komponent untuk form-create-subject -->
-
+        <!-- komponent untuk form-edit-subject -->
+            <div
+                v-show="currentView === 'edit'"
+                class="relative shadow-md sm:rounded-lg">
+                <form-edit-classroom
+                    :visable-card="currentView"
+                    :majors="listMajor"
+                    :teachers="listTeacher"
+                    :students="listStudent"
+                    :classroom="editClassroom"
+                    :waiting-process="isLoading"
+                    @back-to="currentView = $event"
+                    @reload="refreshListClassrooom"
+                />
+            </div>
         `
     }).mount('#app')
 }
