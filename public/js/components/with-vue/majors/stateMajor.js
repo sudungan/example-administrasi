@@ -11,6 +11,7 @@ export default function stateMajor() {
             const headMajorById = ref(null)
             const disableButton = ref(false)
             const errorHeadMajor = ref("")
+            const errors = reactive({ name: '', user_id: '',  addition_role_id: '' })
             const listTeacher = ref([])
             const currentView = ref("loading-table")
             const isLoading = ref(false)
@@ -87,7 +88,7 @@ export default function stateMajor() {
             });
             return {
                 listMajor, disableButton, listTeacher, currentView, isLoading, getListMajor,
-                getListTeacher, getHeadMajorById, generateMessageError,
+                getListTeacher, getHeadMajorById, generateMessageError, errors, showFormCreate,
 
             }
         },
@@ -112,7 +113,7 @@ export default function stateMajor() {
                         </svg>
                         <span class="sr-only">Info</span>
                         <div>
-                            <a class="hover:underline" href="{{route('roles.index')}}" wire:navigate>Jabatan Tambahan</a> <span class="font-medium font-extrabold dark:text-yellow-600 text-yellow-400">@{{ errors.addition_role_id }}</span> Belum ada..
+                            <a class="hover:underline" href="{{route('roles.index')}}" wire:navigate>Jabatan Tambahan</a> <span class="font-medium font-extrabold dark:text-yellow-600 text-yellow-400">{{ errors.addition_role_id }}</span> Belum ada..
                         </div>
                     </div>
 
@@ -122,7 +123,7 @@ export default function stateMajor() {
                         </svg>
                         <span class="sr-only">Info</span>
                         <div>
-                            <a class="hover:underline" href="{{route('users.index')}}" wire:navigate>Check Kembali, </a> <span class="font-medium font-extrabold dark:text-yellow-600 text-yellow-400">@{{ errors.teacher_id }}</span>
+                            <a class="hover:underline" href="{{route('users.index')}}" wire:navigate>Check Kembali, </a> <span class="font-medium font-extrabold dark:text-yellow-600 text-yellow-400">{{ errors.teacher_id }}</span>
                         </div>
                     </div>
 
@@ -138,40 +139,42 @@ export default function stateMajor() {
                 </div>
 
 
+            <!-- komponent untuk data-table-major -->
             <div
                 v-show="currentView === 'table'"
                 class="relative shadow-md sm:rounded-lg">
-
+                <data-table-major />
             </div>
 
-             {{-- card-loading-table --}}
+            <!-- komponent untuk loading-data-table-major -->
             <div
                 v-show="currentView === 'loading-table'"
                 class="relative shadow-md sm:rounded-lg">
-                @include('majors.with-vue._card-loading-table')
+
             </div>
 
+            <!-- komponent untuk form-create-major -->
             <div
                 v-cloak
                 v-show="currentView === 'create'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                @include('majors.with-vue._card-form-create')
+
             </div>
 
+            <!-- komponent untuk form-edit-major -->
             <div
                 v-cloak
                 v-show="currentView === 'edit'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                    @include('majors.with-vue._card-form-edit')
-            </div>
 
+            </div>
         </div>
 
-            <!-- komponent untuk loading-data-table-major -->
 
-            <!-- komponent untuk form-create-major -->
 
-            <!-- komponent untuk form-edit-major -->
+
+
+
         `
     }).mount("#app")
 }
