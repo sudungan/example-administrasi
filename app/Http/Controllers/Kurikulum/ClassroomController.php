@@ -233,7 +233,40 @@ class ClassroomController extends Controller
     }
 
     public function updateClassroom(Request $request, $classroomId) {
-        dd($classroomId);
+       try {
+        $validator = Validator::make($request->all(), [
+                'name'                => 'required', 'max:255',
+                'teacher_id'          => ['required'],
+                'student_ids.*'       => 'required|integer|exists:users,id',
+                'student_ids'         => 'required|array|min:1',
+                'student_ids.*'       => 'required|integer',
+                'major_id'            => 'required'
+            ], [
+                'name.required'             => 'Nama Kelas harus diisi..',
+                'teacher_id.required'       => 'Nama Guru wajib dipilih',
+                'student_ids.*.required'    => 'Nama Siswa Harus dipilih..',
+                'student_ids.min'           => 'Minimal satu siswa harus dipilih.',
+                'student_ids.required'      => 'Minimal satu siswa harus dipilih.',
+                'student_ids.*.integer'     => 'ID siswa tidak valid.',
+                'major_id.required'         => 'Nama Jurusan Harus dipilih..',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], HttpCode::UNPROCESABLE_CONTENT);
+            }
+            
+            $classroom = Classroom::with('')->findOrFail($classroomId);
+        return response()->json([
+            'message'   => 'updated classroom succesfully'
+        ], HttpCode::OK);
+       } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+       }
     }
 
     public function getEditClassroomBy($classroomId) {

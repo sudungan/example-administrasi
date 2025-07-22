@@ -23,7 +23,7 @@ export default function stateClassroom() {
             const listTeacher = ref([])
             const listStudent = ref([])
             const detailClassroom = reactive({ id: null, name: '', teacher_id: null, major_id: null, teacher: {}, major: {}, students: [] })
-            const editClassroom = reactive({ id: null, name: '', teacher_id: null, major_id: null, teacher: {}, major: {}, students: [] })
+            const editClassroom = ref({ id: null, name: '', teacher_id: null, major_id: null, teacher: {}, major: {}, students: [] })
             const currentView = ref("loading-table")
             const disableButton = ref(false)
             const errors = reactive({ name: '', teacher_id: '', major_id: '', student_id: '' })
@@ -72,7 +72,6 @@ export default function stateClassroom() {
                 try {
                     let result = await axios.get('/list-student')
                     listStudent.value = result.data.data
-                    console.log('data students', listStudent.value)
                 } catch (error) {
                     if (error.response && error.response.status === 404) {
                         let responseErrors = error.response.data.errors;
@@ -112,8 +111,9 @@ export default function stateClassroom() {
             async function getEditClassroom(classroomId) {
                 try {
                     let result = await axios.get(`/edit-classroom-by/${classroomId}`)
-                    let dataClassroom = result.data.data
-                       Object.assign(editClassroom, dataClassroom)
+                    // let dataClassroom = result.data.data
+                     editClassroom.value = result.data.data
+                    //    Object.assign(editClassroom, dataClassroom)
                         currentView.value = 'edit'
                 } catch (error) {
                     console.log('error:', error)

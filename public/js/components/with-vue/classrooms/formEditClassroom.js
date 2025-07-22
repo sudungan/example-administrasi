@@ -1,5 +1,5 @@
 import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
-const { defineComponent, watch, ref, onMounted, reactive  } = Vue
+const { defineComponent, watch, ref, onMounted, reactive, nextTick } = Vue
 import multipleSelect from "../../multipleSelect.js"
 export default defineComponent({
     name: 'formEditClassroom',
@@ -35,17 +35,18 @@ export default defineComponent({
     emit: ['backTo', 'reload'],
     setup(props, {emit}) {
             const childMajors = ref([])
+            const localClassroom = ref({...props.classroom}) // melakukan clone data dari props classroom
             const childTeachers = ref([]);
-            const childStudents = ref(props.students)
+            const childStudents = ref([])
             const errors = reactive({ id: '', name: '', password: '', email: '', role_id: ''  })
-            const editclassroom = reactive({ id: '', name: '', student_ids: [], major_id: '', teacher_id: '' }) // state menampung data classroom yang akan diupdate
-
+            const editClassroom = reactive({ id: '', name: '', student_ids: [], major_id: '', teacher_id: '' }) // state menampung data classroom yang akan diupdate
+            const selected = ref(null)
             const localProcesing = ref(props.waitingProcess)
             const isLoading = ref(false)
             const fieldLabels = { name: 'Nama', teacher_id: 'Guru', major_id: 'Jurusan',  student_ids: 'Siswa' };
 
             // melihat perubahan langsung dari props.students yang dikirim dari parent disimpan ke state childStudents
-            watch(() => props.classroom, (newVal) => { Object.assign(editclassroom, newVal)  }, { immediate: true });
+            watch(() => props.classroom, (newVal) => { Object.assign(editClassroom, newVal)  }, { immediate: true });
 
             // melihat perubahan langsung dari props.majors yang dikirim dari parent disimpan ke state childMajors
             watch(() => props.majors, (newVal) => { childMajors.value = newVal }, { immediate: true })
@@ -56,31 +57,106 @@ export default defineComponent({
             // melihat perubahan langsung dari props.students yang dikirim dari parent disimpan ke state childStudents
             watch(() => props.students, (newVal) => { childStudents.value = newVal }, { immediate: true });
 
+            // melihat perubahan langsung dari props.waitingProcess yang dikirim dari parent disimpan ke state childStudents
+            watch(() => props.waitingProcess, (newVal) => { localProcesing.value = newVal }, { immediate: true });
+
+            onMounted(async () => {
+
+                 await nextTick();
+                // melakakan inisialisasi dari refrensi selected ref
+                const $el = $(selected.value);
+
+                // memberi nilai dari properti yang tersedia
+                $el.select2({  width: '100%',   placeholder: "Pilih siswa", allowClear: true });
+
+                // Set nilai awal
+                $el.val(editClassroom.student_ids.map(String)).trigger('change');
+
+                // nextTick(() => {
+                //     $el.val(editClassroom.student_ids.map(String)).trigger('change');
+                // });
+
+                // Saat user memilih dari Select2
+                $el.on('change', () => {
+                    const selectedVal = $el.val() || [];
+                    editClassroom.student_ids = selectedVal.map(Number); // Convert ke angka
+                });
+            });
+
             async function updateClassroom(classroomId) {
                 try {
+                    let isValid = true;
+                    localProcesing.value = true;
+                    for(let key in editClassroom) {
+                    const value = editClassroom[key];
+                    const isEmpty = (Array.isArray(value) && value.length === 0) || (!Array.isArray(value) && !value.toString().trim());
+
+                    if (isEmpty) {
+                        const label = fieldLabels[key] || key;
+                        errors[key] = `${label} tidak boleh kosong`;
+                        isValid = false;
+                        localProcesing.value = false;
+                    }else {
+                        errors[key] = '';
+                    }
+                }
+
+                if (!isValid) return
+                    isLoading.value = true;
                     let sendUpdateClassroom = {
-                        id: editclassroom.id,
-                        name: editclassroom.name,
-                        student_ids: editclassroom.student_ids,
-                        major_id: editclassroom.major_id,
-                        teacher_id: editclassroom.teacher_id
+                        id: editClassroom.id,
+                        name: editClassroom.name,
+                        student_ids: editClassroom.student_ids,
+                        major_id: editClassroom.major_id,
+                        teacher_id: editClassroom.teacher_id
                     }
                     let result = axios.put(`/update-classroom-by/${classroomId}`, sendUpdateClassroom);
+                    isLoading.value = false;
                     emit('reload')
-
                 } catch (error) {
+                    if (error.response && error.response.status === 422) { // catch error UNPROCESABLE_CONTENT
+                        localProcesing.value = false;
+                        let responseErrors = error.response.data.errors;
+                        for (let key in responseErrors) {
+                            errors[key] = responseErrors[key][0];
+                        }
+                    }
 
+                    if(error.response && error.response.status === 409) {  // catch error CONFLICT
+                        localProcesing.value = false;
+                        emit('backTo', 'table');
+                        swalNotificationWarning(error.response.data.message);
+                    }else {
+                        swalInternalServerError(error.response.message);
+                    }
                 }
             }
+
+            function isChangedClasroom() {
+                return JSON.stringify(localClassroom.value) !== JSON.stringify(props.classroom)
+            }
+
             const btnCancelUpdate = ()=> {
-                emit('backTo', 'table')
+                if (isChangedClasroom()) {
+                    cancelConfirmation('Yakin membatalkan?', (result) => {
+                        if (result.isConfirmed) {
+                            resetFields(errors)
+                            emit('reload')
+                            emit('backTo', 'table');
+                        }
+                    });
+                } else {
+                    resetErrors()
+                    emit('reload')
+                    emit('backTo', 'table');
+                }
             }
 
 
         return {
-            updateClassroom, editclassroom, btnCancelUpdate, fieldLabels, errors,
+            updateClassroom, editClassroom, btnCancelUpdate, fieldLabels, errors,
             majors: childMajors, students: childStudents, teachers: childTeachers,
-            isLoading: localProcesing,
+            isLoading: localProcesing, selected, classroom: localClassroom
         }
     },
     template: `
@@ -92,7 +168,7 @@ export default defineComponent({
                 </h3>
             </div>
             <div class="p-4 md:p-5 space-y-4">
-                <form @submit.prevent="updateClassroom(classroom.id)" class="space-y-4">
+                <form @submit.prevent="updateClassroom(editClassroom.id)" class="space-y-4">
                     <div class="grid gap-2 mb-2 grid-cols-2">
                         <div class="col-span-2 sm:col-span-1">
                             <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -100,7 +176,7 @@ export default defineComponent({
                             </label>
                             <input
                                 type="text"
-                                v-model="classroom.name"
+                                v-model="editClassroom.name"
                                 id="name"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                 placeholder="Type classroom name here.."
@@ -110,7 +186,7 @@ export default defineComponent({
 
                         <div class="col-span-2 sm:col-span-1">
                             <label for="teacher_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Wali Kelas</label>
-                            <select v-model="classroom.teacher_id" id="teacher_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <select v-model="editClassroom.teacher_id" id="teacher_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                 <option value="">Select homerome teacher </option>
                                 <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">{{teacher.name}}</option>
                             </select>
@@ -119,9 +195,12 @@ export default defineComponent({
 
                         <div class="col-span-2 sm:col-span-2">
                             <label for="student_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Siswa</label>
-                                <select ref="selected" id="select-multiple"  multiple="multiple"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            >
+                                <select
+                                    ref="selected"
+                                    id="select-multiple"
+                                    multiple="multiple"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                >
                             <option v-for="student in students" :value="student.id" :key="student.id">
                                     {{ student.name }}
                                 </option>
@@ -133,7 +212,7 @@ export default defineComponent({
                             <label for="major_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Nama Jurusan
                             </label>
-                            <select v-model="classroom.major_id" id="major_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <select v-model="editClassroom.major_id" id="major_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                 <option value="">Select Major</option>
                                 <option v-for="major in majors" :key="major.id" :value="major.id">{{major.name}}</option>
                             </select>

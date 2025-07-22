@@ -35,7 +35,7 @@ export default defineComponent({
         const childTeachers = ref(props.teachers)
         const childStudents = ref(props.students)
         const childIsLoading = ref(props.waitingProcess)
-        const selected = ref(null)
+        const selectedCreateNew = ref(null)
         const fieldLabels = { name: 'Nama', teacher_id: 'Guru', major_id: 'Jurusan',  student_ids: 'Siswa' };
 
         // melihat perubahan langsung dari props.majors yang dikirim dari parent disimpan ke state childMajors
@@ -52,7 +52,7 @@ export default defineComponent({
 
         // melihat perubahan select2 multiple dari classroom.students_ids
         watch(() => classroom.student_ids, (newVal) => {
-            const $el = $(selected.value);
+            const $el = $(selectedCreateNew.value);
             const currentVal = $el.val() || [];
             const newValStr = newVal.map(String);
             if (JSON.stringify(currentVal) !== JSON.stringify(newValStr)) {
@@ -60,9 +60,9 @@ export default defineComponent({
             }
         });
 
-       onMounted(() => {
+        onMounted(() => {
             // melakakan inisialisasi dari refrensi selected ref
-            const $el = $(selected.value);
+            const $el = $(selectedCreateNew.value);
 
             // memberi nilai dari properti yang tersedia
             $el.select2({  width: '100%',   placeholder: "Pilih siswa", allowClear: true });
@@ -80,7 +80,7 @@ export default defineComponent({
         async function storeClassroom() {
             try {
                 let isValid = true;
-
+                childIsLoading.value = true;
                 for(let key in classroom) {
                     const value = classroom[key];
                     const isEmpty = (Array.isArray(value) && value.length === 0) || (!Array.isArray(value) && !value.toString().trim());
@@ -89,6 +89,7 @@ export default defineComponent({
                         const label = fieldLabels[key] || key;
                         errors[key] = `${label} tidak boleh kosong`;
                         isValid = false;
+                        childIsLoading.value = false;
                     }else {
                         errors[key] = '';
                     }
@@ -159,7 +160,7 @@ export default defineComponent({
         return {
             storeClassroom, closeCreateForm, classroom, errors,
             fieldLabels, majors: childMajors, teachers: childTeachers,
-            students: childStudents, selected, waitingProcess: childIsLoading
+            students: childStudents, selectedCreateNew, waitingProcess: childIsLoading
         }
     },
     template:  `
@@ -198,7 +199,7 @@ export default defineComponent({
 
                             <div class="col-span-2 sm:col-span-2">
                                 <label for="student_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Siswa</label>
-                                 <select ref="selected" id="select-multiple"  multiple="multiple"
+                                 <select ref="selectedCreateNew" id="select-multiple"  multiple="multiple"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                 >
                                 <option v-for="student in students" :value="student.id" :key="student.id">
