@@ -2,11 +2,13 @@ const { createApp, ref, reactive, onMounted } = Vue
 import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
 import dataTableMajor from './dataTableMajor.js';
 import loadingTableMajor from './loadingTableMajor.js';
+import formCreateMajor from './formCreateMajor.js';
 export default function stateMajor() {
     createApp({
         components: {
             dataTableMajor,
-            loadingTableMajor
+            loadingTableMajor,
+            formCreateMajor
         },
         setup() {
             const listMajor = ref([])
@@ -146,7 +148,7 @@ export default function stateMajor() {
             <div
                 v-show="currentView === 'table'"
                 class="relative shadow-md sm:rounded-lg">
-                <data-table-major :dataProvide="listMajor" />
+                <data-table-major :data-provide="listMajor" />
             </div>
 
             <!-- komponent untuk loading-data-table-major -->
@@ -161,7 +163,12 @@ export default function stateMajor() {
                 v-cloak
                 v-show="currentView === 'create'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-
+                <form-create-major
+                    :teachers="listTeacher"
+                    :visable-card="currentView"
+                    :waiting-process="isLoading"
+                    @back-to="currentView = $event"
+                />
             </div>
 
             <!-- komponent untuk form-edit-major -->
