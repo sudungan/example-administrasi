@@ -1,11 +1,10 @@
-<x-layouts.app :title="__('Kelas')">
+{{-- <x-layouts.app :title="__('Kelas')">
     <div wire:ignore class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         @include('partials.classrooms-heading')
         <div class="relative h-full flex-1 overflow-hidden rounded-xl">
         <div id="app"></div>
-            {{-- button add --}}
 
-            {{-- <div class="flex gap-4">
+            <div class="flex gap-4">
                 <button
                     v-show="currentView === 'table'"
                     @click="showFormCreate"
@@ -24,32 +23,28 @@
                         <span class="font-medium font-extrabold dark:text-yellow-600 text-yellow-400">Data Kelas belum ada</span>
                     </div>
                 </div>
-            </div> --}}
+            </div>
 
-            {{-- card-table-classroom --}}
-            {{-- <div
+            <div
                 v-show="currentView === 'table'"
                 class="relative shadow-md sm:rounded-lg">
                 @include('classrooms.with-vue._card-table-classroom')
-            </div> --}}
+            </div>
 
-            {{-- card-detail-classroom --}}
-            {{-- <div
+            <div
                 v-show="currentView === 'detail'"
                 class="relative shadow-md sm:rounded-lg">
                 @include('classrooms.with-vue._card-detail-classroom')
-            </div> --}}
+            </div>
 
-            {{-- component-loading-table --}}
-            {{-- <div
+            <div
                 v-show="currentView === 'loading-table'"
                 class="relative shadow-md sm:rounded-lg">
                 <loading-table-classroom />
                 @include('classrooms.with-vue._card-loading-table')
-            </div> --}}
+            </div>
 
-            {{-- component-form-create --}}
-            {{-- <div
+            <div
                 v-cloak
                 v-show="currentView === 'create'"
                 class="relative sm:rounded-lg">
@@ -63,10 +58,9 @@
                         @back-to="currentView = $event"
                         @reload="refreshListClassrooom"
                     />
-            </div> --}}
+            </div>
 
-            {{-- component-form-edit --}}
-            {{-- <div
+            <div
                 v-cloak
                 v-show="currentView === 'edit'"
                 class="relative sm:rounded-lg">
@@ -78,15 +72,10 @@
                         @back-to="currentView = $event"
                         @reload="refreshListClassrooom"
                     />
-            </div> --}}
+            </div>
         </div>
     </div>
-    <script type="module">
-        import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
-        import stateClassroom from '/js/components/with-vue/classrooms/stateClassroom.js';
-        stateClassroom()
-    </script>
-     {{-- <script type="module">
+     <script type="module">
         import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
         const { createApp, ref, reactive, onMounted } = Vue
         import formCreateClassroom from '/js/components/with-vue/classrooms/formCreateClassroom.js';
@@ -260,5 +249,5 @@
                 }
             }
         }).mount('#app')
-    </script> --}}
-</x-layouts.app>
+    </script>
+</x-layouts.app> --}}

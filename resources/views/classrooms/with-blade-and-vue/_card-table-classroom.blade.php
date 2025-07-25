@@ -1,4 +1,4 @@
-<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+{{-- <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <div class="flex justify-end pb-4 bg-white dark:bg-zinc-800">
         <label for="table-search" class="sr-only">Search</label>
         <div class="relative mt-1">
@@ -71,4 +71,4 @@
             </template>
         </tbody>
     </table>
-</div>
+</div> --}}
