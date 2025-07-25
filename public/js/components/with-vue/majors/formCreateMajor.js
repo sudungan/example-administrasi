@@ -18,6 +18,10 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
+        provideData: {
+            type: Number,
+            required:true
+        }
     },
     emits: ['backTo', 'reload'],
     setup(props, {emit}) {
@@ -27,6 +31,7 @@ export default defineComponent({
         const childTeachers = ref(props.teachers)
         const childStudents = ref(props.students)
         const childIsLoading = ref(props.waitingProcess)
+        const childHeadMajorId = ref(props.provideData)
         const selectedCreateNew = ref(null)
         const fieldLabels = { name: 'Nama', user_id: 'Guru' };
 
@@ -35,6 +40,9 @@ export default defineComponent({
 
         // melihat perubahan langsung dari props.waitingProcess yang dikirim dari parent disimpan ke state childIsLoading
         watch(() => props.waitingProcess, (newVal) => { childIsLoading.value = newVal }, { immediate: true });
+
+        // melihat perubahan langsung dari props.waitingProcess yang dikirim dari parent disimpan ke state childIsLoading
+        watch(() => props.provideData, (newVal) => { childHeadMajorId.value = newVal }, { immediate: true });
 
         async function storeMajor() {
             try {
@@ -57,9 +65,10 @@ export default defineComponent({
                 let sendMajor = {
                     name: major.name,
                     user_id: major.user_id,
+                    addition_role_id: childHeadMajorId.value
                 }
                 childIsLoading.value = true;
-                let result = await axios.post('/store-classroom', sendMajor)
+                let result = await axios.post('/store-major', sendMajor)
                 resetFields(major)
                 successNotification(result.data.message)
                 childIsLoading.value = false;
@@ -68,22 +77,10 @@ export default defineComponent({
             } catch (error) {
                if (error.response?.status === 422) {
                     let responseErrors = error.response.data.errors;
-                    for (let key in responseErrors) {
-                        // if(key == 'name') {
-                        //     errors[key] = responseErrors[key][0]
-                        //     childIsLoading.value = false;
-                        // }
-
-                        // if (key ==  'teacher_id') {
-                        //     errors[key] = responseErrors[key][0];
-                        //     childIsLoading.value = false;
-                        // }
-
-                        // if (key == 'student_ids') {
-                        //     errors[key] = responseErrors[key].join('<br>');
-                        //     childIsLoading.value = false;
-                        // }
-                    }
+                        for (let key in responseErrors) {
+                            errors[key] = responseErrors[key][0];
+                        }
+                        childIsLoading.value = false
                }else {
                 childIsLoading.value = false;
                 console.log('error terakhir:', error)
@@ -115,7 +112,8 @@ export default defineComponent({
         return {
             storeMajor, closeCreateForm, major, errors,
             fieldLabels, majors: childMajors, teachers: childTeachers,
-            students: childStudents, selectedCreateNew, waitingProcess: childIsLoading
+            students: childStudents, selectedCreateNew, waitingProcess: childIsLoading,
+            provideData: childHeadMajorId
         }
     },
     template:  `

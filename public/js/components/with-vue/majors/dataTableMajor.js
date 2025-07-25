@@ -8,14 +8,31 @@ export default defineComponent({
             required: true
         }
     },
-    emits: [''],
+    emits: ['reload'],
     setup(props, {emit}) {
         const editMajor = (majorId)=> {
 
         }
 
         const deleteConfirmation = (majorId)=> {
-
+             confirmDelete('Yakin dihapus?', async (result)=>{
+                if(!result.isConfirmed) {
+                    return
+                }
+                await swalLoading('delete process..',async (result)=> {
+                    try {
+                        let result = await axios.delete(`/delete-major/${majorId}`)
+                        successNotification(result.data.message)
+                        emit('reload')
+                    } catch (error) {
+                        if (error.response && error.response.status == 409) {
+                            swalNotificationConflict(error.response.data.message)
+                        }else {
+                            swalInternalServerError(error.response.data.message) // http code 500
+                        }
+                    }
+                });
+            })
         }
         return {
             editMajor, deleteConfirmation

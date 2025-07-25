@@ -94,8 +94,8 @@ class MajorController extends Controller
                 'name.unique'           => 'Nama Jurusan sudah digunakan..',
                 'name.min'              => 'Nama user minimal 3 karakter',
                 'name.regex'            => 'Nama Jurusan hanya boleh berisi huruf dan spasi.',
-                'user_id.required'      => 'Nama Kanidat wajib dipilih',
-                'user_id.unique'        => 'Nama Kanidat wajib dipakai',
+                'user_id.required'      => 'Nama guru wajib dipilih',
+                'user_id.unique'        => 'Nama guru sudah dipakai',
                 'addition_role_id'      => 'Jabatan Kepala Jurusan Belum ada',
             ]);
 

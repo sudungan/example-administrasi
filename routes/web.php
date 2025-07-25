@@ -33,6 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('store-classroom', [ClassroomController::class, 'storeDataClassroom'])->name('store-classroom');
     Route::put('update-classroom-by/{classroomId}', [ClassroomController::class, 'updateClassroom'])->name('');
     Route::delete('delete-classroom-by/{classroom}', [ClassroomController::class, 'deleteClassroomBy'])->name('delete-classroom-by');
+
     // ROUTE FOR ROLES
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('list-role', [RoleController::class, 'getListRole'])->name('list-role');

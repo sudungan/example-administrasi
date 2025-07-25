@@ -12,7 +12,7 @@ export default function stateMajor() {
         },
         setup() {
             const listMajor = ref([])
-            const headMajorById = ref(null)
+            const headMajorById = ref(0)
             const disableButton = ref(false)
             const errorHeadMajor = ref("")
             const errors = reactive({ name: '', user_id: '',  addition_role_id: '' })
@@ -56,7 +56,6 @@ export default function stateMajor() {
                     try {
                     let result = await axios.get('/head-major-byId')
                     headMajorById.value = result.data.data
-
                 } catch (error) {
                     if (error.response && error.response.status === 404) {
                         let responseErrors = error.response.data.errors;
@@ -86,6 +85,10 @@ export default function stateMajor() {
                 errors.addition_role_id = word.slice(1, -2).join(" ");
             }
 
+            const refreshListMajor = async()=> {
+                await getListMajor()
+            }
+
             onMounted(async ()=> {
                 await getListMajor()
                 await getListTeacher()
@@ -94,7 +97,7 @@ export default function stateMajor() {
             return {
                 listMajor, disableButton, listTeacher, currentView, isLoading, getListMajor,
                 getListTeacher, getHeadMajorById, generateMessageError, errors, showFormCreate,
-
+                headMajorById, refreshListMajor
             }
         },
         template: `
@@ -148,7 +151,10 @@ export default function stateMajor() {
             <div
                 v-show="currentView === 'table'"
                 class="relative shadow-md sm:rounded-lg">
-                <data-table-major :data-provide="listMajor" />
+                <data-table-major
+                    :data-provide="listMajor"
+                    @reload="refreshListMajor"
+                    />
             </div>
 
             <!-- komponent untuk loading-data-table-major -->
@@ -167,6 +173,8 @@ export default function stateMajor() {
                     :teachers="listTeacher"
                     :visable-card="currentView"
                     :waiting-process="isLoading"
+                    :provide-data="headMajorById"
+                    @reload="refreshListMajor"
                     @back-to="currentView = $event"
                 />
             </div>
