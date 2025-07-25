@@ -1,10 +1,12 @@
 const { createApp, ref, reactive, onMounted } = Vue
 import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.js';
 import dataTableMajor from './dataTableMajor.js';
+import loadingTableMajor from './loadingTableMajor.js';
 export default function stateMajor() {
     createApp({
         components: {
             dataTableMajor,
+            loadingTableMajor
         },
         setup() {
             const listMajor = ref([])
@@ -42,7 +44,8 @@ export default function stateMajor() {
                                 generateMessageError(errors[key])
                         }
                     }else {
-                        swalInternalServerError(error.response.message)
+                        console.log(error)
+                        // swalInternalServerError(error.response.message)
                     }
                 }
             }
@@ -143,14 +146,14 @@ export default function stateMajor() {
             <div
                 v-show="currentView === 'table'"
                 class="relative shadow-md sm:rounded-lg">
-                <data-table-major />
+                <data-table-major :dataProvide="listMajor" />
             </div>
 
             <!-- komponent untuk loading-data-table-major -->
             <div
                 v-show="currentView === 'loading-table'"
                 class="relative shadow-md sm:rounded-lg">
-
+                <loading-table-major />
             </div>
 
             <!-- komponent untuk form-create-major -->
