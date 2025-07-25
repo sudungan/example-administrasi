@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Jurusan')" appName="Example Administrasi">
+{{-- <x-layouts.app :title="__('Jurusan')" appName="Example Administrasi">
     <div x-data="dataMajor()" class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl" wire:ignore>
         @include('partials.majors-heading')
 
@@ -38,4 +38,4 @@
 
         </div>
     </div>
-</x-layouts.app>
+</x-layouts.app> --}}

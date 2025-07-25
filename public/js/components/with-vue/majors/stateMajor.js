@@ -3,18 +3,21 @@ import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/esm/axios.min.j
 import dataTableMajor from './dataTableMajor.js';
 import loadingTableMajor from './loadingTableMajor.js';
 import formCreateMajor from './formCreateMajor.js';
+import formEditMajor from './formEditMajor.js';
 export default function stateMajor() {
     createApp({
         components: {
             dataTableMajor,
             loadingTableMajor,
-            formCreateMajor
+            formCreateMajor,
+            formEditMajor
         },
         setup() {
             const listMajor = ref([])
             const headMajorById = ref(0)
             const disableButton = ref(false)
             const errorHeadMajor = ref("")
+            const editDataMajor = ref({ id: '', name: '', user_id: '' })
             const errors = reactive({ name: '', user_id: '',  addition_role_id: '' })
             const listTeacher = ref([])
             const currentView = ref("loading-table")
@@ -80,6 +83,20 @@ export default function stateMajor() {
                 }
             }
 
+            const getEditMajor = async(majorId)=> {
+                try {
+                     try {
+                        let result = await axios.get(`edit-major/${majorId}`);
+                        editDataMajor.value = result.data.data;
+                        currentView.value = 'edit';
+                    } catch (error) {
+                        console.log('data error',error)
+                    }
+                } catch (error) {
+                    console.log('error', error)
+                }
+            }
+
             const generateMessageError = (text)=> {
                 let word = text.split(" ")
                 errors.addition_role_id = word.slice(1, -2).join(" ");
@@ -97,7 +114,7 @@ export default function stateMajor() {
             return {
                 listMajor, disableButton, listTeacher, currentView, isLoading, getListMajor,
                 getListTeacher, getHeadMajorById, generateMessageError, errors, showFormCreate,
-                headMajorById, refreshListMajor
+                headMajorById, refreshListMajor, getEditMajor, editDataMajor
             }
         },
         template: `
@@ -154,6 +171,7 @@ export default function stateMajor() {
                 <data-table-major
                     :data-provide="listMajor"
                     @reload="refreshListMajor"
+                    @edit="getEditMajor"
                     />
             </div>
 
@@ -184,7 +202,15 @@ export default function stateMajor() {
                 v-cloak
                 v-show="currentView === 'edit'"
                 class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-
+                <form-edit-major
+                    :major="editDataMajor"
+                    :teachers="listTeacher"
+                    :visable-card="currentView"
+                    :waiting-process="isLoading"
+                    :provide-data="headMajorById"
+                    @reload="refreshListMajor"
+                    @back-to="currentView = $event"
+                />
             </div>
         </div>
 

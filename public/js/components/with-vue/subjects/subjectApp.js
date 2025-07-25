@@ -52,7 +52,6 @@ export default function subjectApp () {
                     let result = await axios.get('list-subject');
                     listSubject.value = result.data.data
                     currentView.value = 'table'
-                    console.log('data dari list-subject', listSubject.value)
                 } catch (error) {
                     console.log('error:', error)
                 }
@@ -66,7 +65,6 @@ export default function subjectApp () {
                 try {
                     let result = await axios.get('list-teacher');
                     listTeacher.value = result.data.data
-                    console.log('data dari list-teacher', listTeacher.value)
                 } catch (error) {
                     console.log('error:', error)
                 }
@@ -76,7 +74,6 @@ export default function subjectApp () {
                 try {
                     let result = await axios.get('list-classroom');
                     listClassroom.value = result.data.data
-                    console.log('data dari list-classroom', listClassroom.value)
                 } catch (error) {
                     console.log('error:', error)
                 }

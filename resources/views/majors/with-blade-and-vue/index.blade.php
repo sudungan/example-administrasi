@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Jurusan')" appName="Example Administrasi">
+{{-- <x-layouts.app :title="__('Jurusan')" appName="Example Administrasi">
     <div id="app" class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl" wire:ignore>
         @include('partials.majors-heading')
 
@@ -50,7 +50,6 @@
                 @include('majors.with-vue._card-table-major')
             </div>
 
-             {{-- card-loading-table --}}
             <div
                 v-show="currentView === 'loading-table'"
                 class="relative shadow-md sm:rounded-lg">
@@ -347,4 +346,4 @@
             }
         }).mount('#app')
         </script>
-</x-layouts.app>
+</x-layouts.app> --}}

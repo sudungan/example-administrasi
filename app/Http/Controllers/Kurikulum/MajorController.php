@@ -146,7 +146,6 @@ class MajorController extends Controller
 
     public function updateMajor(Request $request, Major $major) {
         try {
-
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required',
                 'name' => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/'],
