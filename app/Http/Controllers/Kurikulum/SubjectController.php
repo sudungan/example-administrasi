@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Kurikulum;
 
 use App\Helpers\HttpCode;
-use App\Http\Controllers\Controller;
-use App\Models\Classroom;
-use App\Models\Subject;
-use App\Models\TeacherColour;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use App\Models\{TeacherColour, Classroom, Subject, User};
 
 class SubjectController extends Controller
 {
@@ -77,6 +75,50 @@ class SubjectController extends Controller
                 [ 'message'   => 'subject created succesfully', ],
                 HttpCode::CREATED
             );
+
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /*
+        next-todo list-on-subject:
+        mengecek user-teacher yang tidak memiliki base-colour akan
+        diharuskan ditambakan colour, kalau sudah ada langsung skip langsung
+        ke pembuatan subject saja
+    */
+
+    public function storeTeacherColour(Request $request) {
+        try {
+            $validator = Validator::make($request->all(), [
+                'user_id'   => ['required'],
+                'subject_id'  => 'nullable',
+                'colour'    => 'required'
+                ], [
+                'colour.required'   => 'Warna wajib dipilh'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], HttpCode::UNPROCESABLE_CONTENT);
+            }
+
+            $validated = $validator->validate();
+            $teacherColour = TeacherColour::create([
+                'user_id'   =>$validated['user_id'],
+                'subject_id'    => null,
+                'colour'        => $validated['colour']
+            ]);
+
+            $dataPassing = TeacherColour::where('id', $teacherColour['id'])->with('teacher')->first();
+            return response()->json([
+                    'message'   => 'teacher colour created succesfully',
+                    'data'      => $dataPassing
+                ],  HttpCode::CREATED);
 
         } catch (\Exception $error) {
             return response()->json([

@@ -1,6 +1,7 @@
     import dataTableSubject from "./dataTableSubject.js"
     import formCreateSubject from "./formCreateSubject.js"
     import loadingTableSubject from "./loadingTableSubject.js"
+    import createTeacherColour from "./createTeacherColour.js"
     const { createApp, ref, reactive, onMounted } = Vue
 export default function subjectApp () {
 
@@ -8,15 +9,17 @@ export default function subjectApp () {
         components: {
             dataTableSubject,
             formCreateSubject,
-            loadingTableSubject
+            loadingTableSubject,
+            createTeacherColour,
         },
         setup() {
             const currentView = ref("loading-table")
             const message = ref('Hello Vue!')
+            const dataTeacher = ref({})
             const listSubject = ref([])
             const listTeacher = ref([])
             const listClassroom = ref([])
-            const showFormCreate =()=> currentView.value = 'create'
+            const showFormCreate =()=> currentView.value = 'create-teacher-colour'
             const baseColour = ref([
                 { id:'1', item:'blue'}, { id:'2', item:'gray'}, { id:'3', item:'red'}, { id:'4', item:'green'}, { id:'5', item:'yellow'},
                 { id:'6', item:'indigo'}, { id:'7', item:'purple'}, { id:'8', item:'pink'}, { id:'9', item:'lime'}, { id:'10', item:'indigo'},
@@ -70,6 +73,11 @@ export default function subjectApp () {
                 }
             }
 
+            // fungsi untuk menghandle passing data dari BE ke component lain
+            function handlePassingData(data) {
+                dataTeacher.value = data
+            }
+
             async function getListClassroom() {
                 try {
                     let result = await axios.get('list-classroom');
@@ -80,7 +88,8 @@ export default function subjectApp () {
             }
             return {
                 message, currentView, showFormCreate, listSubject, getListSubject, listTeacher, listClassroom,
-                getListClassroom, getListTeacher, baseColour, refreshListSubject, baseCssColour
+                getListClassroom, getListTeacher, baseColour, refreshListSubject, baseCssColour, dataTeacher,
+                handlePassingData,
              }
         },
         template: `
@@ -93,15 +102,6 @@ export default function subjectApp () {
                     <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
                     Mata Pelajaran
                 </button>
-                <div v-if="listSubject.length == 0 && currentView === 'table'" class="flex items-center p-2 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert">
-                    <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-                    </svg>
-                    <span class="sr-only">Info</span>
-                    <div>
-                        <span class="font-medium">Data Mata Pelajaran Belum ada...</span>
-                    </div>
-                </div>
             </div>
 
             <!-- komponent untuk loading-data-table-subject -->
@@ -110,29 +110,33 @@ export default function subjectApp () {
             </div>
 
             <!-- komponent untuk data-table-subject -->
-             <div
-                v-show="currentView === 'table'"
-                class="relative shadow-md sm:rounded-lg">
-               <data-table-subject
-                    :visable-card="currentView"
-                    :data="listSubject"
-                />
+             <div v-show="currentView === 'table'" class="relative shadow-md sm:rounded-lg">
+               <data-table-subject :visable-card="currentView" :data="listSubject" />
             </div>
 
             <!-- komponent untuk form-create-subject -->
-             <div
-                v-show="currentView === 'create'"
-                class="relative shadow-md sm:rounded-lg">
+             <div v-show="currentView === 'create-subject'" class="relative sm:rounded-lg">
+                <form-create-subject
+                    :visable-card="currentView"
+                    :classrooms="listClassroom"
+                    @reload="refreshListSubject"
+                    :dataPassingTeacher="dataTeacher"
+                    @back-to="currentView = $event"
+                />
+            </div>
 
-               <form-create-subject
+            <!-- komponent untuk form-create-teacher-colour -->
+             <div  v-show="currentView === 'create-teacher-colour'"  class="relative sm:rounded-lg">
+                <create-teacher-colour
                     :visable-card="currentView"
                     :teachers="listTeacher"
-                    :classrooms="listClassroom"
                     :provide-colour="baseColour"
-                    @reload="refreshListSubject"
-                    @back-to="currentView = $event"
-               />
+                    :dataPassingTeacher="dataTeacher"
+                    @change-to="currentView = $event"
+                    @send-back-data="handlePassingData"
+                />
             </div>
+
         `
     }).mount('#app')
 }
