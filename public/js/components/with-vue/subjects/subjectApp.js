@@ -44,6 +44,7 @@ export default function subjectApp () {
             }
 
             onMounted(async ()=>{
+                await getListBaseTeacherColour()
                 await getListSubject()
                 await getListTeacher()
                 await getListClassroom()
@@ -62,6 +63,15 @@ export default function subjectApp () {
 
             async function refreshListSubject() {
                 getListSubject()
+            }
+
+            async function getListBaseTeacherColour() {
+                try {
+                    let result = await axios.get('/check-base-colour-teacher')
+                    console.log('data', result)
+                } catch (error) {
+                    console.log(error)
+                }
             }
 
             async function getListTeacher() {
@@ -89,11 +99,12 @@ export default function subjectApp () {
             return {
                 message, currentView, showFormCreate, listSubject, getListSubject, listTeacher, listClassroom,
                 getListClassroom, getListTeacher, baseColour, refreshListSubject, baseCssColour, dataTeacher,
-                handlePassingData,
+                handlePassingData, getListBaseTeacherColour,
              }
         },
         template: `
             <div class="flex gap-2">
+            <!-- todo-list: bila users: teacher tidak ada akan disable -->
                 <button
                     v-show="currentView === 'table'"
                     @click="showFormCreate"

@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{TeacherColour, Classroom, Subject, User};
+use App\Exceptions\{ConflictException, NotFoundException};
+use App\Helpers\MainRole;
+use Illuminate\Support\Facades\DB;
 
 class SubjectController extends Controller
 {
@@ -83,12 +86,32 @@ class SubjectController extends Controller
         }
     }
 
-    /*
-        next-todo list-on-subject:
-        mengecek user-teacher yang tidak memiliki base-colour akan
-        diharuskan ditambakan colour, kalau sudah ada langsung skip langsung
-        ke pembuatan subject saja
-    */
+    public function checkBaseTeacherSubject() {
+        try {
+            $listTeacherColour = TeacherColour::with('teacher')
+                                ->whereIn('user_id', DB::table('users')->select('id')->where('role_id', MainRole::item['guru'])->pluck('id'))
+                                ->get();
+
+            if ($listTeacherColour->isEmpty()) {
+                 throw new NotFoundException(
+                    'list Base Colour Teacher belum ada.',
+                    ['teacher_id' => ['list Base Colour Teacher belum ada.']
+                    ], HttpCode::NOT_FOUND
+                );
+            }
+
+            return response()->json([
+                'message'   => 'get data base teacher colour successfully',
+                'data'      => $listTeacherColour
+            ], HttpCode::OK);
+        }  catch(NotFoundException $error) {
+            return $error->render(request());
+        }catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ]);
+        }
+    }
 
     public function storeTeacherColour(Request $request) {
         try {
