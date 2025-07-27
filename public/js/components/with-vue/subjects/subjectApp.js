@@ -15,6 +15,8 @@ export default function subjectApp () {
         setup() {
             const currentView = ref("loading-table")
             const message = ref('Hello Vue!')
+            const listTeacherSubject = ref([])
+            const selectTeacherId = ref(null)
             const dataTeacher = ref({})
             const listSubject = ref([])
             const listTeacher = ref([])
@@ -47,6 +49,7 @@ export default function subjectApp () {
                 await getListBaseTeacherColour()
                 await getListSubject()
                 await getListTeacher()
+                await getListTeacherSubject()
                 await getListClassroom()
             });
 
@@ -56,6 +59,18 @@ export default function subjectApp () {
                     let result = await axios.get('list-subject');
                     listSubject.value = result.data.data
                     currentView.value = 'table'
+                } catch (error) {
+                    console.log('error:', error)
+                }
+            }
+
+            async function getListTeacherSubject() {
+                try {
+                    let result = await axios.get('list-teacher-subject');
+                    listTeacherSubject.value = result.data.data
+                    console.log('data list teacher subject', listTeacherSubject.value)
+                    currentView.value = 'table'
+
                 } catch (error) {
                     console.log('error:', error)
                 }
@@ -88,6 +103,11 @@ export default function subjectApp () {
                 dataTeacher.value = data
             }
 
+            function handleSelectTeacher(data) {
+                currentView.value = data.component   // 'create-subject'
+                selectTeacherId.value = data.teacherId
+            }
+
             async function getListClassroom() {
                 try {
                     let result = await axios.get('list-classroom');
@@ -99,22 +119,10 @@ export default function subjectApp () {
             return {
                 message, currentView, showFormCreate, listSubject, getListSubject, listTeacher, listClassroom,
                 getListClassroom, getListTeacher, baseColour, refreshListSubject, baseCssColour, dataTeacher,
-                handlePassingData, getListBaseTeacherColour,
+                handlePassingData, getListBaseTeacherColour, listTeacherSubject, selectTeacherId, handleSelectTeacher
              }
         },
         template: `
-            <div class="flex gap-2">
-            <!-- todo-list: bila users: teacher tidak ada akan disable -->
-                <button
-                    v-show="currentView === 'table'"
-                    @click="showFormCreate"
-                    type="button"
-                    class="text-white mb-2 inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center text-xs dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                    Mata Pelajaran
-                </button>
-            </div>
-
             <!-- komponent untuk loading-data-table-subject -->
              <div v-show="currentView === 'loading-table'" class="relative shadow-md sm:rounded-lg">
                 <loading-table-subject :visable-card="currentView" />
@@ -122,7 +130,11 @@ export default function subjectApp () {
 
             <!-- komponent untuk data-table-subject -->
              <div v-show="currentView === 'table'" class="relative shadow-md sm:rounded-lg">
-               <data-table-subject :visable-card="currentView" :data="listSubject" />
+               <data-table-subject
+                :visable-card="currentView"
+                :data="listTeacherSubject"
+                @add="handleSelectTeacher"
+                />
             </div>
 
             <!-- komponent untuk form-create-subject -->

@@ -31,6 +31,21 @@ class SubjectController extends Controller
         }
     }
 
+    public function getListTeacherSubject() {
+        try {
+            $teachers = User::where('role_id', MainRole::item['guru'])->with('subjects')->get();
+
+            return response()->json([
+                'message'   => 'get list teacher successfully',
+                'data'      => $teachers
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function storeSubject(Request $request) {
         try {
             $validator = Validator::make($request->all(), [
@@ -91,6 +106,8 @@ class SubjectController extends Controller
             $listTeacherColour = TeacherColour::with('teacher')
                                 ->whereIn('user_id', DB::table('users')->select('id')->where('role_id', MainRole::item['guru'])->pluck('id'))
                                 ->get();
+
+                $teacherColour = User::where('role_id', MainRole::item['guru'])->whereHas('subjectColour')->get();
 
             if ($listTeacherColour->isEmpty()) {
                  throw new NotFoundException(

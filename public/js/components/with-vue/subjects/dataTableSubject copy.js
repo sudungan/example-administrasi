@@ -11,8 +11,7 @@ export default defineComponent({
             required: true
         }
     },
-    emits: ['add'],
-    setup(props, {emit}) {
+    setup(props) {
         const localListSubject = ref([])
         const colorMap = {
             blue: 'bg-blue-100 text-blue-800 border border-blue-400 dark:text-blue-400 dark:bg-blue-900',
@@ -34,18 +33,24 @@ export default defineComponent({
             return colorMap[colour] || 'bg-gray-100 text-gray-800 border border-gray-400'
         }
 
-        function addSubjectTeacher(teacherId) {
-            emit('add', {  component: 'create-subject',  teacherId: teacherId })
-        }
-
         watch(() => props.data, (newVal) => { localListSubject.value = [...newVal] }, { immediate: true });
         return {
-            localListSubject, getBadgeClass, addSubjectTeacher
+            localListSubject, getBadgeClass
         }
     },
     template: `
        <div class="mt-2 relative overflow-x-auto shadow-md sm:rounded-lg">
             <div class="flex flex-wrap justify-between pb-4">
+                <!-- Kosongkan sisi kiri jika tidak digunakan -->
+                <div v-if="data.length == 0" class="flex w-auto items-start p-2 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert">
+                    <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                    </svg>
+                    <span class="sr-only">Info</span>
+                    <div>
+                        <span class="font-medium">Data Mata Pelajaran Belum ada...</span>
+                    </div>
+                </div>
                 <!-- Search Input di Pojok Kanan -->
                 <div class="relative">
                     <label for="table-search" class="sr-only">Search</label>
@@ -81,50 +86,38 @@ export default defineComponent({
                            Jumlah JP
                         </th>
                          <th scope="col" class="px-6 py-3">
-                           Total JP
+                           Warna
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Action
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     <template v-if="data.length > 0">
-                        <tr v-for="(teacher , index) in data" :key="teacher.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <tr v-for="(subject , index) in data" :key="subject.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 {{ index + 1 }}
                             </th>
                             <td class="px-6 py-4">
-                                <button @click="addSubjectTeacher(teacher.id)" class="text-blue-600 underline cursor-pointer hover:text-blue-800">
-                                    {{ teacher.name }}
-                                 </button>
+                                {{ subject.name }}
                             </td>
                             <td class="px-6 py-4">
-                                <template v-if="teacher.subject?.name">
-                                    {{ teacher.subject?.name }}-{{teacher.subject?.major.initial}}
-                                </template>
-                                <template v-else>
-                                    <div class="flex w-auto items-start p-2 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert">
-                                        <div>
-                                            <span class="font-medium">Data Mata Pelajaran Belum ada...</span>
-                                        </div>
-                                    </div>
-                                </template>
+                                {{ subject.teacher?.name }}
                             </td>
                             <td class="px-6 py-4">
-                                <template v-if="teacher.classroom?.name">
-                                    {{ teacher.classroom?.name }}-{{teacher.classroom?.major.initial}}
-                                </template>
-                                <template v-else>
-                                    <div class="flex w-auto items-start p-2 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert">
-                                        <div>
-                                            <span class="font-medium">Data Mata Pelajaran Belum ada...</span>
-                                        </div>
-                                    </div>
-                                </template>
+                                {{ subject.classroom?.name }}-{{subject.classroom?.major.initial}}
                             </td>
                             <td class="px-6 py-4">
-                                {{ teacher.jumlah_jp }}
+                                {{ subject.jumlah_jp }}
                             </td>
                             <td class="px-6 py-4">
-                               0
+                                <span :class="getBadgeClass(subject.colour)" class="text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm">
+                                    {{ subject.colour }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
                             </td>
                         </tr>
                      </template>
