@@ -74,12 +74,6 @@ export default defineComponent({
                         <th scope="col" class="px-6 py-3">
                             Nama Pelajaran
                         </th>
-                        <th scope="col" class="px-6 py-3">
-                            Kelas
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                           Jumlah JP
-                        </th>
                          <th scope="col" class="px-6 py-3">
                            Total JP
                         </th>
@@ -107,21 +101,6 @@ export default defineComponent({
                                         </div>
                                     </div>
                                 </template>
-                            </td>
-                            <td class="px-6 py-4">
-                                <template v-if="teacher.classroom?.name">
-                                    {{ teacher.classroom?.name }}-{{teacher.classroom?.major.initial}}
-                                </template>
-                                <template v-else>
-                                    <div class="flex w-auto items-start p-2 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert">
-                                        <div>
-                                            <span class="font-medium">Data Mata Pelajaran Belum ada...</span>
-                                        </div>
-                                    </div>
-                                </template>
-                            </td>
-                            <td class="px-6 py-4">
-                                {{ teacher.jumlah_jp }}
                             </td>
                             <td class="px-6 py-4">
                                0

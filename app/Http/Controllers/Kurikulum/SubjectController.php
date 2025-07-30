@@ -31,6 +31,20 @@ class SubjectController extends Controller
         }
     }
 
+    public function getTeacherBy($teacherId) {
+        try {
+            $teacher = User::select('id', 'name')->where('role_id', MainRole::item['guru'])->where('id', $teacherId)->first();
+            return response()->json([
+                'message'   => 'get data teacher successfully',
+                'data'      => $teacher
+            ], HttpCode::OK);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function getListTeacherSubject() {
         try {
             $teachers = User::where('role_id', MainRole::item['guru'])->with('subjects')->get();
@@ -101,28 +115,15 @@ class SubjectController extends Controller
         }
     }
 
-    public function checkBaseTeacherSubject() {
+    public function checkBaseTeacherSubject($teacherId) {
         try {
-            $listTeacherColour = TeacherColour::with('teacher')
-                                ->whereIn('user_id', DB::table('users')->select('id')->where('role_id', MainRole::item['guru'])->pluck('id'))
-                                ->get();
-
-                $teacherColour = User::where('role_id', MainRole::item['guru'])->whereHas('subjectColour')->get();
-
-            if ($listTeacherColour->isEmpty()) {
-                 throw new NotFoundException(
-                    'list Base Colour Teacher belum ada.',
-                    ['teacher_id' => ['list Base Colour Teacher belum ada.']
-                    ], HttpCode::NOT_FOUND
-                );
-            }
+            $teacherColour = TeacherColour::where('user_id', $teacherId)->first();
 
             return response()->json([
-                'message'   => 'get data base teacher colour successfully',
-                'data'      => $listTeacherColour
-            ], HttpCode::OK);
-        }  catch(NotFoundException $error) {
-            return $error->render(request());
+                'message'   => 'get base colour teacher subject successfully',
+                'data'      => $teacherColour
+            ]);
+
         }catch (\Exception $error) {
             return response()->json([
                 'message'   => $error->getMessage()
@@ -134,7 +135,6 @@ class SubjectController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'user_id'   => ['required'],
-                'subject_id'  => 'nullable',
                 'colour'    => 'required'
                 ], [
                 'colour.required'   => 'Warna wajib dipilh'
@@ -149,8 +149,7 @@ class SubjectController extends Controller
 
             $validated = $validator->validate();
             $teacherColour = TeacherColour::create([
-                'user_id'   =>$validated['user_id'],
-                'subject_id'    => null,
+                'user_id'       =>$validated['user_id'],
                 'colour'        => $validated['colour']
             ]);
 

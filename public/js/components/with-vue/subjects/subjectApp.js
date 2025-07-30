@@ -17,6 +17,8 @@ export default function subjectApp () {
             const message = ref('Hello Vue!')
             const listTeacherSubject = ref([])
             const selectTeacherId = ref(null)
+            const hasTeacherBaseColour = ref(null)
+            const dataTeacherBy = ref({ id: '', name: '' })
             const dataTeacher = ref({})
             const listSubject = ref([])
             const listTeacher = ref([])
@@ -68,7 +70,6 @@ export default function subjectApp () {
                 try {
                     let result = await axios.get('list-teacher-subject');
                     listTeacherSubject.value = result.data.data
-                    console.log('data list teacher subject', listTeacherSubject.value)
                     currentView.value = 'table'
 
                 } catch (error) {
@@ -103,9 +104,39 @@ export default function subjectApp () {
                 dataTeacher.value = data
             }
 
-            function handleSelectTeacher(data) {
-                currentView.value = data.component   // 'create-subject'
-                selectTeacherId.value = data.teacherId
+            async function handleSelectTeacher(data) {
+                try {
+                    selectTeacherId.value = data.teacherId
+                    dataTeacherBy.value = await getTeacherBy(data.teacherId)
+                    hasTeacherBaseColour.value =  await checkBaseColour(selectTeacherId.value)
+                    if (hasTeacherBaseColour.value) {
+                        currentView.value = data.component   // 'create-subject'
+                    }else {
+                        currentView.value = 'create-teacher-colour'
+                        dataTeacherBy.value
+                    }
+                } catch (error) {
+                    console.log('error', error)
+                }
+            }
+
+            async function checkBaseColour(teacherId) {
+                try {
+                    let result = await axios.get(`/check-base-colour-by/${teacherId}`)
+                    return result.data.data
+                } catch (error) {
+                    console.log('error:', error)
+                }
+
+            }
+
+            async function getTeacherBy(teacherId) {
+                try {
+                    let result = await axios.get(`/teacther-by/${teacherId}`)
+                   return result.data.data
+                } catch (error) {
+                    console.log('error', error)
+                }
             }
 
             async function getListClassroom() {
@@ -119,7 +150,8 @@ export default function subjectApp () {
             return {
                 message, currentView, showFormCreate, listSubject, getListSubject, listTeacher, listClassroom,
                 getListClassroom, getListTeacher, baseColour, refreshListSubject, baseCssColour, dataTeacher,
-                handlePassingData, getListBaseTeacherColour, listTeacherSubject, selectTeacherId, handleSelectTeacher
+                handlePassingData, getListBaseTeacherColour, listTeacherSubject, selectTeacherId, handleSelectTeacher,
+                hasTeacherBaseColour, checkBaseColour, dataTeacherBy, getTeacherBy
              }
         },
         template: `
@@ -152,10 +184,10 @@ export default function subjectApp () {
              <div  v-show="currentView === 'create-teacher-colour'"  class="relative sm:rounded-lg">
                 <create-teacher-colour
                     :visable-card="currentView"
-                    :teachers="listTeacher"
                     :provide-colour="baseColour"
-                    :dataPassingTeacher="dataTeacher"
+                    :dataPassingTeacher="dataTeacherBy"
                     @change-to="currentView = $event"
+                    @back-to="currentView = $event"
                     @send-back-data="handlePassingData"
                 />
             </div>

@@ -6,10 +6,6 @@ export default defineComponent({
             type: String,
             required: true
         },
-        teachers: {
-            type: Array,
-            required: true
-        },
         provideColour: {
             type: Array,
             required: true
@@ -21,17 +17,13 @@ export default defineComponent({
     },
     emit: ['changeTo','backTo', 'sendBackData'],
     setup(props, {emit}) {
-        const teacherColour = reactive({ user_id:'', colour: '' })
-        const fieldLabels = { name: 'Nama', user_id: 'Guru', colour: 'Warna' }
+        const teacherColour = reactive({ colour: '' })
+        const fieldLabels = { colour: 'Warna' }
         const errors = reactive({ user_id: '', colour: '' })
-        const localTeacher = ref(props.teachers)
         const localColours = ref(props.provideColour)
         const localDataPassingTeacher = ref({...props.dataPassingTeacher})
         const isLoading = ref(false)
         let badgeClass = computed(() => {
-            if(!teacherColour.colour) {
-                console.log('tidak memiliki')
-            }
             let color = teacherColour.colour
             return [
                 `bg-${color}-100`, `dark:bg-${color}-900`, `dark:text-${color}-300`, `text-${color}-800`,  `border`,  `border-${color}-400`,  'text-xs',  'font-medium', 'mb-2', 'me-2',  'px-2.5', 'py-0.5','rounded-sm'
@@ -55,14 +47,12 @@ export default defineComponent({
             sky: '#0ea5e9'
         }
 
-        // melihat perubahan langsung dari props.teachers yang dikirim dari parent disimpan ke state localTeacher
-        watch(() => props.teachers, (newVal) => { localTeacher.value = newVal }, { immediate: true });
-
         // melihat perubahan langsung dari props.classrooms yang dikirim dari parent disimpan ke state localColours
         watch(() => props.provideColour, (newVal) => { localColours.value = newVal }, { immediate: true });
 
         // melihat perubahan langsung dari props.classrooms yang dikirim dari parent disimpan ke state localColours
         watch(() => props.dataPassingTeacher, (newVal) => { localDataPassingTeacher.value = newVal }, { immediate: true });
+
         function closeCreateForm() {
             resetFields(teacherColour);
             resetFields(errors);
@@ -85,19 +75,20 @@ export default defineComponent({
                 if (!isValid) return // jika tidak valid / tidak terisi beberapa field akan kembali
 
                 let sendTeacherColour = {
-                    user_id: teacherColour.user_id,
+                    user_id: localDataPassingTeacher.value.id,
                     colour: teacherColour.colour,
                 }
                     isLoading.value = true;
                 let result = await axios.post(`store-teacher-colour`, sendTeacherColour)
                     localDataPassingTeacher.value = result.data.data
+                    console.log('data base teacher', localDataPassingTeacher.value)
                     isLoading.value = false;
                     resetFields(teacherColour);
                     resetFields(errors);
                     emit('changeTo', 'create-subject')
                     emit('sendBackData', localDataPassingTeacher.value)
+                    // emit('add', {  component: 'create-subject',  teacherId: teacherId })
             } catch (error) {
-                console.log('error dari create subject', error)
                 if (error.response && error.response.status === 422) {
                     let responseErrors = error.response.data.errors;
                     for (let key in responseErrors) {
@@ -109,7 +100,7 @@ export default defineComponent({
         }
 
         return {
-            closeCreateForm, storeTeacherColour, errors, isLoading, teachers: localTeacher,
+            closeCreateForm, storeTeacherColour, errors, isLoading,
             provideColour: localColours, badgeClass, baseCssColour, teacherColour, dataPassingTeacher: localDataPassingTeacher
         }
     },
@@ -127,11 +118,12 @@ export default defineComponent({
 
                             <div class="col-span-2 sm:col-span-1">
                                 <label for="user_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Guru</label>
-                                <select v-model="teacherColour.user_id" id="user_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                    <option value="">Select teacher</option>
-                                    <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">{{teacher.name}}</option>
-                                </select>
-                                <p v-if="errors.user_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.user_id }}</p>
+                               <input
+                                    type="text"
+                                    class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    :value="dataPassingTeacher.name"
+                                    disabled
+                                    readonly>
                             </div>
 
                             <div class="col-span-2 sm:col-span-1">
