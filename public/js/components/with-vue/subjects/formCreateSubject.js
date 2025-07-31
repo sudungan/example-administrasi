@@ -82,7 +82,7 @@ export default defineComponent({
         let badgeClass = computed(() => {
             let color = localDataTeacher.value.colour
             return [
-                `bg-${color}-100`, `dark:bg-${color}-900`, `dark:text-${color}-300`, `text-${color}-800`,  `border`,  `border-${color}-400`,  'text-xs',  'font-medium', 'mb-2', 'me-2',  'px-2.5', 'py-0.5','rounded-sm'
+                `bg-${color}-100`, `dark:bg-${color}-900`, `dark:text-${color}-200`, `text-${color}-800`,  `border`,  `border-${color}-400`,  'text-xs',  'font-medium', 'mb-2', 'me-2',  'px-2.5', 'py-0.5','rounded-sm'
             ]
         })
 

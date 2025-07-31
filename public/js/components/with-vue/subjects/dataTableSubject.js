@@ -58,6 +58,7 @@ export default defineComponent({
     template: `
        <div class="mt-2 relative overflow-x-auto shadow-md sm:rounded-lg">
             <div class="flex flex-wrap justify-between pb-4">
+             <div></div>
                 <!-- Search Input di Pojok Kanan -->
                 <div class="relative">
                     <label for="table-search" class="sr-only">Search</label>

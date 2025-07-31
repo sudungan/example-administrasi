@@ -17,23 +17,9 @@ class SubjectController extends Controller
         return view('subjects.with-vue.index');
     }
 
-    public function getListSubject() {
-        try {
-            $listSubject = Subject::with(['teacher', 'classroom.major'])->get();
-            return response()->json([
-                'message'   => 'get list subject successfully',
-                'data'      => $listSubject
-            ], HttpCode::OK);
-        } catch (\Exception $error) {
-            return response()->json([
-                'message'=> $error->getMessage()
-            ], HttpCode::INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public function getListSubjectBy($teacherId) {
         try {
-            $subjects = Subject::where('user_id', $teacherId)->with(['classroom', 'teacher'])->get();
+            $subjects = Subject::where('user_id', $teacherId)->with(['classroom.major', 'teacher'])->get();
             return response()->json([
                 'message'   => 'get list subject by teacher successfully',
                 'data'      => $subjects

@@ -21,11 +21,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('subjects', [SubjectController::class, 'index'])->name('subjects.index');
     Route::post('store-subject', [SubjectController::class, 'storeSubject'])->name('store-subject');
     Route::post('store-teacher-colour', [SubjectController::class, 'storeTeacherColour'])->name('store-teacher-colour');
-    Route::get('list-subject', [SubjectController::class, 'getListSubject'])->name('list-subject');
     Route::get('check-base-colour-by/{teacherId}', [SubjectController::class, 'checkBaseTeacherSubject'])->name('check-base-colour-by');
     Route::get('list-teacher-subject', [SubjectController::class, 'getListTeacherSubject'])->name('list-teacher-subject');
     Route::get('teacher-by/{teacherId}', [SubjectController::class, 'getTeacherBy'])->name('teacher-by');
     Route::get('list-subject-by/{teacherId}', [SubjectController::class, 'getListSubjectBy'])->name('list-subject-by');
+
     // ROUTE FOR CLASSROOMS
     Route::get('classrooms', [ClassroomController::class, 'index'])->name('classrooms.index');
     Route::get('list-classroom', [ClassroomController:: class, 'getListClassroom'])->name('list-classroom');

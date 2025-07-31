@@ -16,8 +16,6 @@ export default function subjectApp () {
             const dataTeacherBy = ref({ id: '', name: '' })
             const showListSubjectsTeacher = ref([])
             const dataTeacher = ref({})
-            const listSubject = ref([])
-            const listTeacher = ref([])
             const listClassroom = ref([])
             const showFormCreate =()=> currentView.value = 'create-teacher-colour'
             const baseColour = ref([
@@ -44,26 +42,13 @@ export default function subjectApp () {
             }
 
             onMounted(async ()=> {
-                await getListSubject()
-                await getListTeacher()
                 await getListTeacherSubject()
                 await getListClassroom()
             });
 
-            async function getListSubject() {
-                try {
-                    currentView.value = 'loading-table'
-                    let result = await axios.get('list-subject');
-                    listSubject.value = result.data.data
-                    currentView.value = 'table'
-                } catch (error) {
-                    console.log('error:', error)
-                }
-            }
-
             async function getListTeacherSubject() {
                 try {
-                    let result = await axios.get('list-teacher-subject');
+                    let result = await axios.get('list-teacher-subject'); // mengambil data guru dengan subjectnya
                     listTeacherSubject.value = result.data.data
                     currentView.value = 'table'
 
@@ -74,15 +59,6 @@ export default function subjectApp () {
 
             async function refreshListSubject() {
                 await getListTeacherSubject()
-            }
-
-            async function getListTeacher() {
-                try {
-                    let result = await axios.get('list-teacher');
-                    listTeacher.value = result.data.data
-                } catch (error) {
-                    console.log('error:', error)
-                }
             }
 
             // fungsi untuk menghandle passing data dari BE ke component lain
@@ -108,13 +84,13 @@ export default function subjectApp () {
                 try {
                     let result = await axios.get(`/list-subject-by/${data.teacherId}`)
                     showListSubjectsTeacher.value = result.data.data
-                    console.log('data', showListSubjectsTeacher.value)
                     currentView.value = 'show-list-subject-by'
                 } catch (error) {
                     console.log('error', error)
                 }
             }
 
+            // melakukan check base teacher colour pada guru yang tersedia
             async function checkBaseColour(teacherId) {
                 try {
                     let result = await axios.get(`/check-base-colour-by/${teacherId}`)
@@ -124,6 +100,7 @@ export default function subjectApp () {
                 }
             }
 
+            // mengambil data guru berdasarkan id
             async function getTeacherBy(teacherId) {
                 try {
                     let result = await axios.get(`/teacher-by/${teacherId}`)
@@ -133,6 +110,7 @@ export default function subjectApp () {
                 }
             }
 
+            // mengambil data seluruh list kelas yang tersedia
             async function getListClassroom() {
                 try {
                     let result = await axios.get('list-classroom');
@@ -142,8 +120,8 @@ export default function subjectApp () {
                 }
             }
             return {
-                message, currentView, showFormCreate, listSubject, getListSubject, listTeacher, listClassroom,
-                getListClassroom, getListTeacher, baseColour, refreshListSubject, baseCssColour, handleShowSubjectTeacher,
+                message, currentView, showFormCreate, listClassroom,
+                getListClassroom, baseColour, refreshListSubject, baseCssColour, handleShowSubjectTeacher,
                 dataTeacher, handlePassingData, listTeacherSubject, handleSelectTeacher,showListSubjectsTeacher,
                 hasTeacherBaseColour, checkBaseColour, dataTeacherBy, getTeacherBy,
              }
@@ -165,7 +143,7 @@ export default function subjectApp () {
             </div>
 
             <!-- komponent untuk show-list-subject-by-teacherId -->
-             <div v-show="currentView === 'show-list-subject-by'" class="relative shadow-md sm:rounded-lg">
+             <div v-show="currentView === 'show-list-subject-by'" class="relative sm:rounded-lg">
                <card-show-list-subject
                 :visable-card="currentView"
                 :data="showListSubjectsTeacher"
