@@ -6,7 +6,7 @@ use App\Helpers\HttpCode;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{TeacherColour, Classroom, Subject, User};
+use App\Models\{TeacherColour, Classroom, Subject, SubjectTeacher, User};
 use App\Exceptions\{ConflictException, NotFoundException};
 use App\Helpers\MainRole;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +31,20 @@ class SubjectController extends Controller
         }
     }
 
+    public function getListSubjectBy($teacherId) {
+        try {
+            $subjects = Subject::where('user_id', $teacherId)->with(['classroom', 'teacher'])->get();
+            return response()->json([
+                'message'   => 'get list subject by teacher successfully',
+                'data'      => $subjects
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ]);
+        }
+    }
+
     public function getTeacherBy($teacherId) {
         try {
             $teacher = User::select('id', 'name')->where('role_id', MainRole::item['guru'])->where('id', $teacherId)->first();
@@ -47,7 +61,7 @@ class SubjectController extends Controller
 
     public function getListTeacherSubject() {
         try {
-            $teachers = User::where('role_id', MainRole::item['guru'])->with('subjects')->get();
+            $teachers = User::where('role_id', MainRole::item['guru'])->with(['subjects','amountSubjects'])->get();
 
             return response()->json([
                 'message'   => 'get list teacher successfully',
@@ -65,14 +79,13 @@ class SubjectController extends Controller
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required',
                 'name' => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/'],
-                'user_id'   => ['required', 'unique:' . Subject::class],
+                'user_id'   => ['required'],
                 'classroom_id'  => 'required',
                 'jumlah_jp'  => 'required',
                 'colour'    => 'required'
                 ], [
                 'name.min'  => 'Nama user minimal 3 karakter',
                 'name.regex'   => 'Nama Jurusan hanya boleh berisi huruf dan spasi.',
-                'user_id.unique'  => 'Nama guru sudah digunakan dalam pelajaran ini..',
                 'user_id.required'=> 'Nama Kepala Jurusan wajib dipilih',
                 'classroom_id.required'   => 'Kelas harus dipilih',
                 'jumlah_jp.required' => 'Total Jam Pelajaran wajib dipilih..',
@@ -89,7 +102,7 @@ class SubjectController extends Controller
             $validated = $validator->validate();
 
 
-            $subject = Subject::create([
+            Subject::create([
                 'name'          =>  $validated['name'],
                 'user_id'       =>  $validated['user_id'],
                 'classroom_id'  =>  $validated['classroom_id'],
@@ -97,11 +110,11 @@ class SubjectController extends Controller
                 'jumlah_jp'     =>  $validated['jumlah_jp']
             ]);
 
-            TeacherColour::create([
-                'user_id'   =>$validated['user_id'],
-                'subject_id'    => $subject->id,
-                'colour'        => $validated['colour']
-            ]);
+            $subjectTeacher = SubjectTeacher::firstOrNew(['user_id' => $validated['user_id']]);
+
+            $subjectTeacher->total_jp = ($subjectTeacher->total_jp ?? 0) + $validated['jumlah_jp'];
+
+            $subjectTeacher->save();
 
             return response()->json(
                 [ 'message'   => 'subject created succesfully', ],
@@ -117,7 +130,7 @@ class SubjectController extends Controller
 
     public function checkBaseTeacherSubject($teacherId) {
         try {
-            $teacherColour = TeacherColour::where('user_id', $teacherId)->first();
+            $teacherColour = TeacherColour::where('user_id', $teacherId)->with('teacher')->first();
 
             return response()->json([
                 'message'   => 'get base colour teacher subject successfully',
@@ -135,7 +148,8 @@ class SubjectController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'user_id'   => ['required'],
-                'colour'    => 'required'
+                'colour'    => 'required',
+                'jumlah_jp' => 'required'
                 ], [
                 'colour.required'   => 'Warna wajib dipilh'
             ]);

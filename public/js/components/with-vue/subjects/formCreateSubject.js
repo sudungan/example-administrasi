@@ -11,18 +11,19 @@ export default defineComponent({
             required: true
         },
         dataPassingTeacher: {
-            type: Object,
+            type: [Object, null],
             required: true
         }
     },
     emit: ['backTo', 'reload'],
     setup(props, {emit}) {
-        const subject = reactive({ name: '', user_id: '', classroom_id: '', colour: '', jumlah_jp: '' })
-        const fieldLabels = { name: 'Nama', user_id: 'Guru', classroom_id: 'Kelas', colour: 'Warna', jumlah_jp: 'Jumlah Jam Pelajaran' }
-        const errors = reactive({ name: '', user_id: '', classroom_id: '', colour: '', jumlah_jp: '' })
+        const subject = reactive({ name: '',  classroom_id: '', jumlah_jp: '' })
+        const fieldLabels = { name: 'Nama', classroom_id: 'Kelas', jumlah_jp: 'Jumlah Jam Pelajaran' }
+        const errors = reactive({ name: '', classroom_id: '', jumlah_jp: '' })
         const localDataTeacher = ref({...props.dataPassingTeacher})
         const localClassroom = ref(props.classrooms)
         const isLoading = ref(false)
+
 
         // melihat perubahan langsung dari props.teachers yang dikirim dari parent disimpan ke state localDataTeacher
         watch(() => props.dataPassingTeacher, (newVal) => { localDataTeacher.value = newVal }, { immediate: true });
@@ -53,12 +54,12 @@ export default defineComponent({
 
                 let sendDataSubject = {
                     name: subject.name,
-                    user_id: subject.user_id,
+                    user_id: localDataTeacher.value.user_id,
+                    colour: localDataTeacher.value.colour,
                     classroom_id: subject.classroom_id,
                     jumlah_jp: subject.jumlah_jp
                 }
                     isLoading.value = true;
-                    console.log('data subject', sendDataSubject)
                 let result = await axios.post(`store-subject`, sendDataSubject)
                     isLoading.value = false;
                     resetFields(subject);
@@ -78,16 +79,26 @@ export default defineComponent({
             }
         }
 
+        let badgeClass = computed(() => {
+            let color = localDataTeacher.value.colour
+            return [
+                `bg-${color}-100`, `dark:bg-${color}-900`, `dark:text-${color}-300`, `text-${color}-800`,  `border`,  `border-${color}-400`,  'text-xs',  'font-medium', 'mb-2', 'me-2',  'px-2.5', 'py-0.5','rounded-sm'
+            ]
+        })
+
         return {
-            subject, closeCreateForm, storeSubject, errors, isLoading, dataPassingTeacher: localDataTeacher, classrooms: localClassroom,
+            subject, closeCreateForm, badgeClass, storeSubject, errors, isLoading, dataPassingTeacher: localDataTeacher, classrooms: localClassroom,
         }
     },
     template: `
         <div class="relative p-4 w-full max-w-2xl max-h-full">
             <div class="relative bg-gray-300 rounded-lg shadow-sm dark:bg-gray-900">
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white dark:semibold">
-                        New subject to teacher {{ dataPassingTeacher.teacher?.name }}
+                    <h3 class="text-xl flex-inline font-semibold text-gray-900 dark:text-white dark:semibold">
+                        new subject to
+                        <span v-if="dataPassingTeacher" :class="badgeClass">
+                        {{dataPassingTeacher.teacher.name}}
+                        </span>
                     </h3>
                 </div>
                  <div class="p-4 md:p-5 space-y-4">
@@ -116,7 +127,7 @@ export default defineComponent({
                                         :value="classroom.id
                                         ">{{classroom.name}}-{{classroom.major.initial}}</option>
                                 </select>
-                                <p v-if="errors.classroom_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.user_id }}</p>
+                                <p v-if="errors.classroom_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.classroom_id }}</p>
                             </div>
 
                             <div class="col-span-2 sm:col-span-1">

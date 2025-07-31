@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Classroom, Major, User,};
+use App\Models\{Subject, User, };
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,13 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subjects', function (Blueprint $table) {
+        Schema::create('subjects_teacher', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->foreignIdFor(Subject::class);
             $table->foreignIdFor(User::class);
-            $table->foreignIdFor(Classroom::class);
-            $table->integer('jumlah_jp')->default(0);
-            $table->string('colour')->default('gray');
+            $table->integer('total_jp')->default(0);
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subjects');
+        Schema::dropIfExists('subjects_teacher');
     }
 };
