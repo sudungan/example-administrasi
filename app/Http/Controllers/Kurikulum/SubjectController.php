@@ -6,7 +6,7 @@ use App\Helpers\HttpCode;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{TeacherColour, Classroom, Subject, SubjectTeacher, User};
+use App\Models\{TeacherColour, Classroom, Subject, SubjectTeacher, User, ScheduleSubject};
 use App\Exceptions\{ConflictException, NotFoundException};
 use App\Helpers\MainRole;
 use Illuminate\Support\Facades\DB;
@@ -163,6 +163,33 @@ class SubjectController extends Controller
             return response()->json([
                 'message'   => $error->getMessage()
             ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function deleteSubjectById(Subject $subject) {
+        try {
+             if (Subject::where('id', $subject['id'])->whereHas('scheduleSubjects')->exists()) {
+               throw new ConflictException('mapel sudah digunakan dalam jadwal', [
+                    'schedule_id' => 'mapel sudah digunakan dalam jadwal'
+                ]);
+            }
+            $subjectTeacher = SubjectTeacher::where('user_id', $subject['user_id'])->first();
+
+            $subjectTeacher->total_jp == 0 ?
+                $subjectTeacher->delete() :
+                $subjectTeacher->update(['total_jp'  => $subjectTeacher->total_jp - $subject->jumlah_jp ]);
+
+            $subject->delete();
+
+           return response()->json([
+            'message'   => 'subject deleted sucessfully'
+           ]);
+        } catch(ConflictException $exception) {
+            return $exception->render(request());
+        }catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ]);
         }
     }
 }

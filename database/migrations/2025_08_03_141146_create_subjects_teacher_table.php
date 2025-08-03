@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Subject, User, };
+use App\Models\{Classroom, Subject, User,};
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,9 +14,8 @@ return new class extends Migration
     {
         Schema::create('subjects_teacher', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Subject::class);
             $table->foreignIdFor(User::class);
-            $table->integer('total_jp')->default(0);
+            $table->integer('total_jp');
             $table->timestamps();
         });
     }

@@ -139,6 +139,7 @@ export default function subjectApp () {
                 :data="listTeacherSubject"
                 @add="handleSelectTeacher"
                 @show="handleShowSubjectTeacher"
+                @reload="refreshListSubject"
                 />
             </div>
 

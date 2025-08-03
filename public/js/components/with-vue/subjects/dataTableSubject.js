@@ -11,7 +11,7 @@ export default defineComponent({
             required: true
         }
     },
-    emits: ['add', 'show'],
+    emits: ['add', 'show', 'reload'],
     setup(props, {emit}) {
         const localListSubject = ref([])
         const colorMap = {
@@ -39,7 +39,24 @@ export default defineComponent({
         }
 
         function deleteConfirmation(subjectId) {
-            console.log('id', subjectId)
+            confirmDelete('Yakin dihapus?', async (result)=>{
+                if(!result.isConfirmed) {
+                    return
+                }
+                await swalLoading('delete process..',async (result)=> {
+                    try {
+                        let result = await axios.delete(`/delete-subject-by/${subjectId}`)
+                        successNotification(result.data.message)
+                        emit('reload')
+                    } catch (error) {
+                        if (error.response && error.response.status == 409) {
+                            swalNotificationConflict(error.response.data.message)
+                        }else {
+                            swalInternalServerError(error.response.data.message) // http code 500
+                        }
+                    }
+                });
+            })
         }
 
         function editSubject(subjectId) {
