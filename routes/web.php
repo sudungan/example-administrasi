@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\General\{RoleController, UserController};
 use App\Http\Controllers\Kurikulum\{
-    MajorController, ClassroomController, SubjectController
+    MajorController, ClassroomController, ScheduleController, SubjectController
 };
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -16,6 +16,8 @@ Route::view('dashboard', 'dashboard')
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
+    // ROUTE FOR SCHEDULE SUBJECT
+    Route::get('schedules', [ScheduleController::class, 'index'])->name('schedules.index');
 
     // ROUTE FOR SUBJECT
     Route::get('subjects', [SubjectController::class, 'index'])->name('subjects.index');
