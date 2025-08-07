@@ -11,10 +11,13 @@ export default defineComponent({
             required: true
         },
     },
-    emits: ['backTo'],
+    emits: ['backTo', 'reload'],
     setup(props, {emit}) {
             const childIsLoading = ref(props.waitingProcess)
             const createTimeTable = reactive({ start_time: '', end_time: '', activity: '',  category: '' })
+            const errors = reactive({start_time: '',  end_time: '', activity: '', category: ''})
+            const fieldLabels = { start_time: 'waktu awal', end_time: 'waktu akhir', activity: 'aktifitas', category: 'Kategory' }
+            const isLoading = ref(false)
             let optionCategories = [{id: 1, name: 'all day', key: 'all_day'}, {id: 2, key: 'some_day', name: 'some day'}]
             const closeCreateForm = ()=> {
                 emit('backTo', 'table')
@@ -22,11 +25,49 @@ export default defineComponent({
 
             watch(() => props.waitingProcess, (newVal) => { childIsLoading.value = newVal }, { immediate: true });
 
-            function storeTimeTable() {
+            async function storeTimeTable() {
+                try {
+                        let isValid = true;
+                        childIsLoading.value = true;
+                        for (let key in createTimeTable) {
+                            if (!createTimeTable[key].toString().trim()) {
+                                let label  = fieldLabels[key] || key;
+                                    errors[key] = `${label} tidak boleh kosong`;
+                                    isValid = false;
+                            }else {
+                                errors[key] = '';
+                            }
+                        }
+
+                    if (!isValid) return
+                    let sendTimetable = {
+                        start_time: createTimeTable.start_time,
+                        end_time: createTimeTable.end_time,
+                        activity: createTimeTable.activity,
+                        category: createTimeTable.category
+                    }
+                    childIsLoading.value = true;
+                    let result = await axios.post('/store-timetable', sendTimetable)
+                    resetFields(createTimeTable)
+                    successNotification(result.data.message)
+                    childIsLoading.value = false;
+                    emit('reload')
+                    emit('backTo', 'table')
+
+                } catch (error) {
+                    console.log('error', error)
+                     if (error.response && error.response.status === 422) {
+                    let responseErrors = error.response.data.errors;
+                    for (let key in responseErrors) {
+                        errors[key] = responseErrors[key][0];
+                    }
+                }
+                 isLoading.value = false;
+                }
                 console.log('testing')
             }
         return {
-            waitingProcess: childIsLoading, closeCreateForm, createTimeTable, storeTimeTable, optionCategories
+            waitingProcess: childIsLoading, isLoading, closeCreateForm, createTimeTable, storeTimeTable, optionCategories, errors, fieldLabels
         }
     },
     template: `
@@ -49,6 +90,7 @@ export default defineComponent({
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                    placeholder="HH:MM"
                                 >
+                                <p  v-if="errors.start_time" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.start_time }}</p>
                             </div>
 
                             <div class="col-span-2 sm:col-span-1">
@@ -60,6 +102,7 @@ export default defineComponent({
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                    placeholder="HH:MM"
                                 >
+                                  <p  v-if="errors.end_time" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.end_time }}</p>
                             </div>
 
 
@@ -72,6 +115,7 @@ export default defineComponent({
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                     placeholder="ketik nama kegiatan disini.."
                                 >
+                                <p  v-if="errors.activity" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.activity }}</p>
                             </div>
 
                             <div class="col-span-2 sm:col-span-1">
@@ -80,6 +124,7 @@ export default defineComponent({
                                     <option value="">Select category</option>
                                     <option v-for="category in optionCategories" :value="category.key" :key="category.id"> {{category.name}} </option>
                                 </select>
+                                <p  v-if="errors.category" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.category }}</p>
                             </div>
 
                             <div class="relative flex mt-2 gap-2">

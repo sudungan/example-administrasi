@@ -18,6 +18,9 @@ Route::view('dashboard', 'dashboard')
 Route::middleware(['auth'])->group(function () {
     // ROUTE FOR SCHEDULE SUBJECT
     Route::get('schedules', [ScheduleController::class, 'index'])->name('schedules.index');
+    Route::post('store-timetable', [ScheduleController::class, 'storeTimetable'])->name('store-timetable');
+    Route::get('list-timetable', [ScheduleController::class, 'getListTimetable'])->name('list-timetable');
+
 
     // ROUTE FOR SUBJECT
     Route::get('subjects', [SubjectController::class, 'index'])->name('subjects.index');

@@ -101,3 +101,8 @@ function resetFields(target) {
         }
     });
 }
+
+function formatTime(time) {
+    return time.slice(0,5)
+}
+// const formatTime = (time) => time.slice(0, 5);
