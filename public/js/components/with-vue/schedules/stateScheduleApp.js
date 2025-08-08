@@ -2,17 +2,18 @@
     import formCreateTime from "./formCreateTime.js"
     import cardListTeacherSubject from "./cardListTeacherSubject.js"
     import settingSchedule from "./settingSchedule.js"
+    import cardSettingTimeTable from "./cardSettingTimeTable.js"
     const { createApp, ref, reactive, onMounted } = Vue
 
 export default function stateScheduleApp () {
     createApp({
-        components: { dataTableSchedule, formCreateTime, cardListTeacherSubject, settingSchedule },
+        components: { dataTableSchedule, formCreateTime, cardListTeacherSubject, settingSchedule, cardSettingTimeTable },
         setup() {
             const currentView = ref("table")
-            const disableButton = ref(false)
             const isLoading = ref(false)
             const listTimetable = ref([])
             const listWeekDays = ref({})
+            const editTimeSlot = ref({ id: '', start_time: '',  end_time: '', activity: '', category: '' })
             const handleCreateTimetable = ()=> { currentView.value = 'create-time' }
 
             onMounted(async ()=> {
@@ -33,14 +34,28 @@ export default function stateScheduleApp () {
                 await getListTimetable()
             }
 
+            // fungsi untuk setting mata pelajaran berdasarkan mapel by subjectId
             function handleSettingSchedule(data) {
                 currentView.value = data.component
                 console.log('subjectId', data.subjectId)
             }
 
+            // fungsi untuk melakukan pengambilan data time slot by Id dan akan dipassing ke card
+            async function getEditTimeSlot(data) {
+                try {
+                    let result = await axios.get(`/time-slot-by/${data.timeId}`)
+                    editTimeSlot.value = result.data.data;
+                    currentView.value = data.component // mengambil nama component
+                } catch (error) {
+                    console.log('error mengambil data time-slot', error)
+                }
+            }
+
+
+
             return {
                 currentView, handleCreateTimetable, isLoading, getListTimetable, listTimetable, refreshTimeTable, listWeekDays,
-                handleSettingSchedule
+                handleSettingSchedule, editTimeSlot, getEditTimeSlot
             }
         },
         template: `
@@ -49,11 +64,12 @@ export default function stateScheduleApp () {
                 <data-table-schedule
                     :dataProvide="listTimetable"
                     @add-time="handleCreateTimetable"
+                    @edit-time="getEditTimeSlot"
                     :weekProvide="listWeekDays"
                 />
             </div>
 
-            <!-- komponent untuk creaet-time-schedule -->
+            <!-- komponent untuk create-time-schedule -->
             <div
                 v-cloak
                 v-show="currentView === 'create-time'"
@@ -63,6 +79,20 @@ export default function stateScheduleApp () {
                     :waiting-process="isLoading"
                     @reload="refreshTimeTable"
                     @back-to="currentView = $event"
+                />
+            </div>
+
+             <!-- komponent untuk setting-time-schedule -->
+            <div
+                v-cloak
+                v-show="currentView === 'card-setting-time'"
+                class="relative sm:rounded-lg">
+                <card-setting-time-table
+                    :visable-card="currentView"
+                    :waiting-process="isLoading"
+                    :provide-data="editTimeSlot"
+                    @back-to="currentView = $event"
+                    @reload="refreshTimeTable"
                 />
             </div>
 

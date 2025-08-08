@@ -86,7 +86,6 @@ export default defineComponent({
                         childIsLoading.value = false
                }else {
                 childIsLoading.value = false;
-                console.log('error terakhir:', error)
                }
             }
         }

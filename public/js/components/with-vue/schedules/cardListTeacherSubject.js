@@ -17,7 +17,6 @@ export default defineComponent({
              try {
                     let result = await axios.get('list-teacher-subject'); // mengambil data guru dengan subjectnya
                     listTeacherSubject.value = result.data.data
-                    console.log('data', listTeacherSubject.value)
                 } catch (error) {
                     console.log('error:', error)
                 }

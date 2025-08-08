@@ -20,6 +20,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('schedules', [ScheduleController::class, 'index'])->name('schedules.index');
     Route::post('store-timetable', [ScheduleController::class, 'storeTimetable'])->name('store-timetable');
     Route::get('list-timetable', [ScheduleController::class, 'getListTimetable'])->name('list-timetable');
+    Route::get('time-slot-by/{timeId}', [ScheduleController::class, 'getTimeSlotBy'])->name('time-slot-by');
+    Route::put('edit-time-by/{timeId}', [ScheduleController::class, 'updateTimeSlotBy'])->name('edit-time-by');
 
 
     // ROUTE FOR SUBJECT

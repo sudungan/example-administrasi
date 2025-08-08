@@ -11,7 +11,7 @@ export default defineComponent({
             required: true
         }
     },
-    emits: ['addTime'],
+    emits: ['addTime', 'editTime'],
     setup(props, {emit}) {
         const childListTimetable = ref([])
         const childListWeekDays = ref(props.weekProvide)
@@ -22,11 +22,16 @@ export default defineComponent({
             {id: 1, name: 'X-AK'}, {id: 2, name: 'X-RPL' }, {id: 3, name: 'XI-AK'}, {id: 4, name: 'XI-RPL'}, {id: 5, name: 'XII-AK', },
         ]
         const formatTime = (time) => time.slice(0, 5);
-        const settingTime =()=> {
+        const btnAddTime =()=> {
             emit('addTime')
         }
+
+        function btnEditTimetable(timeId) {
+            emit('editTime', {component: 'card-setting-time', timeId: timeId})
+        }
+
         return {
-            settingTime, childListTimetable, formatTime, childListWeekDays
+            btnAddTime, childListTimetable, formatTime, childListWeekDays, btnEditTimetable
         }
     },
     template: `
@@ -35,7 +40,7 @@ export default defineComponent({
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-                <th @click="settingTime" class="px-2 py-2 text-start border-r border-gray-300">
+                <th @click="btnAddTime" class="px-2 py-2 text-start border-r border-gray-300">
                     <div class="flex flex-col items-start">
                         <span class="underline cursor-pointer hover:font-bold hover:text-red-900">Time</span>
                         <span>Kelas</span>
@@ -63,7 +68,7 @@ export default defineComponent({
                 <template v-for="time in childListTimetable" :key="childListTimetable.id" >
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 border-b">
                         <th class="px-1 py-1">
-                            <span class="bg-blue-100 text-blue-800 text-[10px] font-medium px-1.5 py-0.5 rounded-sm border border-blue-400 dark:bg-gray-700 dark:text-blue-400">
+                            <span @click="btnEditTimetable(time.id)" class="hover:underline hover:cursor-pointer bg-blue-100 text-blue-800 text-[10px] font-medium px-1.5 py-0.5 rounded-sm border border-blue-400 dark:bg-gray-700 dark:text-blue-400">
                                 {{ formatTime(time.start_time) }} - {{ formatTime(time.end_time) }}
                             </span>
                         </th>
