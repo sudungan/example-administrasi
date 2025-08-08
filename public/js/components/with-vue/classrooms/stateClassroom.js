@@ -35,7 +35,7 @@ export default function stateClassroom() {
                 await getListTecher()
                 await getListStudent()
             });
-             async function getListClassroom() {
+            async function getListClassroom() {
                 try {
                     currentView.value = 'loading-table'
                     const result = await axios.get('/list-classroom');

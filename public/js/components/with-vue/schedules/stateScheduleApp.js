@@ -13,11 +13,13 @@ export default function stateScheduleApp () {
             const isLoading = ref(false)
             const listTimetable = ref([])
             const listWeekDays = ref({})
+            const listClassroom = ref([])
             const editTimeSlot = ref({ id: '', start_time: '',  end_time: '', activity: '', category: '' })
             const handleCreateTimetable = ()=> { currentView.value = 'create-time' }
 
             onMounted(async ()=> {
                 await getListTimetable()
+                await getListClassroom()
             });
             async function getListTimetable() {
                 try {
@@ -27,6 +29,16 @@ export default function stateScheduleApp () {
                     console.log('data', listWeekDays.value)
                 } catch (error) {
                     console.log('error', error)
+                }
+            }
+
+
+            async function getListClassroom() {
+                try {
+                    const result = await axios.get('/list-classroom');
+                    listClassroom.value = result.data.data
+                } catch (error) {
+                    console.log(error)
                 }
             }
 
@@ -55,7 +67,7 @@ export default function stateScheduleApp () {
 
             return {
                 currentView, handleCreateTimetable, isLoading, getListTimetable, listTimetable, refreshTimeTable, listWeekDays,
-                handleSettingSchedule, editTimeSlot, getEditTimeSlot
+                handleSettingSchedule, editTimeSlot, getEditTimeSlot, listClassroom, getListClassroom
             }
         },
         template: `
@@ -63,6 +75,7 @@ export default function stateScheduleApp () {
             <div v-show="currentView === 'table'" class="relative shadow-md sm:rounded-lg">
                 <data-table-schedule
                     :dataProvide="listTimetable"
+                    :provideClassroom="listClassroom"
                     @add-time="handleCreateTimetable"
                     @edit-time="getEditTimeSlot"
                     :weekProvide="listWeekDays"
