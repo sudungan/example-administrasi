@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\TimeSlot;
 use Carbon\Carbon;
+use App\Exceptions\{ConflictException, NotFoundException};
+use App\Models\Major;
 use Illuminate\Support\Facades\Validator;
 
 class ScheduleController extends Controller
@@ -98,7 +100,7 @@ class ScheduleController extends Controller
             $validated['end_time'] = substr($validated['end_time'], 0, 5);
 
             $timeSlot = TimeSlot::findOrFail($timeId);
-            
+
             $timeSlot->update([
                 'activity'      => $validated['activity'],
                 'category'      => $validated['category'],
@@ -122,12 +124,35 @@ class ScheduleController extends Controller
             return response()->json([
                 'message'   => 'get-list timetable successfully',
                 'data'  => $listTimetable,
-                'weekdays'  => TimeSlot::getWeekDays(),
             ]);
         } catch (\Exception $error) {
             return response()->json([
                 'mesesage'  => $error->getMessage()
             ]);
+        }
+    }
+
+    public function deleteTimeSlotBy($timeSlotId) {
+        try {
+            $timeSlot = TimeSlot::where('id', $timeSlotId)->first();
+            
+            if ($timeSlot->whereHas('schedules')->exists()) {
+                 throw new ConflictException('time slot telah digunakan', [
+                    'time_slot_id' => 'time slot telah digunakan'
+                ]);
+            }
+
+            $timeSlot->delete();
+
+            return response()->json([
+                'message'   => 'time deleted successfully'
+            ], HttpCode::OK);
+        } catch(ConflictException $exception) {
+            return $exception->render(request());
+        }catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 }

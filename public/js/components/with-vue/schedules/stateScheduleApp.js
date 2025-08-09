@@ -12,7 +12,6 @@ export default function stateScheduleApp () {
             const currentView = ref("table")
             const isLoading = ref(false)
             const listTimetable = ref([])
-            const listWeekDays = ref({})
             const listClassroom = ref([])
             const editTimeSlot = ref({ id: '', start_time: '',  end_time: '', activity: '', category: '' })
             const handleCreateTimetable = ()=> { currentView.value = 'create-time' }
@@ -25,8 +24,6 @@ export default function stateScheduleApp () {
                 try {
                     let result = await axios.get('/list-timetable')
                     listTimetable.value = result.data.data
-                    listWeekDays.value = result.data.weekdays
-                    console.log('data', listWeekDays.value)
                 } catch (error) {
                     console.log('error', error)
                 }
@@ -66,7 +63,7 @@ export default function stateScheduleApp () {
 
 
             return {
-                currentView, handleCreateTimetable, isLoading, getListTimetable, listTimetable, refreshTimeTable, listWeekDays,
+                currentView, handleCreateTimetable, isLoading, getListTimetable, listTimetable, refreshTimeTable,
                 handleSettingSchedule, editTimeSlot, getEditTimeSlot, listClassroom, getListClassroom
             }
         },
@@ -78,7 +75,7 @@ export default function stateScheduleApp () {
                     :provideClassroom="listClassroom"
                     @add-time="handleCreateTimetable"
                     @edit-time="getEditTimeSlot"
-                    :weekProvide="listWeekDays"
+                    @reload="refreshTimeTable"
                 />
             </div>
 

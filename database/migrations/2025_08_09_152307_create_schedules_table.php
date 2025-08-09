@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\{Classroom, Subject, TimeSlot};
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,11 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('schedules_time', function (Blueprint $table) {
+        Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->time('start');
-            $table->time('end');
-            $table->string('description');
+            $table->foreignIdFor(TimeSlot::class);
+            $table->foreignIdFor(Subject::class);
+            $table->foreignIdFor(Classroom::class);
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('schedules_time');
+        Schema::dropIfExists('schedules');
     }
 };

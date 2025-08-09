@@ -22,6 +22,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('list-timetable', [ScheduleController::class, 'getListTimetable'])->name('list-timetable');
     Route::get('time-slot-by/{timeId}', [ScheduleController::class, 'getTimeSlotBy'])->name('time-slot-by');
     Route::put('edit-time-by/{timeId}', [ScheduleController::class, 'updateTimeSlotBy'])->name('edit-time-by');
+    Route::delete('delete-time-slot-by/{timeSlotId}', [ScheduleController::class, 'deleteTimeSlotBy'])->name('delete-time-slot-by');
 
 
     // ROUTE FOR SUBJECT

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->time('start_time');
             $table->time('end_time');
             $table->string('category');
+            $table->string('day')->nullable();
             $table->timestamps();
         });
     }
