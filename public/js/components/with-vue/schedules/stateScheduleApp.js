@@ -3,11 +3,14 @@
     import cardListTeacherSubject from "./cardListTeacherSubject.js"
     import settingSchedule from "./settingSchedule.js"
     import cardSettingTimeTable from "./cardSettingTimeTable.js"
+    import cardCreateSchedule from "./cardCreateSchedule.js"
     const { createApp, ref, reactive, onMounted } = Vue
 
 export default function stateScheduleApp () {
     createApp({
-        components: { dataTableSchedule, formCreateTime, cardListTeacherSubject, settingSchedule, cardSettingTimeTable },
+        components: { dataTableSchedule, formCreateTime, cardListTeacherSubject, settingSchedule, cardSettingTimeTable,
+            cardCreateSchedule,
+         },
         setup() {
             const currentView = ref("table")
             const isLoading = ref(false)
@@ -15,6 +18,14 @@ export default function stateScheduleApp () {
             const listClassroom = ref([])
             const editTimeSlot = ref({ id: '', start_time: '',  end_time: '', activity: '', category: '' })
             const handleCreateTimetable = ()=> { currentView.value = 'create-time' }
+            const showFormCreate =()=> currentView.value = 'create'
+            const days = [
+                {id: 1, value: 'senin', label: 'senin'},
+                {id: 2, value: 'selasa', label: 'selasa'},
+                {id: 3, value: 'rabu', label: 'rabu'},
+                {id: 4, value: 'kamis', label: 'kamis'},
+                {id: 5, value: 'jumat', label: 'jumat'},
+            ]
 
             onMounted(async ()=> {
                 await getListTimetable()
@@ -64,10 +75,23 @@ export default function stateScheduleApp () {
 
             return {
                 currentView, handleCreateTimetable, isLoading, getListTimetable, listTimetable, refreshTimeTable,
-                handleSettingSchedule, editTimeSlot, getEditTimeSlot, listClassroom, getListClassroom
+                handleSettingSchedule, editTimeSlot, getEditTimeSlot, listClassroom, getListClassroom, days, showFormCreate
             }
         },
         template: `
+
+        <!-- komponent untuk tombol-create-schedule -->
+        <div class="flex gap-4">
+            <button
+                v-show="currentView === 'table'"
+                @click="showFormCreate"
+                type="button"
+                class="text-white mb-2 inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center text-xs dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <svg class="me-1 ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                Jadwal
+            </button>
+        </div>
+
             <!-- komponent untuk data-table-schedule -->
             <div v-show="currentView === 'table'" class="relative shadow-md sm:rounded-lg">
                 <data-table-schedule
@@ -106,16 +130,6 @@ export default function stateScheduleApp () {
                 />
             </div>
 
-            <!-- komponent untuk data-table-schedule -->
-            <div
-                v-cloak
-                v-show="currentView === 'table'"
-                class="relative sm:rounded-lg mt-6">
-                <card-list-teacher-subject
-                    @setting="handleSettingSchedule"
-                />
-            </div>
-
              <!-- komponent untuk card-setting-schedule -->
             <div
                 v-cloak
@@ -123,6 +137,18 @@ export default function stateScheduleApp () {
                 class="relative sm:rounded-lg mt-6">
                 <settingSchedule
                     @back-to="currentView = $event"
+                    :provide-days="days"
+                />
+            </div>
+
+             <!-- komponent untuk card-create-schedule -->
+            <div
+                v-if="currentView === 'create'"
+                class="relative sm:rounded-lg mt-6">
+                <card-create-schedule
+                    @back-to="currentView = $event"
+                    :provide-days="days"
+                    :waiting-process="isLoading"
                 />
             </div>
         `

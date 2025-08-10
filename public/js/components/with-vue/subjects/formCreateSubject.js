@@ -86,6 +86,7 @@ export default defineComponent({
             ]
         })
 
+
         return {
             subject, closeCreateForm, badgeClass, storeSubject, errors, isLoading, dataPassingTeacher: localDataTeacher, classrooms: localClassroom,
         }
@@ -97,7 +98,7 @@ export default defineComponent({
                     <h3 class="text-xl flex-inline font-semibold text-gray-900 dark:text-white dark:semibold">
                         new subject to
                         <span v-if="dataPassingTeacher" :class="badgeClass">
-                        {{dataPassingTeacher.teacher.name}}
+                            {{dataPassingTeacher.teacher.name}}
                         </span>
                     </h3>
                 </div>

@@ -15,9 +15,9 @@ export default defineComponent({
     setup(props, {emit}) {
             const isLoading = ref(false)
             const childIsLoading = ref(props.waitingProcess)
-            const createTimeTable = reactive({ start_time: '', end_time: '', activity: '',  category: '', day: ''})
-            const errors = reactive({ start_time: '',  end_time: '', activity: '', category: '', day: ''})
-            const fieldLabels = { start_time: 'waktu awal', end_time: 'waktu akhir', activity: 'aktifitas', category: 'Kategory', day: 'hari' }
+            const createTimeTable = reactive({ start_time: '', end_time: ''})
+            const errors = reactive({ start_time: '',  end_time: ''})
+            const fieldLabels = { start_time: 'waktu awal', end_time: 'waktu akhir' }
             const days = ['senin', 'selasa', 'rabu', 'kamis', 'jumat']
             let optionCategories = [{id: 1, name: 'all day', key: 'all_day'}, {id: 2, key: 'some_day', name: 'some day'}]
             const closeCreateForm = ()=> {
@@ -42,18 +42,11 @@ export default defineComponent({
                             }
                         }
 
-                        if (createTimeTable.category == 'some_day' && !createTimeTable.day) {
-                            errors.day = 'hari wajib dipilih..';
-                            isValid = false;
-                            childIsLoading.value = false;
-                        }
 
                     if (!isValid) return
                     let sendTimetable = {
                         start_time: createTimeTable.start_time,
                         end_time: createTimeTable.end_time,
-                        activity: createTimeTable.activity,
-                        category: createTimeTable.category
                     }
                     childIsLoading.value = true;
                     let result = await axios.post('/store-timetable', sendTimetable)
@@ -112,37 +105,6 @@ export default defineComponent({
                                 >
                                   <p  v-if="errors.end_time" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.end_time }}</p>
                             </div>
-
-
-                            <div class="col-span-2 sm:col-span-1">
-                                <label for="student_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Activity name</label>
-                                <input
-                                    type="text"
-                                    v-model="createTimeTable.activity"
-                                    id="name"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    placeholder="ketik nama kegiatan disini.."
-                                >
-                                <p  v-if="errors.activity" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.activity }}</p>
-                            </div>
-
-                            <div class="col-span-2 sm:col-span-1">
-                                <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category time</label>
-                                <select v-model="createTimeTable.category" name="createTimeTable.category" id="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                    <option value="">Select category</option>
-                                    <option v-for="category in optionCategories" :value="category.key" :key="category.id"> {{category.name}} </option>
-                                </select>
-                                <p  v-if="errors.category" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.category }}</p>
-                            </div>
-
-                            <div class="col-span-2 mb-6" v-show="createTimeTable.category == 'some_day'">
-                                <label for="day" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Day</label>
-                                    <select v-model="createTimeTable.day"  id="day" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                    <option value="">Select day</option>
-                                    <option v-for="(day, index) in days" :value="day" :key="index"> {{day}} </option>
-                                </select>
-                                <p  v-if="errors.day" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.day }}</p>
-                            </div> 
 
                             <div class="relative flex mt-2 gap-2">
                                 <button

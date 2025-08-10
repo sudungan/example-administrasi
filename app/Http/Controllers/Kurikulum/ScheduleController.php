@@ -22,14 +22,9 @@ class ScheduleController extends Controller
             $validator = Validator::make($request->all(), [
                 'start_time' => 'required',
                 'end_time' => 'required',
-                'activity'  => 'nullable',
-                'category'  => 'required',
                 ], [
                 'start_time.required'=> 'Jam awal wajib disi',
                 'end_time.min'  => 'Jam awal wajib disi',
-                'name.regex'   => 'Nama Jurusan hanya boleh berisi huruf dan spasi.',
-                'activity.nullable'   => 'Aktifitas tidak harus disi..',
-                'category.required' => 'kategory jam wajib dipilih..',
             ]);
 
             if($validator->fails()){
@@ -42,8 +37,6 @@ class ScheduleController extends Controller
             $validated = $validator->validate();
 
             TimeSlot::create([
-                'activity'      => $validated['activity'],
-                'category'      => $validated['category'],
                 'start_time'    => $validated['start_time'],
                 'end_time'      => $validated['end_time'],
             ]);
@@ -77,14 +70,9 @@ class ScheduleController extends Controller
             $validator = Validator::make($request->all(), [
                 'start_time' => 'required',
                 'end_time' => 'required',
-                'activity'  => 'nullable',
-                'category'  => 'required',
                 ], [
                 'start_time.required'=> 'Jam awal wajib disi',
                 'end_time.min'  => 'Jam awal wajib disi',
-                'name.regex'   => 'Nama Jurusan hanya boleh berisi huruf dan spasi.',
-                'activity.nullable'   => 'Aktifitas tidak harus disi..',
-                'category.required' => 'kategory jam wajib dipilih..',
             ]);
 
             if($validator->fails()){
@@ -96,14 +84,12 @@ class ScheduleController extends Controller
 
             $validated = $validator->validate();
 
-            $validated['start_time'] = substr($validated['start_time'], 0, 5);
-            $validated['end_time'] = substr($validated['end_time'], 0, 5);
+            // $validated['start_time'] = substr($validated['start_time'], 0, 5);
+            // $validated['end_time'] = substr($validated['end_time'], 0, 5);
 
             $timeSlot = TimeSlot::findOrFail($timeId);
 
             $timeSlot->update([
-                'activity'      => $validated['activity'],
-                'category'      => $validated['category'],
                 'start_time'    => $validated['start_time'],
                 'end_time'      => $validated['end_time'],
             ]);
@@ -135,7 +121,7 @@ class ScheduleController extends Controller
     public function deleteTimeSlotBy($timeSlotId) {
         try {
             $timeSlot = TimeSlot::where('id', $timeSlotId)->first();
-            
+
             if ($timeSlot->whereHas('schedules')->exists()) {
                  throw new ConflictException('time slot telah digunakan', [
                     'time_slot_id' => 'time slot telah digunakan'

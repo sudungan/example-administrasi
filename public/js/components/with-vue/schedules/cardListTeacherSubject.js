@@ -6,6 +6,7 @@ export default defineComponent({
     setup(props, {emit}) {
         const isOpen = ref(false)
         const listTeacherSubject = ref([])
+        const colourSubject = ref("")
 
         onMounted(async()=> {
             await getListTeacherSubject()
@@ -26,15 +27,16 @@ export default defineComponent({
             emit('setting', {component: 'setting-schedule', subjectId: subjectId})
         }
 
-         let badgeClass = computed(() => {
-            let color = localDataTeacher.value.colour
-            return [
-                `bg-${color}-100`, `dark:bg-${color}-900`, `dark:text-${color}-200`, `text-${color}-800`,  `border`,  `border-${color}-400`,  'text-xs',  'font-medium', 'mb-2', 'me-2',  'px-2.5', 'py-0.5','rounded-sm'
-            ]
-        })
+         function useSubjectColor(subject) {
+            return {
+                'background-color': subject.colour + '20',
+                'color': subject.colour,
+                'border-color' : subject.colour           
+            }
+        }
 
         return {
-            isOpen, handleBtnOpen, listTeacherSubject, getListTeacherSubject, settingSchedule
+            isOpen, handleBtnOpen, listTeacherSubject, getListTeacherSubject, settingSchedule, useSubjectColor
         }
     },
     template: `
@@ -76,7 +78,9 @@ export default defineComponent({
                                             <template v-if="teacher.subjects && teacher.subjects.length">
                                                 <div v-for="subject in teacher.subjects" :key="subject.id" class="inline-flex mb-2">
                                                     <!-- Badge isi subject -->
-                                                    <span class="gap-2 inline-flex bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm me-2 dark:bg-gray-700 dark:text-gray-400 border border-gray-500">
+                                                    <span
+                                                        :style="useSubjectColor(subject)"
+                                                        class="me-2 cursor-pointer underline border rounded-sm text-xs font-medium me-2 px-2.5 py-0.5 hover:text-blue-500 hover:font-bold">
                                                         <p @click="settingSchedule(subject.id)" class="me-2 cursor-pointer underline hover:text-blue-500 hover:font-bold">  {{ subject.name }} </p>
                                                     </span>
                                                 </div>
