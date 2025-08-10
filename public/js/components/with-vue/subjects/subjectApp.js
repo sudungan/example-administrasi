@@ -133,7 +133,7 @@ export default function subjectApp () {
             </div>
 
             <!-- komponent untuk data-table-subject -->
-             <div v-show="currentView === 'table'" class="relative shadow-md sm:rounded-lg">
+             <div v-cloak v-show="currentView === 'table'" class="relative shadow-md sm:rounded-lg">
                <data-table-subject
                 :visable-card="currentView"
                 :data="listTeacherSubject"
@@ -144,7 +144,9 @@ export default function subjectApp () {
             </div>
 
             <!-- komponent untuk show-list-subject-by-teacherId -->
-             <div v-show="currentView === 'show-list-subject-by'" class="relative sm:rounded-lg">
+             <div
+                v-cloak
+                v-show="currentView === 'show-list-subject-by'" class="relative sm:rounded-lg">
                <card-show-list-subject
                 :visable-card="currentView"
                 :data="showListSubjectsTeacher"
@@ -153,7 +155,9 @@ export default function subjectApp () {
             </div>
 
             <!-- komponent untuk form-create-subject -->
-             <div v-show="currentView === 'create-subject'" class="relative sm:rounded-lg">
+             <div
+                v-cloak
+                v-show="currentView === 'create-subject'" class="relative sm:rounded-lg">
                 <form-create-subject
                     :visable-card="currentView"
                     :classrooms="listClassroom"
@@ -164,7 +168,9 @@ export default function subjectApp () {
             </div>
 
             <!-- komponent untuk form-create-teacher-colour -->
-             <div  v-show="currentView === 'create-teacher-colour'"  class="relative sm:rounded-lg">
+             <div
+                v-cloak
+                v-show="currentView === 'create-teacher-colour'"  class="relative sm:rounded-lg">
                 <create-teacher-colour
                     :visable-card="currentView"
                     :provide-colour="baseColour"

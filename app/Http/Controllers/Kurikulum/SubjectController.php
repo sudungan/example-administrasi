@@ -135,7 +135,6 @@ class SubjectController extends Controller
             $validator = Validator::make($request->all(), [
                 'user_id'   => ['required'],
                 'colour'    => 'required',
-                'jumlah_jp' => 'required'
                 ], [
                 'colour.required'   => 'Warna wajib dipilh'
             ]);

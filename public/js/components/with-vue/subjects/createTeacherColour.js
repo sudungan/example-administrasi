@@ -81,7 +81,6 @@ export default defineComponent({
                     isLoading.value = true;
                 let result = await axios.post(`store-teacher-colour`, sendTeacherColour)
                     localDataPassingTeacher.value = result.data.data
-                    console.log('data base teacher', localDataPassingTeacher.value)
                     isLoading.value = false;
                     resetFields(teacherColour);
                     resetFields(errors);

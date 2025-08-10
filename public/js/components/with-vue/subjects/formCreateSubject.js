@@ -133,7 +133,7 @@ export default defineComponent({
 
                             <div class="col-span-2 sm:col-span-1">
                                 <label for="student_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jumlah JP</label>
-                                <select v-model="subject.jumlah_jp" id="jumlah_jp" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                <select  v-model="subject.jumlah_jp" id="jumlah_jp" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option value=""> Jumlah Jam Pelajaran</option>
                                     <option v-for="index in 10" :key="index" :value="index">{{index}}</option>
                                 </select>

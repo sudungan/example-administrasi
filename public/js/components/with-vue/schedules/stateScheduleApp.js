@@ -17,6 +17,14 @@ export default function stateScheduleApp () {
             const listTimetable = ref([])
             const listClassroom = ref([])
             const editTimeSlot = ref({ id: '', start_time: '',  end_time: '', activity: '', category: '' })
+            const listTypeSchedule = ref([
+                {id: 1, value: 'lesson', label: 'belajar'},
+                {id: 2, value: 'break', label: 'istirahat'},
+                {id: 3, value: 'ceremony', label: 'upacara'},
+                {id: 4, value: 'extracurricular', label: 'ekstrakulikuler'},
+                {id: 5, value: 'other', label: 'lain'},
+
+            ])
             const handleCreateTimetable = ()=> { currentView.value = 'create-time' }
             const showFormCreate =()=> currentView.value = 'create'
             const days = [
@@ -31,6 +39,7 @@ export default function stateScheduleApp () {
                 await getListTimetable()
                 await getListClassroom()
             });
+
             async function getListTimetable() {
                 try {
                     let result = await axios.get('/list-timetable')
@@ -75,7 +84,8 @@ export default function stateScheduleApp () {
 
             return {
                 currentView, handleCreateTimetable, isLoading, getListTimetable, listTimetable, refreshTimeTable,
-                handleSettingSchedule, editTimeSlot, getEditTimeSlot, listClassroom, getListClassroom, days, showFormCreate
+                handleSettingSchedule, editTimeSlot, getEditTimeSlot, listClassroom, getListClassroom, days, showFormCreate,
+                listTypeSchedule
             }
         },
         template: `
@@ -149,6 +159,8 @@ export default function stateScheduleApp () {
                     @back-to="currentView = $event"
                     :provide-days="days"
                     :waiting-process="isLoading"
+                    :provide-type="listTypeSchedule"
+                    :provide-time="listTimetable"
                 />
             </div>
         `

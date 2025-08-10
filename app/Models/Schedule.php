@@ -8,7 +8,7 @@ class Schedule extends Model
 {
     protected $table = 'schedules';
 
-    protected $fillable = ['classroom_id', 'subject_id', 'time_slot_id'];
+    protected $fillable = ['name', 'classroom_id', 'subject_id', 'time_slot_id', 'type', 'day'];
 
     public function classrooms() {
         return $this->belongsToMany(Classroom::class);

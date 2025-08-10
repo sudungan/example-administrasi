@@ -17,6 +17,9 @@ return new class extends Migration
             $table->foreignIdFor(TimeSlot::class);
             $table->foreignIdFor(Subject::class);
             $table->foreignIdFor(Classroom::class);
+            $table->string('type');
+            $table->string('name')->nullable();
+            $table->string('day');
             $table->timestamps();
         });
     }
