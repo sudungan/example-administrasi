@@ -20,11 +20,11 @@ export default defineComponent({
         const subject = reactive({ name: '',  classroom_id: '', jumlah_jp: '' })
         const subjectClassroom = reactive({ name: '',  classrooms_subject: [{classroom_id: '', jumlah_jp: ''}] })
         const fieldLabels = { name: 'Nama', classroom_id: 'Kelas', jumlah_jp: 'Jumlah Jam Pelajaran' }
-        const errors = reactive({ name: '', classroom_id: '', jumlah_jp: '' })
+        const errors = reactive({ name: '',  classrooms_subject: [{classroom_id: '', jumlah_jp: ''}] })
         const localDataTeacher = ref({...props.dataPassingTeacher})
         const localClassroom = ref(props.classrooms)
         const isLoading = ref(false)
-
+        const disabledButton = ref(false)
 
         // melihat perubahan langsung dari props.teachers yang dikirim dari parent disimpan ke state localDataTeacher
         watch(() => props.dataPassingTeacher, (newVal) => { localDataTeacher.value = newVal }, { immediate: true });
@@ -32,33 +32,55 @@ export default defineComponent({
         // melihat perubahan langsung dari props.classrooms yang dikirim dari parent disimpan ke state localClassroom
         watch(() => props.classrooms, (newVal) => { localClassroom.value = newVal }, { immediate: true });
 
+        watch(subjectClassroom, (newVal) => { disabledButton.value = ! Object.values(newVal).every(value => {
+                if (Array.isArray(value)) {
+                    return value.some(item => item.classroom_id && item.jumlah_jp);
+                }
+                return !value.toString().trim();
+            })
+        }, { deep: true, immediate: true });
+
+
         const closeCreateForm =()=> {
-            resetFields(subject);
-            resetFields(errors);
+            // todo-list: memperbaiki reset all errrors dan reset all field
             emit('backTo', 'table')
         }
 
         async function storeSubject() {
             try {
                 let isValid = true;
-                for (let key in subject) {
-                    if (!subject[key].toString().trim()) {
-                        let label  = fieldLabels[key] || key;
+                for (let key in subjectClassroom) {
+                    const value = subjectClassroom[key];
+                    if(Array.isArray(value)) {
+                        value.forEach((item, index)=> {
+                            if (!item.classroom_id) {
+                                errors.classrooms_subject[index].classroom_id = "Kelas wajib diisi";
+                                isValid = false;
+                            }
+                            if (!item.jumlah_jp) {
+                                errors.classrooms_subject[index].jumlah_jp = "Jumlah JP wajib diisi";
+                                isValid = false;
+                            }
+                        })
+                    } else {
+                        if (!value.toString().trim()) {
+                            const label = fieldLabels[key] || key;
                             errors[key] = `${label} tidak boleh kosong`;
                             isValid = false;
-                    }else {
-                        errors[key] = '';
+                        } else {
+                            errors[key] = '';
+                        }
                     }
                 }
 
                 if (!isValid) return // jika tidak valid / tidak terisi beberapa field akan kembali
 
                 let sendDataSubject = {
-                    name: subject.name,
+                    name: subjectClassroom.name,
                     user_id: localDataTeacher.value.user_id,
                     colour: localDataTeacher.value.colour,
+                    classrooms_subject: subjectClassroom.classrooms_subject,
                     classroom_id: subject.classroom_id,
-                    jumlah_jp: subject.jumlah_jp
                 }
                     isLoading.value = true;
                 let result = await axios.post(`store-subject`, sendDataSubject)
@@ -84,6 +106,15 @@ export default defineComponent({
             subjectClassroom.classrooms_subject.push({classroom_id: '', jumlah_jp: ''})
         }
 
+        const isAllFilled  = computed(() => {
+            return Object.values(subjectClassroom).every(item => {
+                if (Array.isArray(item)) {
+                    return item.every(item => item.classroom_id && item.jumlah_jp);
+                }
+                return item && item.toString().trim() !== '';
+            })
+        });
+
         function removeSubjectClassroom(index) {
             subjectClassroom.classrooms_subject.splice(index, 1)
         }
@@ -98,7 +129,7 @@ export default defineComponent({
 
         return {
             subject, closeCreateForm, badgeClass, storeSubject, errors, isLoading, dataPassingTeacher: localDataTeacher, classrooms: localClassroom,
-            addSubjectClassroom, subjectClassroom, removeSubjectClassroom
+            addSubjectClassroom, subjectClassroom, removeSubjectClassroom, disabledButton, isAllFilled
         }
     },
     template: `
@@ -114,8 +145,8 @@ export default defineComponent({
                 </div>
                  <div class="p-4 md:p-5 space-y-4">
                     <form @submit.prevent="storeSubject" class="space-y-4">
-                        <div class="mb-6">
-                            <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <div class="mb-2">
+                            <label for="name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">
                                 Nama Pelajaran
                             </label>
                             <input
@@ -128,7 +159,7 @@ export default defineComponent({
                             <p  v-if="errors.name" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.name }}</p>
                         </div>
                         <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                            <div v-for="(item, index) in subjectClassroom.classrooms_subject" :key="index" class="py-3 sm:py-4 grid gap-2 mb-2 grid-cols-2">
+                            <div v-for="(item, index) in subjectClassroom.classrooms_subject" :key="index" class="py-2 sm:py-3 grid gap-2 mb-2 grid-cols-2">
                                     <div class="col-span-2 sm:col-span-1">
                                         <label for="classroom_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                             Nama Kelas
@@ -145,7 +176,7 @@ export default defineComponent({
                                                 {{classroom.name}}-{{classroom.major.initial}}
                                             </option>
                                         </select>
-                                        <p v-if="errors.classroom_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.classroom_id }}</p>
+                                        <p v-if="errors.classrooms_subject[index]?.classroom_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.classrooms_subject[index].classroom_id }}</p>
                                     </div>
 
                                     <div class="col-span-2 sm:col-span-1">
@@ -160,9 +191,13 @@ export default defineComponent({
                                                     dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                                 <option value="">Jumlah Jam Pelajaran</option>
                                                 <option v-for="index in 10" :key="index" :value="index">{{ index }}</option>
+                                                <p v-if="errors.classrooms_subject[index]?.jumlah_jp" class="mt-1 text-sm text-red-600 dark:text-red-500">{{errors.classrooms_subject[index].jumlah_jp }} }}</p>
                                             </select>
 
-                                            <button  v-if="index === subjectClassroom.classrooms_subject.length - 1" type="button" @click="addSubjectClassroom" class="p-1 text-white hover:cursor-pointer">
+                                            <button v-if="index === subjectClassroom.classrooms_subject.length - 1 && isAllFilled"
+                                                type="button"
+                                                @click="addSubjectClassroom"
+                                                class="p-1 text-white hover:cursor-pointer">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                     viewBox="0 0 24 24" stroke-width="1.5"
                                                     stroke="currentColor" class="w-5 h-5">
@@ -172,7 +207,8 @@ export default defineComponent({
                                                 </svg>
                                             </button>
                                             <button v-if="subjectClassroom.classrooms_subject.length > 1"
-                                                    type="button" @click="removeSubjectClassroom(index)"
+                                                    type="button"
+                                                    @click="removeSubjectClassroom(index)"
                                                     class="p-1 text-white hover:cursor-pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="red" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -186,7 +222,7 @@ export default defineComponent({
                         </div>
 
 
-                        <div class="col-span-2 flex gap-2 mt-4">
+                        <div class="col-span-2 flex gap-2 mt-2">
                             <button
                                 :disabled="isLoading"
                                 type="submit"

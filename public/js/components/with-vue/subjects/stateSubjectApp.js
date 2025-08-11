@@ -4,7 +4,7 @@
     import createTeacherColour from "./createTeacherColour.js"
     import cardShowListSubject from "./cardShowListSubject.js"
     const { createApp, ref, reactive, onMounted } = Vue
-export default function subjectApp () {
+export default function stateSubjectApp () {
 
     createApp({
         components: { dataTableSubject, formCreateSubject, loadingTableSubject, createTeacherColour, cardShowListSubject },

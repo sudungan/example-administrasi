@@ -66,15 +66,13 @@ class SubjectController extends Controller
                 'user_id' => 'required',
                 'name' => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/'],
                 'user_id'   => ['required'],
-                'classroom_id'  => 'required',
-                'jumlah_jp'  => 'required',
+                'classrooms_subject'  => 'required',
                 'colour'    => 'required'
                 ], [
                 'name.min'  => 'Nama user minimal 3 karakter',
                 'name.regex'   => 'Nama Jurusan hanya boleh berisi huruf dan spasi.',
                 'user_id.required'=> 'Nama Kepala Jurusan wajib dipilih',
-                'classroom_id.required'   => 'Kelas harus dipilih',
-                'jumlah_jp.required' => 'Total Jam Pelajaran wajib dipilih..',
+                'classrooms_subject.required'   => 'Kelas harus dipilih',
                 'colour.required'   => 'Warna wajib dipilh'
             ]);
 
@@ -88,6 +86,7 @@ class SubjectController extends Controller
             $validated = $validator->validate();
 
 
+            dd($validated);
             Subject::create([
                 'name'          =>  $validated['name'],
                 'user_id'       =>  $validated['user_id'],

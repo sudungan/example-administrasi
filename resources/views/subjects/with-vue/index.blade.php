@@ -6,7 +6,7 @@
         </div>
     </div>
     <script type="module">
-        import subjectApp from '/js/components/with-vue/subjects/subjectApp.js'
-        subjectApp()
+        import stateSubjectApp from '/js/components/with-vue/subjects/stateSubjectApp.js'
+        stateSubjectApp()
     </script>
 </x-layouts.app>
