@@ -91,17 +91,23 @@ class SubjectController extends Controller
                 'colour'        =>  $validated['colour'],
             ]);
 
+            $totalJpByClassrooms = 0;
+            $pivotData = [];
             foreach ($validated['classrooms_subject'] as $classroom) {
-                $subject->classroomSubject()->attach($classroom['classroom_id'],
-                [
+                // $subject->classroomSubject()->attach($classroom['classroom_id'],
+                // [
+                //     'jumlah_jp' => $classroom['jumlah_jp']
+                // ]);
+                $pivotData[$classroom['classroom_id']] = [
                     'jumlah_jp' => $classroom['jumlah_jp']
-                ]);
+                ];
+                $totalJpByClassrooms += $classroom['jumlah_jp'];
             }
-            $subject_jp = DB::table('classroom_subject')->where('subject_id', $subject['id'])->sum('jumlah_jp');
 
+            $subject->classroomSubject()->attach($pivotData);
             $subjectTeacher = SubjectTeacher::firstOrNew(['user_id' => $validated['user_id']]);
 
-            $subjectTeacher->total_jp = ($subjectTeacher->total_jp ?? 0) + $subject_jp;
+            $subjectTeacher->total_jp = ($subjectTeacher->total_jp ?? 0) + $totalJpByClassrooms;;
 
             $subjectTeacher->save();
 
