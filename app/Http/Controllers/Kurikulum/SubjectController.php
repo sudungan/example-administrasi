@@ -85,19 +85,23 @@ class SubjectController extends Controller
 
             $validated = $validator->validate();
 
-
-            dd($validated);
-            Subject::create([
+            $subject = Subject::create([
                 'name'          =>  $validated['name'],
                 'user_id'       =>  $validated['user_id'],
-                'classroom_id'  =>  $validated['classroom_id'],
                 'colour'        =>  $validated['colour'],
-                'jumlah_jp'     =>  $validated['jumlah_jp']
             ]);
+
+            foreach ($validated['classrooms_subject'] as $classroom) {
+                $subject->classroomSubject()->attach($classroom['classroom_id'],
+                [
+                    'jumlah_jp' => $classroom['jumlah_jp']
+                ]);
+            }
+            $subject_jp = DB::table('classroom_subject')->where('subject_id', $subject['id'])->sum('jumlah_jp');
 
             $subjectTeacher = SubjectTeacher::firstOrNew(['user_id' => $validated['user_id']]);
 
-            $subjectTeacher->total_jp = ($subjectTeacher->total_jp ?? 0) + $validated['jumlah_jp'];
+            $subjectTeacher->total_jp = ($subjectTeacher->total_jp ?? 0) + $subject_jp;
 
             $subjectTeacher->save();
 

@@ -8,7 +8,7 @@ class Subject extends Model
 {
     protected $table = 'subjects';
 
-    protected $fillable = ['name', 'user_id', 'classroom_id', 'jumlah_jp', 'colour'];
+    protected $fillable = ['name', 'user_id', 'colour'];
 
     public function classroom() {
         return $this->belongsTo(Classroom::class);
@@ -16,6 +16,21 @@ class Subject extends Model
 
     public function teacher() {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function classroomSubject() {
+        return $this->belongsToMany(Classroom::class, 'classroom_subject')->withPivot('jumlah_jp')->withTimestamps();;
+    }
+
+    public function teacherJp() {
+       return $this->hasOneThrough(
+            SubjectTeacher::class, // model akhir
+            User::class,           // model perantara
+            'id',                  // FK di tabel User → user.id
+            'user_id',             // FK di SubjectTeacher → subject_teacher.user_id
+            'user_id',             // FK di Subject → subject.user_id
+            'id'                   // PK di User
+        );
     }
 
 }

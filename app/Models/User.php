@@ -80,6 +80,10 @@ class User extends Authenticatable
         return $this->hasOne(SubjectTeacher::class);
     }
 
+    public function subjectJp() {
+        return $this->hasOne(SubjectTeacher::class, 'user_id', 'id');
+    }
+
     public function subjectColour() {
         return $this->hasOne(TeacherColour::class);
     }
