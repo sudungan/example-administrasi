@@ -83,8 +83,9 @@ export default function stateSubjectApp () {
             async function handleShowSubjectTeacher(data) {
                 try {
                     let result = await axios.get(`/list-subject-by/${data.teacherId}`)
-                    showListSubjectsTeacher.value = result.data.data
-                    currentView.value = 'show-list-subject-by'
+                    console.log('data', result.data.data)
+                    // showListSubjectsTeacher.value = result.data.data
+                    // currentView.value = 'show-list-subject-by'
                 } catch (error) {
                     console.log('error', error)
                 }

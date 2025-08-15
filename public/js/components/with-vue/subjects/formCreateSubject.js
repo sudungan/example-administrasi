@@ -20,7 +20,6 @@ export default defineComponent({
         const subject = reactive({ name: '',  classroom_id: '', jumlah_jp: '' })
         const subjectClassroom = reactive({ name: '',  classrooms_subject: [{classroom_id: '', jumlah_jp: ''}] })
         const fieldLabels = { name: 'Nama', classroom_id: 'Kelas', jumlah_jp: 'Jumlah Jam Pelajaran' }
-        // const errors = reactive({ name: '',  classrooms_subject: [{classroom_id: '', jumlah_jp: ''}] })
         const errors = reactive({
             name: '',
             classrooms_subject: subjectClassroom.classrooms_subject.map(() => ({
@@ -49,8 +48,26 @@ export default defineComponent({
 
 
         const closeCreateForm =()=> {
-            // todo-list: memperbaiki reset all errrors dan reset all field
-            emit('backTo', 'table')
+            let isAnyFilled = Object.values(subjectClassroom).some(value => {
+                if (Array.isArray(value)) {
+                    return value.some(item => Object.values(item).some(index => index !== ''))
+                }
+                return value !== ''
+            })
+
+            if (isAnyFilled) {
+                cancelConfirmation('Yakin membatalkan?', (result)=> {
+                    if (result.isConfirmed) {
+                        resetFieldsSubject();
+                        resetFields(errors); // reset field untuk object errors
+                        emit('backTo', 'table')
+                    }
+                });
+            }else {
+                resetFieldsSubject();
+                resetFields(errors);
+                emit('backTo', 'table')
+            }
         }
 
         async function storeSubject() {
@@ -93,12 +110,11 @@ export default defineComponent({
                     user_id: localDataTeacher.value.user_id,
                     colour: localDataTeacher.value.colour,
                     classrooms_subject: subjectClassroom.classrooms_subject,
-                    classroom_id: subject.classroom_id,
                 }
                     isLoading.value = true;
                 let result = await axios.post(`store-subject`, sendDataSubject)
                     isLoading.value = false;
-                    resetFields(subject);
+                    resetFieldsSubject();
                     resetFields(errors);
                     successNotification(result.data.message)
                     emit('reload')
@@ -132,6 +148,28 @@ export default defineComponent({
             subjectClassroom.classrooms_subject.splice(index, 1)
         }
 
+        function resetDimanic(target) {
+
+        }
+
+        function resetFieldsSubject() {
+            Object.assign(subjectClassroom, {
+                name: '',
+                classrooms_subject: [
+                    {classroom_id: '', jumlah_jp: ''}
+                ]
+            })
+        }
+
+        function resetErrorSubject() {
+            Object.assign(subjectClassroom, {
+                name: '',
+                classrooms_subject: [
+                    {classroom_id: '', jumlah_jp: ''}
+                ]
+            })
+        }
+
         let badgeClass = computed(() => {
             let color = localDataTeacher.value.colour
             return [
@@ -142,7 +180,7 @@ export default defineComponent({
 
         return {
             subject, closeCreateForm, badgeClass, storeSubject, errors, isLoading, dataPassingTeacher: localDataTeacher, classrooms: localClassroom,
-            addSubjectClassroom, subjectClassroom, removeSubjectClassroom, disabledButton, isAllFilled
+            addSubjectClassroom, subjectClassroom, removeSubjectClassroom, disabledButton, resetFieldsSubject, isAllFilled
         }
     },
     template: `
