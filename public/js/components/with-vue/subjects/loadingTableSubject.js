@@ -13,7 +13,6 @@ export default defineComponent({
                     <th class="px-6 py-3">#</th>
                     <th class="px-6 py-3">NAMA GURU</th>
                     <th class="px-6 py-3">NAMA PELAJARAN</th>
-                    <th class="px-6 py-3">TOTAL JP</th>
                     <th class="px-6 py-3">Action</th>
                 </tr>
                 </thead>
@@ -26,9 +25,6 @@ export default defineComponent({
                     <div class="h-2.5 bg-gray-300 rounded w-24"></div>
                 </td>
                 <td class="px-6 py-4">
-                    <div class="h-2.5 bg-gray-300 rounded w-28"></div>
-                </td>
-                 <td class="px-6 py-4">
                     <div class="h-2.5 bg-gray-300 rounded w-28"></div>
                 </td>
                 <td class="px-6 py-4 flex gap-2">

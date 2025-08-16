@@ -83,12 +83,10 @@ export default defineComponent({
 
                             if (!item.classroom_id) {
                                 errors.classrooms_subject[index].classroom_id = "Kelas wajib diisi";
-                                console.log('item classroom_id', item.classroom_id, 'index', index)
                                 isValid = false;
                             }
                             if (!item.jumlah_jp) {
                                 errors.classrooms_subject[index].jumlah_jp = "Jumlah JP wajib diisi";
-                                console.log('item jumlah_jp', item.jumlah_jp, 'index', index)
                                 isValid = false;
                             }
                         })

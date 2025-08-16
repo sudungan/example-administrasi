@@ -176,20 +176,35 @@ class SubjectController extends Controller
         }
     }
 
-    public function deleteSubjectById(Subject $subject) {
+    public function deleteSubjectById(Subject $subject, $classroomId) {
         try {
+            // mengecek subject sudah dipakai di scheduleSubjects / jadwal pelajaran
              if (Subject::where('id', $subject['id'])->whereHas('scheduleSubjects')->exists()) {
                throw new ConflictException('mapel sudah digunakan dalam jadwal', [
                     'schedule_id' => 'mapel sudah digunakan dalam jadwal'
                 ]);
             }
+            // mengambil seluruh total_jp dari subjectTeacher
             $subjectTeacher = SubjectTeacher::where('user_id', $subject['user_id'])->first();
 
-            $subjectTeacher->total_jp == 0 ?
-                $subjectTeacher->delete() :
-                $subjectTeacher->update(['total_jp'  => $subjectTeacher->total_jp - $subject->jumlah_jp ]);
+            // mengambil classroom_subject
+            $classroomSubject = DB::table('classroom_subject')->where('classroom_id', $classroomId)->where('subject_id', $subject['id'])->first();
 
-            $subject->delete();
+            // Jika ada subjectTeacher -> update atau hapus
+            if ($subjectTeacher && $classroomSubject) {
+                $newTotalJp = $subjectTeacher->total_jp - $classroomSubject->jumlah_jp;
+                $newTotalJp > 0
+                    ? $subjectTeacher->update(['total_jp' => $newTotalJp])
+                    : $subjectTeacher->delete();
+            }
+
+            // menghapus relasi subject di classroom
+            $this->detachSubjectFromClassroom($classroomId, $subject->id);
+
+            // menghapus subject bila subject dalam classroom tidak ada lagi
+            if(! DB::table('classroom_subject')->where('subject_id', $subject['id'])->exists()) {
+                $subject->delete();
+            }
 
            return response()->json([
             'message'   => 'subject deleted sucessfully'
@@ -201,5 +216,12 @@ class SubjectController extends Controller
                 'message'   => $error->getMessage()
             ]);
         }
+    }
+
+    private function detachSubjectFromClassroom($classroomId, $ubjectId = null) {
+        DB::table('classroom_subject') ->where([
+                ['classroom_id', '=', $classroomId],
+                ['subject_id', '=', $ubjectId],
+            ])->delete();
     }
 }

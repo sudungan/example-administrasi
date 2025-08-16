@@ -33,4 +33,8 @@ class Subject extends Model
         );
     }
 
+    public function scheduleSubjects() {
+        return $this->hasMany(Schedule::class);
+    }
+
 }
