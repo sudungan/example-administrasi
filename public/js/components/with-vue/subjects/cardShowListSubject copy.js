@@ -62,23 +62,18 @@ export default defineComponent({
                 <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
                     <li v-for="(subject, index) in localListSubject" :key="index" class="py-4">
                         <div class="flex items-center">
-                        <div class="flex-1 min-w-0 ms-4">
-                            <p class="text-sm font-medium text-gray-900 mb-2 truncate dark:text-white leading-relaxed">
-                                <span :class="badgeClass(subject)">
-                                    {{ subject.name }}
-                                </span>
-                            </p>
-
-                            <template v-for="classroom in subject.classroom_subject" :key="classroom.id">
-                                <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                    {{ classroom.name }}-{{classroom?.major.initial}}
+                            <div class="flex-1 min-w-0 ms-4">
+                                <p class="text-sm font-medium text-gray-900 mb-2 truncate dark:text-white leading-relaxed">
+                                    <span :class="badgeClass(subject)">
+                                        {{ subject.name }}
+                                    </span>
                                 </p>
-                            </template>
-                        </div>
+                                <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                    {{ subject.classroom.name }}-{{subject.classroom.major.initial}}
+                                </p>
+                            </div>
                             <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                <template v-for="classroom in subject.classroom_subject" :key="classroom.id">
-                                    {{ classroom?.pivot.jumlah_jp }} JP
-                                </template>
+                                {{ subject.jumlah_jp }} JP
                             </div>
                         </div>
                     </li>

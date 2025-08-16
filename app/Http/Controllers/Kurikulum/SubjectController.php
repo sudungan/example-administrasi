@@ -19,7 +19,7 @@ class SubjectController extends Controller
 
     public function getListSubjectBy($teacherId) {
         try {
-            $subjects = Subject::where('user_id', $teacherId)->with(['classroom.major', 'teacher', 'classroomSubject'])->get();
+            $subjects = Subject::where('user_id', $teacherId)->with(['teacher', 'classroomSubject.major'])->get();
             // dd($subjects);
             return response()->json([
                 'message'   => 'get list subject by teacher successfully',
