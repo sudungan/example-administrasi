@@ -186,7 +186,7 @@ export default defineComponent({
             <div class="relative bg-gray-300 rounded-lg shadow-sm dark:bg-gray-900">
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
                     <h3 class="text-xl flex-inline font-semibold text-gray-900 dark:text-white dark:semibold">
-                        new subject to
+                        Pelajaran Baru Ke guru
                         <span v-if="dataPassingTeacher" :class="badgeClass">
                             {{dataPassingTeacher.teacher.name}}
                         </span>

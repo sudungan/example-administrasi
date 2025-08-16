@@ -1,6 +1,6 @@
 const { defineComponent, ref, reactive, watch, computed, onMounted  } = Vue
 export default defineComponent({
-    name: 'formCreateSubject', // nama child component,
+    name: 'cardAddSubjectToClassroom', // nama child component,
     props: {
         visableCard: {
             type: String,
@@ -19,6 +19,7 @@ export default defineComponent({
     setup(props, {emit}) {
         const subject = reactive({ name: '',  classroom_id: '', jumlah_jp: '' })
         const subjectClassroom = reactive({ name: '',  classrooms_subject: [{classroom_id: '', jumlah_jp: ''}] })
+        const addSubjectToClassroom = reactive({subjectId: '', classroomId: ''})
         const fieldLabels = { name: 'Nama', classroom_id: 'Kelas', jumlah_jp: 'Jumlah Jam Pelajaran' }
         // const errors = reactive({ name: '',  classrooms_subject: [{classroom_id: '', jumlah_jp: ''}] })
         const errors = reactive({
@@ -142,7 +143,7 @@ export default defineComponent({
 
         return {
             subject, closeCreateForm, badgeClass, storeSubject, errors, isLoading, dataPassingTeacher: localDataTeacher, classrooms: localClassroom,
-            addSubjectClassroom, subjectClassroom, removeSubjectClassroom, disabledButton, isAllFilled
+            addSubjectClassroom, subjectClassroom, removeSubjectClassroom, disabledButton, isAllFilled, addSubjectToClassroom
         }
     },
     template: `
@@ -150,26 +151,38 @@ export default defineComponent({
             <div class="relative bg-gray-300 rounded-lg shadow-sm dark:bg-gray-900">
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
                     <h3 class="text-xl flex-inline font-semibold text-gray-900 dark:text-white dark:semibold">
-                        new subject to
-                        <span v-if="dataPassingTeacher" :class="badgeClass">
-                            {{dataPassingTeacher.teacher.name}}
-                        </span>
+                        Tambah Pelajaran
                     </h3>
                 </div>
                 <div class="p-4 md:p-5 space-y-4">
                     <form @submit.prevent="storeSubject" class="space-y-4">
-                        <div class="mb-2">
-                            <label for="name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">
-                                Nama Pelajaran
-                            </label>
-                            <input
-                                type="text"
-                                v-model="subjectClassroom.name"
-                                id="name"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="Type subject name here.."
-                            >
-                            <p  v-if="errors.name" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.name }}</p>
+                        <div class="grid gap-4 mb-4 grid-cols-2">
+                            <div class="col-span-2 sm:col-span-1">
+                                <label for="name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">
+                                    Nama Guru
+                                </label>
+                                <input
+                                    type="text"
+                                    v-model="subjectClassroom.name"
+                                    id="name"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="Type subject name here.."
+                                >
+                                <p  v-if="errors.name" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.name }}</p>
+                            </div>
+                            <div class="col-span-2 sm:col-span-1">
+                                <label for="name" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">
+                                    Nama Pelajaran
+                                </label>
+                                <input
+                                    type="text"
+                                    v-model="subjectClassroom.name"
+                                    id="name"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="Type subject name here.."
+                                >
+                                <p  v-if="errors.name" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.name }}</p>
+                            </div>
                         </div>
                         <div class="divide-y divide-gray-200 dark:divide-gray-700">
                             <div v-for="(item, index) in subjectClassroom.classrooms_subject" :key="index" class="py-2 sm:py-3 grid gap-2 mb-2 grid-cols-2">

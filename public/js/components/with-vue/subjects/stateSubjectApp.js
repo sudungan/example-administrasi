@@ -3,11 +3,15 @@
     import loadingTableSubject from "./loadingTableSubject.js"
     import createTeacherColour from "./createTeacherColour.js"
     import cardShowListSubject from "./cardShowListSubject.js"
+    import cardAddSubjectToClassroom from "./cardAddSubjectToClassroom.js"
     const { createApp, ref, reactive, onMounted } = Vue
 export default function stateSubjectApp () {
 
     createApp({
-        components: { dataTableSubject, formCreateSubject, loadingTableSubject, createTeacherColour, cardShowListSubject },
+        components: {
+            dataTableSubject, formCreateSubject, loadingTableSubject, createTeacherColour, cardShowListSubject,
+            cardAddSubjectToClassroom
+        },
         setup() {
             const currentView = ref("loading-table")
             const message = ref('Hello Vue!')
@@ -16,6 +20,7 @@ export default function stateSubjectApp () {
             const dataTeacherBy = ref({ id: '', name: '' })
             const showListSubjectsTeacher = ref([])
             const dataTeacher = ref({})
+            const dataAddSubjectTo = ref({})
             const listClassroom = ref([])
             const showFormCreate =()=> currentView.value = 'create-teacher-colour'
             const baseColour = ref([
@@ -64,6 +69,11 @@ export default function stateSubjectApp () {
             // fungsi untuk menghandle passing data dari BE ke component lain
             function handlePassingData(data) {
                 dataTeacher.value = data
+            }
+
+            function handleAddSubjectTo(data) {
+                currentView.value = data.component // nama componentK
+                dataAddSubjectTo.value = data
             }
 
             async function handleSelectTeacher(data) {
@@ -124,7 +134,7 @@ export default function stateSubjectApp () {
                 message, currentView, showFormCreate, listClassroom,
                 getListClassroom, baseColour, refreshListSubject, baseCssColour, handleShowSubjectTeacher,
                 dataTeacher, handlePassingData, listTeacherSubject, handleSelectTeacher,showListSubjectsTeacher,
-                hasTeacherBaseColour, checkBaseColour, dataTeacherBy, getTeacherBy,
+                hasTeacherBaseColour, checkBaseColour, dataTeacherBy, getTeacherBy, handleAddSubjectTo, dataAddSubjectTo
              }
         },
         template: `
@@ -139,6 +149,7 @@ export default function stateSubjectApp () {
                 :visable-card="currentView"
                 :data="listTeacherSubject"
                 @add="handleSelectTeacher"
+                @add-subject-to="handleAddSubjectTo"
                 @show="handleShowSubjectTeacher"
                 @reload="refreshListSubject"
                 />
@@ -160,6 +171,19 @@ export default function stateSubjectApp () {
                 v-cloak
                 v-show="currentView === 'create-subject'" class="relative sm:rounded-lg">
                 <form-create-subject
+                    :visable-card="currentView"
+                    :classrooms="listClassroom"
+                    @reload="refreshListSubject"
+                    :dataPassingTeacher="hasTeacherBaseColour"
+                    @back-to="currentView = $event"
+                />
+            </div>
+
+             <!-- komponent untuk form-add-create-subject -->
+             <div
+                v-cloak
+                v-show="currentView === dataAddSubjectTo.component" class="relative sm:rounded-lg">
+                <card-add-subject-to-classroom
                     :visable-card="currentView"
                     :classrooms="listClassroom"
                     @reload="refreshListSubject"
