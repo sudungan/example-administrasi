@@ -212,8 +212,11 @@ export default defineComponent({
                             <table class="w-full text-sm rounded text-left text-gray-400 dark:text-gray-400">
                                 <thead class="text-xs text-gray-700 bg-transparent dark:text-gray-400">
                                     <tr>
-                                        <th scope="col" class="py-3 text-sm font-medium text-gray-900 dark:text-white">
-                                            Jadwal Kelassa
+                                        <th scope="col" class="py-1 text-sm font-medium text-gray-900 dark:text-white">
+                                            Kelas
+                                        </th>
+                                        <th scope="col" class="py-1 text-sm font-medium text-gray-900 dark:text-white">
+                                            Jam pelajaran
                                         </th>
                                     </tr>
                                 </thead>

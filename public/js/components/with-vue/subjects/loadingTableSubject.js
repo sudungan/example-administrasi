@@ -13,7 +13,7 @@ export default defineComponent({
                     <th class="px-6 py-3">#</th>
                     <th class="px-6 py-3">NAMA GURU</th>
                     <th class="px-6 py-3">NAMA PELAJARAN</th>
-                    <th class="px-6 py-3">Action</th>
+                    <th class="px-6 py-3">TOTAL JP</th>
                 </tr>
                 </thead>
             </template>

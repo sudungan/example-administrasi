@@ -46,6 +46,34 @@ class SubjectController extends Controller
         }
     }
 
+    public function getTotalJpBy($teacherId) {
+        try {
+            $totalJpByTeacher = SubjectTeacher::where('user_id', $teacherId)->first();
+            return response()->json([
+                'message'   => 'get total jp by teacher successfully',
+                'data'      => $totalJpByTeacher
+            ], HttpCode::OK);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getTotalJpTeachers() {
+        try {
+            $totalJpByTeacher = SubjectTeacher::get();
+            return response()->json([
+                'message'   => 'get total jp by teacher successfully',
+                'data'      => $totalJpByTeacher
+            ], HttpCode::OK);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function getListTeacherSubject() {
         try {
             $listTeacherSubject = Subject::with(['teacher','classroomSubject', 'teacherJp'])->get();
@@ -190,7 +218,7 @@ class SubjectController extends Controller
             // mengambil classroom_subject
             $classroomSubject = DB::table('classroom_subject')->where('classroom_id', $classroomId)->where('subject_id', $subject['id'])->first();
 
-            // Jika ada subjectTeacher -> update atau hapus
+            // todo: perbaikan ketika sudah semua subject classroom tidak ada lagi, harusnya subject teacher terhapus
             if ($subjectTeacher && $classroomSubject) {
                 $newTotalJp = $subjectTeacher->total_jp - $classroomSubject->jumlah_jp;
                 $newTotalJp > 0

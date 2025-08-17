@@ -39,51 +39,61 @@ export default defineComponent({
             ]
         }
 
+        const returnKeyLoop = (indexSubject, indexClassroom)=> {
+            return indexSubject - indexClassroom
+        }
+
+        const divideSubjectClassroom = (index)=> {
+            return index + 1 ? 'divide-y divide-gray-200 dark:divide-gray-700' : ''
+        }
         return {
-            badgeClass, localListSubject, btnBack,
+            badgeClass, localListSubject, btnBack, divideSubjectClassroom, returnKeyLoop
         }
     },
     template: `
-        <div class="w-full max-w-4xl p-6 bg-white border border-gray-200 rounded-lg shadow-md sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-            <div class="flex items-center justify-between mb-6">
-                <h5 class="text-2xl font-bold text-gray-900 dark:text-white">List Subject  {{data[0]?.teacher?.name}} </h5>
-                <a @click="btnBack" data-tooltip-target="tooltip-right" data-tooltip-placement="right"  class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
-                <svg class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0 4 4M1 5l4-4"/>
-                </svg>
-                </a>
-                <div id="tooltip-right" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                    Back
-                    <div class="tooltip-arrow" data-popper-arrow></div>
-                </div>
-            </div>
 
-            <div class="flow-root">
-                <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
-                    <li v-for="(subject, index) in localListSubject" :key="index" class="py-4">
-                        <div class="flex items-center">
-                        <div class="flex-1 min-w-0 ms-4">
-                            <p class="text-sm font-medium text-gray-900 mb-2 truncate dark:text-white leading-relaxed">
-                                <span :class="badgeClass(subject)">
-                                    {{ subject.name }}
-                                </span>
-                            </p>
 
-                            <template v-for="classroom in subject.classroom_subject" :key="classroom.id">
-                                <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                    {{ classroom.name }}-{{classroom?.major.initial}}
-                                </p>
-                            </template>
-                        </div>
-                            <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                <template v-for="classroom in subject.classroom_subject" :key="classroom.id">
-                                    {{ classroom?.pivot.jumlah_jp }} JP
-                                </template>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <caption class="p-2 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+            {{data[0]?.teacher?.name}}
+        </caption>
+        <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-6 py-3 rounded-s-lg">
+                   Mata Pelajaran
+                </th>
+                <th scope="col" class="px-6 py-3">
+                   Kelas
+                </th>
+                 <th scope="col" class="px-6 py-3 rounded-e-lg">
+                    JP
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <template v-for="(subject, sIndex) in localListSubject" :key="sIndex">
+                <tr class="bg-white dark:bg-gray-800">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    Apple MacBook Pro 17"
+                </th>
+                <td class="px-6 py-4">
+                    1
+                </td>
+                <td class="px-6 py-4">
+                    $2999
+                </td>
+            </tr>
+            </template>
+        </tbody>
+        <tfoot>
+            <tr class="font-semibold text-gray-900 dark:text-white">
+                <th scope="row" class="px-6 py-3 text-base">Total</th>
+                <td class="px-6 py-3">3</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
     `
 })

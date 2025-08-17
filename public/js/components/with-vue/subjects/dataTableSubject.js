@@ -1,4 +1,4 @@
-const { defineComponent, ref, watch, computed } = Vue
+const { defineComponent, ref, watch, computed, onMounted } = Vue
 export default defineComponent({
     name: 'dataTableSubject', // nama child component
     props: {
@@ -9,11 +9,16 @@ export default defineComponent({
         visableCard: {
             type: String,
             required: true
+        },
+        subjectTeacherBy: {
+            type: Object || null,
+            required: true
         }
     },
     emits: ['add', 'show', 'reload', 'addSubjectTo'],
     setup(props, {emit}) {
         const localListSubject = ref([])
+        const childTotalJp = ref({...props.subjectTeacherBy})
         const colorMap = {
             // gap-2 inline-flex bg-gray-100 text-gray-800 text-xs font-medium items-center px-2.5 py-0.5 rounded-sm me-2 dark:bg-gray-700 dark:text-gray-400 border border-gray-500 mb-2
             blue: 'bg-blue-100 text-blue-800 border border-blue-400 dark:text-blue-400 dark:bg-blue-900',
@@ -45,7 +50,6 @@ export default defineComponent({
                     return
                 }
                 await swalLoading('delete process..',async (result)=> {
-                    console.log('classroomId:', classroomId)
                     try {
                         let result = await axios.delete(`/delete-subject-by/${subjectId}/${classroomId}`)
                         successNotification(result.data.message)
@@ -72,11 +76,16 @@ export default defineComponent({
         function showAllsubject(teacherId) {
             emit('show', {  component: 'show-list-subject-by',  teacherId: teacherId })
         }
+        const getTotalJpByTeacher  = (teacherId)=> {
+            emit('getTotalJpBy', teacherId)
+        }
 
         watch(() => props.data, (newVal) => { localListSubject.value = [...newVal] }, { immediate: true });
+
+        watch(() => props.subjectTeacherBy, (newVal) => { Object.assign(childTotalJp.value, newVal)  }, { immediate: true });
         return {
             localListSubject, getBadgeClass, addSubjectTeacher, showAllsubject, deleteConfirmation, editSubject,
-            btnAddSubjectTo,
+            btnAddSubjectTo, subjectTeacherBy: childTotalJp
         }
     },
     template: `
@@ -111,8 +120,8 @@ export default defineComponent({
                         <th scope="col" class="px-6 py-3">
                             Nama Pelajaran
                         </th>
-                         <th scope="col" class="px-6 py-3">
-                            Action
+                        <th scope="col" class="px-6 py-3">
+                            Total JP
                         </th>
                     </tr>
                 </thead>
@@ -140,6 +149,7 @@ export default defineComponent({
                                                 </a>
                                                 {{ classroom.name }}
                                                 {{ classroom.major?.initial }}
+                                                ({{ classroom.pivot?.jumlah_jp }} JP)
                                                 <svg  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="gray" class="cursor-pointer size-3">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                                 </svg>
@@ -159,15 +169,9 @@ export default defineComponent({
                                 </template>
                             </td>
                             <td class="px-6 py-4">
-                                <a
-                                    v-if="teacher.subjects && teacher.subjects.length"
-                                    @click="showAllsubject(teacher.id)"
-                                    class="font-medium text-blue-600 dark:text-blue-500 hover:cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    </svg>
-                                </a>
+                                <template v-if="teacher.id == subjectTeacherBy.user_id">
+                                    {{ subjectTeacherBy.total_jp }}
+                                </template>
                             </td>
                         </tr>
                      </template>

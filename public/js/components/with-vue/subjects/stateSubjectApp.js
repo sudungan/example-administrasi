@@ -4,7 +4,7 @@
     import createTeacherColour from "./createTeacherColour.js"
     import cardShowListSubject from "./cardShowListSubject.js"
     import cardAddSubjectToClassroom from "./cardAddSubjectToClassroom.js"
-    const { createApp, ref, reactive, onMounted } = Vue
+    const { createApp, ref, reactive, onMounted, nextTick  } = Vue
 export default function stateSubjectApp () {
 
     createApp({
@@ -20,6 +20,7 @@ export default function stateSubjectApp () {
             const dataTeacherBy = ref({ id: '', name: '' })
             const showListSubjectsTeacher = ref([])
             const dataTeacher = ref({})
+            const totalJpTeacher = ref([])
             const dataAddSubjectTo = ref({})
             const listClassroom = ref([])
             const showFormCreate =()=> currentView.value = 'create-teacher-colour'
@@ -48,7 +49,9 @@ export default function stateSubjectApp () {
 
             onMounted(async ()=> {
                 await getListTeacherSubject()
+                await getTotalJByTeacher()
                 await getListClassroom()
+                await nextTick()
             });
 
             async function getListTeacherSubject() {
@@ -62,7 +65,30 @@ export default function stateSubjectApp () {
                 }
             }
 
+            async function getTotalJByTeacher() {
+                try {
+                    let result = await axios.get(`total-jp-teachers`)
+                    totalJpTeacher.value = result.data.data
+                    console.log('data total jp', totalJpTeacher.value)
+                } catch (error) {
+                    console.log('error: ', error)
+                }
+            }
+
+            async function handleGetJpTeacher(teacherId) {
+                try {
+                    if(teacherId != null) {
+                        let result = await axios.get(`total-jp-by/${teacherId}`)
+                        console.log('data', result.data.data)
+                    }
+                    return
+                } catch (error) {
+                    console.log('error', error)
+                }
+            }
+
             async function refreshListSubject() {
+                await getTotalJByTeacher(),
                 await getListTeacherSubject()
             }
 
@@ -134,7 +160,8 @@ export default function stateSubjectApp () {
                 message, currentView, showFormCreate, listClassroom,
                 getListClassroom, baseColour, refreshListSubject, baseCssColour, handleShowSubjectTeacher,
                 dataTeacher, handlePassingData, listTeacherSubject, handleSelectTeacher,showListSubjectsTeacher,
-                hasTeacherBaseColour, checkBaseColour, dataTeacherBy, getTeacherBy, handleAddSubjectTo, dataAddSubjectTo
+                hasTeacherBaseColour, checkBaseColour, dataTeacherBy, getTeacherBy, handleAddSubjectTo, dataAddSubjectTo,
+                getTotalJByTeacher, totalJpTeacher, handleGetJpTeacher
              }
         },
         template: `
@@ -148,10 +175,12 @@ export default function stateSubjectApp () {
                <data-table-subject
                 :visable-card="currentView"
                 :data="listTeacherSubject"
+                :subject-teacher-by="totalJpTeacher"
                 @add="handleSelectTeacher"
                 @add-subject-to="handleAddSubjectTo"
                 @show="handleShowSubjectTeacher"
                 @reload="refreshListSubject"
+                @get-total-jp-by="handleGetJpTeacher"
                 />
             </div>
 
