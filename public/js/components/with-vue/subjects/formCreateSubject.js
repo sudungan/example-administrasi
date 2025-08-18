@@ -146,10 +146,6 @@ export default defineComponent({
             subjectClassroom.classrooms_subject.splice(index, 1)
         }
 
-        function resetDimanic(target) {
-
-        }
-
         function resetFieldsSubject() {
             Object.assign(subjectClassroom, {
                 name: '',

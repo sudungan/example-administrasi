@@ -16,8 +16,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignIdFor(User::class);
-            $table->foreignIdFor(Classroom::class);
-            $table->integer('jumlah_jp')->default(0);
             $table->string('colour')->default('gray');
             $table->timestamps();
         });

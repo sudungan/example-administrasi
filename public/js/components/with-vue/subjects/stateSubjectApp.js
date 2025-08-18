@@ -76,8 +76,8 @@ export default function stateSubjectApp () {
             }
 
             async function refreshListSubject() {
-                await getTotalJpTeacher(),
-                await getListTeacherSubject()
+                await getListTeacherSubject(),
+                await getTotalJpTeacher()
             }
 
             // fungsi untuk menghandle passing data dari BE ke component lain
@@ -164,7 +164,7 @@ export default function stateSubjectApp () {
              <div
                 v-cloak
                 v-show="currentView === 'show-list-subject-by'" class="relative sm:rounded-lg">
-              
+
             </div>
 
             <!-- komponent untuk form-create-subject -->
