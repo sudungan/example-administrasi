@@ -49,7 +49,7 @@ export default function stateSubjectApp () {
 
             onMounted(async ()=> {
                 await getListTeacherSubject()
-                await getTotalJByTeacher()
+                await getTotalJpTeacher()
                 await getListClassroom()
                 await nextTick()
             });
@@ -65,30 +65,18 @@ export default function stateSubjectApp () {
                 }
             }
 
-            async function getTotalJByTeacher() {
+            // fungsi mengambil semua totalJP
+            async function getTotalJpTeacher() {
                 try {
                     let result = await axios.get(`total-jp-teachers`)
                     totalJpTeacher.value = result.data.data
-                    console.log('data total jp', totalJpTeacher.value)
                 } catch (error) {
                     console.log('error: ', error)
                 }
             }
 
-            async function handleGetJpTeacher(teacherId) {
-                try {
-                    if(teacherId != null) {
-                        let result = await axios.get(`total-jp-by/${teacherId}`)
-                        console.log('data', result.data.data)
-                    }
-                    return
-                } catch (error) {
-                    console.log('error', error)
-                }
-            }
-
             async function refreshListSubject() {
-                await getTotalJByTeacher(),
+                await getTotalJpTeacher(),
                 await getListTeacherSubject()
             }
 
@@ -116,17 +104,6 @@ export default function stateSubjectApp () {
                 }
             }
 
-            async function handleShowSubjectTeacher(data) {
-                try {
-                    let result = await axios.get(`/list-subject-by/${data.teacherId}`)
-                    console.log('data', result.data.data)
-                    showListSubjectsTeacher.value = result.data.data
-                    currentView.value = 'show-list-subject-by'
-                } catch (error) {
-                    console.log('error', error)
-                }
-            }
-
             // melakukan check base teacher colour pada guru yang tersedia
             async function checkBaseColour(teacherId) {
                 try {
@@ -147,6 +124,7 @@ export default function stateSubjectApp () {
                 }
             }
 
+
             // mengambil data seluruh list kelas yang tersedia
             async function getListClassroom() {
                 try {
@@ -158,10 +136,10 @@ export default function stateSubjectApp () {
             }
             return {
                 message, currentView, showFormCreate, listClassroom,
-                getListClassroom, baseColour, refreshListSubject, baseCssColour, handleShowSubjectTeacher,
+                getListClassroom, baseColour, refreshListSubject, baseCssColour,
                 dataTeacher, handlePassingData, listTeacherSubject, handleSelectTeacher,showListSubjectsTeacher,
                 hasTeacherBaseColour, checkBaseColour, dataTeacherBy, getTeacherBy, handleAddSubjectTo, dataAddSubjectTo,
-                getTotalJByTeacher, totalJpTeacher, handleGetJpTeacher
+                getTotalJpTeacher, totalJpTeacher,
              }
         },
         template: `
@@ -175,12 +153,10 @@ export default function stateSubjectApp () {
                <data-table-subject
                 :visable-card="currentView"
                 :data="listTeacherSubject"
-                :subject-teacher-by="totalJpTeacher"
+                :data-provide-by="totalJpTeacher"
                 @add="handleSelectTeacher"
                 @add-subject-to="handleAddSubjectTo"
-                @show="handleShowSubjectTeacher"
                 @reload="refreshListSubject"
-                @get-total-jp-by="handleGetJpTeacher"
                 />
             </div>
 
@@ -188,11 +164,7 @@ export default function stateSubjectApp () {
              <div
                 v-cloak
                 v-show="currentView === 'show-list-subject-by'" class="relative sm:rounded-lg">
-               <card-show-list-subject
-                :visable-card="currentView"
-                :data="showListSubjectsTeacher"
-                @back-to="currentView = $event"
-                />
+              
             </div>
 
             <!-- komponent untuk form-create-subject -->

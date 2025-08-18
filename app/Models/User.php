@@ -77,7 +77,7 @@ class User extends Authenticatable
     }
 
     public function amountSubjects() {
-        return $this->hasOne(SubjectTeacher::class);
+        return $this->hasOne(SubjectTeacher::class, 'user_id', 'id');
     }
 
     public function subjectJp() {

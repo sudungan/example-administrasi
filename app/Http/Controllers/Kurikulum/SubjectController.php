@@ -46,20 +46,6 @@ class SubjectController extends Controller
         }
     }
 
-    public function getTotalJpBy($teacherId) {
-        try {
-            $totalJpByTeacher = SubjectTeacher::where('user_id', $teacherId)->first();
-            return response()->json([
-                'message'   => 'get total jp by teacher successfully',
-                'data'      => $totalJpByTeacher
-            ], HttpCode::OK);
-        } catch (\Exception $error) {
-            return response()->json([
-                'message'   => $error->getMessage()
-            ], HttpCode::INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public function getTotalJpTeachers() {
         try {
             $totalJpByTeacher = SubjectTeacher::get();
@@ -76,8 +62,6 @@ class SubjectController extends Controller
 
     public function getListTeacherSubject() {
         try {
-            $listTeacherSubject = Subject::with(['teacher','classroomSubject', 'teacherJp'])->get();
-            // dd($listTeacherSubject);
             $teachers = User::where('role_id', MainRole::item['guru'])->with(['subjects.classroomSubject.major','amountSubjects'])->get();
             return response()->json([
                 'message'   => 'get list teacher successfully',
@@ -92,6 +76,7 @@ class SubjectController extends Controller
 
     public function storeSubject(Request $request) {
         try {
+            // todo: perbaikan store bila nama kelas sama dan mapel sama harusnya menampilkan pesan error
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required',
                 'name' => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/'],

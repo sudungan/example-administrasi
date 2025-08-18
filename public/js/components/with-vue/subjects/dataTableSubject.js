@@ -1,4 +1,5 @@
 const { defineComponent, ref, watch, computed, onMounted } = Vue
+import cardTotalJp from "./cardTotalJp.js"
 export default defineComponent({
     name: 'dataTableSubject', // nama child component
     props: {
@@ -10,15 +11,15 @@ export default defineComponent({
             type: String,
             required: true
         },
-        subjectTeacherBy: {
-            type: Object || null,
+        dataProvideBy: {
+            type: Array,
             required: true
         }
     },
-    emits: ['add', 'show', 'reload', 'addSubjectTo'],
+    emits: ['add', 'reload', 'addSubjectTo'],
     setup(props, {emit}) {
         const localListSubject = ref([])
-        const childTotalJp = ref({...props.subjectTeacherBy})
+        const childTotalJpAllTeacher = ref([])
         const colorMap = {
             // gap-2 inline-flex bg-gray-100 text-gray-800 text-xs font-medium items-center px-2.5 py-0.5 rounded-sm me-2 dark:bg-gray-700 dark:text-gray-400 border border-gray-500 mb-2
             blue: 'bg-blue-100 text-blue-800 border border-blue-400 dark:text-blue-400 dark:bg-blue-900',
@@ -73,19 +74,13 @@ export default defineComponent({
             emit('addSubjectTo', {component: 'add-subject-to', subjectId: subjectId, subjectName: subjectName, teacherName: teacherName})
         }
 
-        function showAllsubject(teacherId) {
-            emit('show', {  component: 'show-list-subject-by',  teacherId: teacherId })
-        }
-        const getTotalJpByTeacher  = (teacherId)=> {
-            emit('getTotalJpBy', teacherId)
-        }
-
         watch(() => props.data, (newVal) => { localListSubject.value = [...newVal] }, { immediate: true });
 
-        watch(() => props.subjectTeacherBy, (newVal) => { Object.assign(childTotalJp.value, newVal)  }, { immediate: true });
+        watch(() => props.dataProvideBy, (newVal) => { childTotalJpAllTeacher.value = newVal }, { immediate: true })
+
         return {
-            localListSubject, getBadgeClass, addSubjectTeacher, showAllsubject, deleteConfirmation, editSubject,
-            btnAddSubjectTo, subjectTeacherBy: childTotalJp
+            localListSubject, getBadgeClass, addSubjectTeacher, deleteConfirmation, editSubject,
+            btnAddSubjectTo, childTotalJpAllTeacher,
         }
     },
     template: `
@@ -169,8 +164,12 @@ export default defineComponent({
                                 </template>
                             </td>
                             <td class="px-6 py-4">
-                                <template v-if="teacher.id == subjectTeacherBy.user_id">
-                                    {{ subjectTeacherBy.total_jp }}
+                                <template v-if="teacher.subjects.length && teacher.id">
+                                    <template v-for="value in childTotalJpAllTeacher" :key="value.id">
+                                        <template v-if="value.user_id == teacher.id">
+                                            {{value.total_jp}}
+                                        </template>
+                                    </template>
                                 </template>
                             </td>
                         </tr>

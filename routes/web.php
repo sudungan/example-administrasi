@@ -34,7 +34,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('teacher-by/{teacherId}', [SubjectController::class, 'getTeacherBy'])->name('teacher-by');
     Route::get('list-subject-by/{teacherId}', [SubjectController::class, 'getListSubjectBy'])->name('list-subject-by');
     Route::get('total-jp-teachers', [SubjectController::class, 'getTotalJpTeachers'])->name('total-jp-teachers');
-    Route::get('total-jp-by/{teacherId}', [SubjectController::class, 'getTotalJpBy'])->name('total-jp-by');
     Route::delete('delete-subject-by/{subject}/{classroomId}', [SubjectController::class, 'deleteSubjectById'])->name('delete-subject-by');
 
     // ROUTE FOR CLASSROOMS
