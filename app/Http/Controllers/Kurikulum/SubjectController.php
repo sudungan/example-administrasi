@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\{TeacherColour, Classroom, Subject, SubjectTeacher, User, ScheduleSubject};
 use App\Exceptions\{ConflictException, NotFoundException};
 use App\Helpers\MainRole;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
 class SubjectController extends Controller
@@ -79,7 +80,7 @@ class SubjectController extends Controller
             // todo: perbaikan store bila nama kelas sama dan mapel sama harusnya menampilkan pesan error
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required',
-                'name' => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/'],
+                'name' => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/',],
                 'user_id'   => ['required'],
                 'classrooms_subject'  => 'required',
                 'colour'    => 'required'
@@ -90,6 +91,17 @@ class SubjectController extends Controller
                 'classrooms_subject.required'   => 'Kelas harus dipilih',
                 'colour.required'   => 'Warna wajib dipilh'
             ]);
+
+            $validator->after(function ($validator) use ($request) {
+                $classroomIds = [];
+                foreach ($request->classrooms_subject as $key => $value) {
+                    if (in_array($value['classroom_id'], $classroomIds)) {
+                        $validator->errors()->add("classrooms_subject.$key.classroom_id", "Kelas sudah dipilih lebih dari satu kali.");
+                    } else {
+                        $classroomIds[] = $value['classroom_id'];
+                    }
+                }
+            });
 
             if ($validator->fails()) {
                 return response()->json([

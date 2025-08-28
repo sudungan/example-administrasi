@@ -110,6 +110,8 @@ export default defineComponent({
                     classrooms_subject: subjectClassroom.classrooms_subject,
                 }
                     isLoading.value = true;
+
+                    console.log(sendDataSubject)
                 let result = await axios.post(`store-subject`, sendDataSubject)
                     isLoading.value = false;
                     resetFieldsSubject();
@@ -118,11 +120,21 @@ export default defineComponent({
                     emit('reload')
                     emit('backTo', 'table')
             } catch (error) {
-                console.log('error dari create subject', error)
                 if (error.response && error.response.status === 422) {
                     let responseErrors = error.response.data.errors;
                     for (let key in responseErrors) {
-                        errors[key] = responseErrors[key][0];
+                        if (key.startsWith('classrooms_subject')) {
+                            // misalnya key = "classrooms_subject.0.classroom_id"
+                            let matches = key.match(/classrooms_subject\.(\d+)\.(\w+)/);
+                            if (matches) {
+                                let index = matches[1];
+                                let field = matches[2];
+                                errors.classrooms_subject[index][field] = responseErrors[key][0];
+                            }
+                        } else {
+                            // error global seperti name, user_id, dll
+                            errors[key] = responseErrors[key][0];
+                        }
                     }
                 }
                  isLoading.value = false;
@@ -233,9 +245,9 @@ export default defineComponent({
                                                         {{classroom.name}}-{{classroom.major.initial}}
                                                     </option>
                                                 </select>
-                                                <p v-if="errors.classrooms_subject[index]?.classroom_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.classrooms_subject[index]?.classroom_id }}</p>
+                                                <p v-if="errors.classrooms_subject[index]?.classroom_id" class="min-h-* text-sm text-red-600 dark:text-red-500">{{ errors.classrooms_subject[index]?.classroom_id || '' }}</p>
                                             </td>
-                                            <td class="px-1 py-1">
+                                            <td class="px-1 py-1 align-top">
                                                 <select v-model="item.jumlah_jp" id="jumlah_jp"
                                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
                                                         focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5
@@ -244,9 +256,9 @@ export default defineComponent({
                                                     <option value="">Jumlah Jam Pelajaran</option>
                                                     <option v-for="index in 10" :key="index" :value="index">{{ index }}</option>
                                                 </select>
-                                                <p v-if="errors.classrooms_subject[index]?.jumlah_jp" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.classrooms_subject[index]?.jumlah_jp }}</p>
+                                                <p v-if="errors.classrooms_subject[index]?.jumlah_jp" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.classrooms_subject[index]?.jumlah_jp || '' }}</p>
                                             </td>
-                                            <td class="px-1 py-1">
+                                            <td class="px-1 py-1 align-top">
                                                 <div class="flex justify-center space-x-1">
                                                     <button
                                                         type="button"
