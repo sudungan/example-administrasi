@@ -132,7 +132,6 @@ export default defineComponent({
                                 errors.classrooms_subject[index][field] = responseErrors[key][0];
                             }
                         } else {
-                            // error global seperti name, user_id, dll
                             errors[key] = responseErrors[key][0];
                         }
                     }

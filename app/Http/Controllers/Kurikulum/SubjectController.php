@@ -77,7 +77,6 @@ class SubjectController extends Controller
 
     public function storeSubject(Request $request) {
         try {
-            // todo: perbaikan store bila nama kelas sama dan mapel sama harusnya menampilkan pesan error
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required',
                 'name' => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/',],
