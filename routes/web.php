@@ -4,6 +4,9 @@ use App\Http\Controllers\General\{RoleController, UserController};
 use App\Http\Controllers\Kurikulum\{
     MajorController, ClassroomController, ScheduleController, SubjectController
 };
+use App\Http\Controllers\Exam\{
+    VocationalExamController
+};
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -81,6 +84,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('select-addition-role/{roleId}', [UserController::class, 'getSelectedRole'])->name('select-addition-role');
     Route::delete('delete-user/{userId}', [UserController::class, 'deleteUser'])->name('delete-user');
 
+    // ROUTE FOR UJIAN KEAHLIAN
+    Route::get('ujian-keahlian',[VocationalExamController::class, 'index'])->name('ujian-keahlian.index');
+    Route::get('list-vocational-exam',[VocationalExamController::class, 'getListVocationalExam'])->name('list-vocational-exam');
+    
+    
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');

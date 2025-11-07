@@ -53,20 +53,23 @@ export default function stateUserApp () {
                     console.log(error)
                 }
             }
+
             const backToPreviousPage = () => {
                 currentView.value = 'table'
                 cardUserDetail.general = false
                 cardUserDetail.profile = false
-
             }
+
             const btnShowDetailProfile =()=> {
                 cardUserDetail.profile = ! cardUserDetail.profile
                 cardUserDetail.general = false
             }
+
             const btnShowDataGeneral =()=> {
                 cardUserDetail.general = !cardUserDetail.general
                 cardUserDetail.profile = false
             }
+
             const showFormCreate = () => currentView.value = 'create'
             const showFormEdit = () => currentView.value = 'edit'
             const showTable = () =>  currentView.value = 'table'
@@ -88,20 +91,21 @@ export default function stateUserApp () {
             }
             const page = ref(1)
             async function btnEditUser(userId) {
-                    try {
+                try {
                     let result = await axios.get(`/edit-user-by/${userId}`);
                     editData.value = result.data.data
                     currentView.value = 'edit'
                 } catch (error) {
                     console.log(error)
                 }
-                }
+            }
 
             function deleteConfirm(userId) {
-                    confirmDelete('Yakin dihapus?', async (result)=>{
+                confirmDelete('Yakin dihapus?', async (result)=>{
                     if(!result.isConfirmed) {
                         return
                     }
+
                     await swalLoading('Menghapus Data Jurusan..',async (result)=> {
                         try {
                             let result = await axios.delete(`/delete-user/${userId}`)

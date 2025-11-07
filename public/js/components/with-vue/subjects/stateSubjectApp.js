@@ -86,8 +86,9 @@ export default function stateSubjectApp () {
             }
 
             function handleAddSubjectTo(data) {
-                currentView.value = data.component // nama componentK
+                currentView.value = data.component // nama component: add-subject-to
                 dataAddSubjectTo.value = data
+                console.log('data', data)
             }
 
             async function handleSelectTeacher(data) {
@@ -134,6 +135,7 @@ export default function stateSubjectApp () {
                     console.log('error:', error)
                 }
             }
+
             return {
                 message, currentView, showFormCreate, listClassroom,
                 getListClassroom, baseColour, refreshListSubject, baseCssColour,
