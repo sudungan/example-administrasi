@@ -11,9 +11,9 @@ export default defineComponent({
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th class="px-6 py-3">#</th>
-                    <th class="px-6 py-3">NAMA JURUSAN</th>
-                    <th class="px-6 py-3">NAMA STUDI KASUS</th>
-                    <th class="px-6 py-3">DIBUAT OLEH</th>
+                    <th class="px-6 py-3">NAMA UJIAN</th>
+                    <th class="px-6 py-3">NAMA PERIODE</th>
+                    <th class="px-6 py-3">TEMA</th>
                 </tr>
                 </thead>
             </template>

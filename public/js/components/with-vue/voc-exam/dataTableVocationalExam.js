@@ -7,6 +7,10 @@ export default defineComponent({
             type: String,
             required: true
         },
+        dataProvideBy: {
+            type: Array,
+            required: true
+        }
     },
     emits: [''],
     setup(props, {emit}) {},
@@ -38,13 +42,13 @@ export default defineComponent({
                             #
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Nama Jurusan
+                            Nama Ujian
                         </th>
                             <th scope="col" class="px-6 py-3">
-                            Nama Studi Kasus
+                            Periode
                         </th>
                             <th scope="col" class="px-6 py-3">
-                            Dibuat Oleh
+                           Tema
                         </th>
                         <th scope="col" class="px-6 py-3">
                             Action
@@ -52,7 +56,39 @@ export default defineComponent({
                     </tr>
                 </thead>
                 <tbody>
-                    
+                    <!-- start empty data exam -->
+                    <template v-if="dataProvideBy.length == 0">
+                        <tr>
+                            <td colspan="100%" class="text-center text-gray-500">
+                                <div class="p-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert">
+                                    <span class="font-medium">Data Ujian Kejuruan Belum ada..</span> 
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                    <!-- start empty data exam -->
+
+                    <!-- start empty data exam -->
+                    <!-- start has data exam -->
+                    <template v-for="(vocationalExam, index) in dataProvideBy" :key="vocationalExam.id">
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ index + 1 }}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{ vocationalExam.name }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ vocationalExam.period }}
+                            </td>
+                            <td class="px-6 py-4">
+                               {{ vocationalExam.description }}
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                            </td>
+                        </tr>
+                    </template>
                 </tbody>
             </table>
         </div>

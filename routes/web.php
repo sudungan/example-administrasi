@@ -87,7 +87,7 @@ Route::middleware(['auth'])->group(function () {
     // ROUTE FOR UJIAN KEAHLIAN
     Route::get('ujian-keahlian',[VocationalExamController::class, 'index'])->name('ujian-keahlian.index');
     Route::get('list-vocational-exam',[VocationalExamController::class, 'getListVocationalExam'])->name('list-vocational-exam');
-    
+    Route::post('store-data-vocational-exam', [VocationalExamController::class, 'storeVocationalExam'])->name('store-data-vocational-exam');
     
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');

@@ -1,33 +1,43 @@
     const { createApp, ref, reactive, onMounted, nextTick  } = Vue
     import loadingTableVocationalExam from "./loadingTableVocationalExam.js"
     import dataTableVocationalExam from "./dataTableVocationalExam.js"
+    import formCreateVocationalExam from "./formCreateVocationalExam.js"
 
 export default function stateVocationalExam() {
     createApp({
         components: {
-            loadingTableVocationalExam, dataTableVocationalExam
+            loadingTableVocationalExam, dataTableVocationalExam, 
+            formCreateVocationalExam
         },
         setup() {
             const currentView = ref("loading-table")
             const listVocationExam = ref([])
             const showFormCreate = () => currentView.value = 'create'
             const showTable = () =>  currentView.value = 'table'
-            
+            const isLoading = ref(false)
+
             onMounted( async()=> {
                 await getListVocationExam()
+                await refreshListVocationalExam()
             })
 
             async function getListVocationExam() {
                 try {
                     const result = await axios.get('list-vocational-exam')
                     listVocationExam.value = result.data.data
+                    console.log('data', listVocationExam.value)
                     currentView.value = 'table'
                 } catch (error) {
                     console.log('error', error)
                 }
             }
+
+            const refreshListVocationalExam = async ()=> {
+                await getListVocationExam()
+            }
             return {
-                showFormCreate, currentView, showTable, listVocationExam
+                showFormCreate, currentView, showTable, listVocationExam, refreshListVocationalExam,
+                isLoading
             }
         },
         template: `
@@ -52,20 +62,29 @@ export default function stateVocationalExam() {
             <div v-cloak v-show="currentView === 'table'" class="relative shadow-md sm:rounded-lg">
                 <data-table-vocational-exam
                     :visable-card="currentView"
+                    :data-provide-by="listVocationExam"
                 />
             </div>
 
             <!-- komponent untuk show-list-subject-by-teacherId -->
-             
 
-            <!-- komponent untuk form-create-subject -->
-            
 
-             <!-- komponent untuk form-add-create-subject -->
-             
+            <!-- komponent untuk form-create-ujian-keahlian -->
 
+
+            <!-- komponent untuk form-add-create-vocational-exam -->
+             <div
+                v-cloak
+                v-show="currentView === 'create'" class="relative sm:rounded-lg">
+                    <form-create-vocational-exam 
+                        :visable-card="currentView"
+                        :waiting-process="isLoading"
+                        @reload="refreshListVocationalExam"
+                        @back-to="currentView = $event"
+                    />
+            </div>
             <!-- komponent untuk form-create-teacher-colour -->
-             
+
 
         `
     }).mount("#app");

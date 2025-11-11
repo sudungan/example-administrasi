@@ -8,15 +8,24 @@ class VocationalExam extends Model
 {
     protected $table = "vocational_exam";
 
-    protected $fillable = ['major_id', 'user_id', 'title', 'created_by'];
-
-    // fungsi untuk relasi ke table majors
-    public function major() {
-        return $this->belongsTo(Major::class);
-    }
+    protected $fillable = ['name', 'period', 'description'];
 
     public function user() {
         return $this->belongsTo(User::class);
     }
 
+    public function vactionExamMajors() {
+        return $this->hasManyThrough(
+            Major::class,
+            ExamDay::class,
+            'vocational_exam_id', // FK di exam_days
+            'id',                 // PK di majors
+            'id',                 // PK di vocational_exam
+            'major_id'            // FK exam_days → majors
+        );
+    }
+
+    public function examDays() {
+        return $this->hasMany(ExamDay::class);
+    }
 }

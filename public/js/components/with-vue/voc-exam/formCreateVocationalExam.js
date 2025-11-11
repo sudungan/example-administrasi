@@ -1,51 +1,51 @@
-const { defineComponent, watch, ref, onMounted, reactive  } = Vue
+const { defineComponent, watch, ref, reactive }  = Vue
+
+// membuat component dari fungsi defineComponent
 export default defineComponent({
-    name: 'formCreateMajor', // nama child component
+    // nama properti untuk nama komponent
+    name: 'formCreateVocationalExam',
+
+    // keyword props untuk menyelaraskan properti yang akan dipakai diparent komponent
     props: {
         visableCard: {
             type: String,
-            required: true
-        },
-        teachers: {
-            type: Array,
             required: true
         },
         waitingProcess: {
             type: Boolean,
             required: true
         },
-        provideData: {
-            type: Number,
-            required:true
-        }
     },
-    emits: ['backTo', 'reload'],
-    setup(props, {emit}) {
-        const major = reactive({  name: '',  user_id: '' })
-        const errors = reactive({  name: '',  user_id: '' })
-        const childTeachers = ref(props.teachers)
-        const childStudents = ref(props.students)
-        const childIsLoading = ref(props.waitingProcess)
-        const childHeadMajorId = ref(props.provideData)
-        const selectedCreateNew = ref(null)
-        const fieldLabels = { name: 'Nama', user_id: 'Guru' };
 
-        // melihat perubahan langsung dari props.teachers yang dikirim dari parent disimpan ke state childTeachers
-        watch(() => props.teachers, (newVal) => { childTeachers.value = newVal }, { immediate: true });
+    // keyword emits untuk menampung nama fungsi yang akan berkomunikasi dengan fungsi component parent
+    emits: ['backTo'], 
+
+    // keyword setup untuk settingan bagian dari component child dibutuhkan
+    setup(props, {emit}) {
+        // membuat state untuk menampung objek vocationExam dari fungsi reactive 
+        const vocationalExam = reactive({ name: '', description: '', period: '' })
+
+        // membuat state untuk menampung objek vocationExam dari fungsi reactive 
+        const errors = reactive({ name: '', period: '', description: '' })
+
+        // membuat state untuk menampung objek vocationExam dari fungsi reactive 
+        const fieldLabels = { name: 'Nama Ujian', description: 'Tema Ujian', period: 'Periode Ujian' };
+
+        // membuat state di child component untuk mengammbil props dari parent
+        const childIsLoading = ref(props.waitingProcess)
 
         // melihat perubahan langsung dari props.waitingProcess yang dikirim dari parent disimpan ke state childIsLoading
         watch(() => props.waitingProcess, (newVal) => { childIsLoading.value = newVal }, { immediate: true });
 
-        // melihat perubahan langsung dari props.waitingProcess yang dikirim dari parent disimpan ke state childIsLoading
-        watch(() => props.provideData, (newVal) => { childHeadMajorId.value = newVal }, { immediate: true });
 
-        async function storeMajor() {
+        // event submit untuk mengirim data ke BE
+        async function storeVocationExam() {
             try {
                 let isValid = true;
                 childIsLoading.value = true;
 
-                for (let key in major) {
-                    if (!major[key].toString().trim()) {
+                for (let key in vocationalExam) {
+                    if (!vocationalExam[key].toString().trim()) {
                         let label  = fieldLabels[key] || key;
                             errors[key] = `${label} tidak boleh kosong`;
                             isValid = false;
@@ -57,14 +57,14 @@ export default defineComponent({
 
                 if (!isValid) return // jika tidak valid / tidak terisi beberapa field akan kembali
 
-                let sendMajor = {
-                    name: major.name,
-                    user_id: major.user_id,
-                    addition_role_id: childHeadMajorId.value
+                let sendDataVacationExam = {
+                    name: vocationalExam.name,
+                    period: vocationalExam.period,
+                    description: vocationalExam.description
                 }
                 childIsLoading.value = true;
-                let result = await axios.post('/store-major', sendMajor)
-                resetFields(major)
+                let result = await axios.post('/store-data-vocational-exam', sendDataVacationExam)
+                resetFields(vocationalExam)
                 successNotification(result.data.message)
                 childIsLoading.value = false;
                 emit('reload')
@@ -83,13 +83,9 @@ export default defineComponent({
             }
         }
 
-        /* 
-            next todo list:  
-                1. inputan period itu harus otomatis terisi berdasarkan dengan tahun sekarang
-                2. hanya bisa read-only dan disable pointer
-            */
-        const closeCreateForm =()=> {
-            let isAnyFilled = Object.values(major).some(value => {
+        // event handler untuk close form create
+        function closeCreateForm() {
+           let isAnyFilled = Object.values(vocationalExam).some(value => {
                 if (Array.isArray(value)) return value.length > 0
                     return value !== ''
             })
@@ -97,43 +93,44 @@ export default defineComponent({
             if (isAnyFilled) {
                 cancelConfirmation('Yakin membatalkan?', (result)=> {
                     if (result.isConfirmed) {
-                        resetFields(major); // reset field untuk object classroom
+                        resetFields(vocationalExam); // reset field untuk object classroom
                         resetFields(errors); // reset field untuk object errors
                         emit('backTo', 'table')
                     }
                 });
             }else {
-                resetFields(major);
+                resetFields(vocationalExam);
                 resetFields(errors);
                 emit('backTo', 'table')
             }
         }
 
+        // keyword return untuk diekspose semua state dan event handler didalam template
         return {
-            storeMajor, closeCreateForm, major, errors,
-            fieldLabels, teachers: childTeachers,
-            students: childStudents, selectedCreateNew, waitingProcess: childIsLoading,
-            provideData: childHeadMajorId
+            vocationalExam, storeVocationExam, errors, closeCreateForm, waitingProcess: childIsLoading,
+            fieldLabels
         }
     },
-    template:  `
+
+    // keyword template untuk tampilan halaman dari component yagn akan ditampilkan
+    template: `
         <div class="relative p-4 w-full max-w-2xl max-h-full">
             <div class="relative bg-gray-300 rounded-lg shadow-sm dark:bg-gray-900">
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white dark:semibold">
-                        Crete New Major
+                        Buat Ujian Keahlian
                     </h3>
                 </div>
                 <div class="p-4 md:p-5 space-y-4">
-                    <form @submit.prevent="storeMajor" class="space-y-4">
+                    <form @submit.prevent="storeVocationExam" class="space-y-4">
                         <div class="grid gap-2 mb-2 grid-cols-2">
                             <div class="col-span-2 sm:col-span-1">
                                 <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Nama Jurusan
+                                Nama Ujian Kejuruan
                                 </label>
                                 <input
                                     type="text"
-                                    v-model="major.name"
+                                    v-model="vocationalExam.name"
                                     id="name"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                     placeholder="Type major name here.."
@@ -142,16 +139,28 @@ export default defineComponent({
                             </div>
 
                             <div class="col-span-2 sm:col-span-1">
-                                <label for="teacher_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Jurusan</label>
-                                <select v-model="major.user_id" id="user_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:gray-600 dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                    <option value="">Select Teacher</option>
-                                    <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
-                                        {{teacher.name}}
-                                    </option>
-                                </select>
-                                <p v-if="errors.user_id" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.user_id }}</p>
+                                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Periode Ujian</label>
+                                <input
+                                    type="text"
+                                    v-model="vocationalExam.period"
+                                    id="name"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="type addition role here.."
+                                >
+                               <p v-if="errors.period" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.period }}</p>
                             </div>
 
+                            <div class="col-span-2">
+                                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tema Ujian</label>
+                                <input 
+                                    type="text" 
+                                    v-model="vocationalExam.description" 
+                                    id="name" 
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                                    placeholder="Tuliskan tema ujian.." 
+                                >
+                                    <p v-if="errors.description" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.description }}</p>
+                            </div>
 
                             <div class="relative flex mt-2 gap-2">
                                 <button

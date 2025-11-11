@@ -46,8 +46,8 @@
                     <flux:navlist.item href="#">Batasan Guru</flux:navlist.item>
                 </flux:navlist.group>
 
-                <flux:navlist.group expandable :expanded="false" heading="Management Jurusan" class="lg:grid">
-                    <flux:navlist.item :href="route('ujian-keahlian.index')" :current="request()->routeIs('ujian-keahlian.index')" wire:navigate> {{__('Ujian Keahlian')}} </flux:navlist.item>
+                <flux:navlist.group expandable :expanded="false" heading="Management UKK" class="lg:grid">
+                    <flux:navlist.item :href="route('ujian-keahlian.index')" :current="request()->routeIs('ujian-keahlian.index')" wire:navigate> {{__('Setting Ujian')}} </flux:navlist.item>
                     {{-- <flux:navlist.item :href="route('classrooms.index')" :current="request()->routeIs('classrooms.index')" wire:navigate> {{__('Kelas')}} </flux:navlist.item>
                     <flux:navlist.item :href="route('subjects.index')" :current="request()->routeIs('subjects.index')" wire:navigate> {{__('Mata Pelajaran')}} </flux:navlist.item>
                      <flux:navlist.item :href="route('schedules.index')" :current="request()->routeIs('schedules.index')" wire:navigate> {{__('Jadwal Pelajaran')}} </flux:navlist.item>
