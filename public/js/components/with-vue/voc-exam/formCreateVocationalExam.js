@@ -23,7 +23,7 @@ export default defineComponent({
     // keyword setup untuk settingan bagian dari component child dibutuhkan
     setup(props, {emit}) {
         // membuat state untuk menampung objek vocationExam dari fungsi reactive 
-        const vocationalExam = reactive({ name: '', description: '', period: '' })
+        const vocationalExam = reactive({ name: '', description: '', period: new Date().getFullYear() })
 
         // membuat state untuk menampung objek vocationExam dari fungsi reactive 
         const errors = reactive({ name: '', period: '', description: '' })
@@ -59,12 +59,13 @@ export default defineComponent({
 
                 let sendDataVacationExam = {
                     name: vocationalExam.name,
-                    period: vocationalExam.period,
+                    period:  vocationalExam.period,
                     description: vocationalExam.description
                 }
+
                 childIsLoading.value = true;
                 let result = await axios.post('/store-data-vocational-exam', sendDataVacationExam)
-                resetFields(vocationalExam)
+                resetFormCreate()
                 successNotification(result.data.message)
                 childIsLoading.value = false;
                 emit('reload')
@@ -83,6 +84,12 @@ export default defineComponent({
             }
         }
 
+        function resetFormCreate() {
+            vocationalExam.name = ''
+            vocationalExam.description = ''
+            vocationalExam.period = new Date().getFullYear()
+        }
+
         // event handler untuk close form create
         function closeCreateForm() {
            let isAnyFilled = Object.values(vocationalExam).some(value => {
@@ -93,13 +100,13 @@ export default defineComponent({
             if (isAnyFilled) {
                 cancelConfirmation('Yakin membatalkan?', (result)=> {
                     if (result.isConfirmed) {
-                        resetFields(vocationalExam); // reset field untuk object classroom
+                        resetFormCreate(); // reset field untuk object classroom
                         resetFields(errors); // reset field untuk object errors
                         emit('backTo', 'table')
                     }
                 });
             }else {
-                resetFields(vocationalExam);
+                resetFormCreate();
                 resetFields(errors);
                 emit('backTo', 'table')
             }
@@ -108,7 +115,7 @@ export default defineComponent({
         // keyword return untuk diekspose semua state dan event handler didalam template
         return {
             vocationalExam, storeVocationExam, errors, closeCreateForm, waitingProcess: childIsLoading,
-            fieldLabels
+            fieldLabels, resetFormCreate
         }
     },
 
@@ -144,7 +151,7 @@ export default defineComponent({
                                     type="text"
                                     v-model="vocationalExam.period"
                                     id="name"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    class="read-only cursor-not-allowed bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                     placeholder="type addition role here.."
                                 >
                                <p v-if="errors.period" class="mt-1 text-sm text-red-600 dark:text-red-500">{{ errors.period }}</p>

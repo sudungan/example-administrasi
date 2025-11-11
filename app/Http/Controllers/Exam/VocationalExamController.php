@@ -38,7 +38,7 @@ class VocationalExamController extends Controller
              $validator = Validator::make($request->all(), [
                 'period'                   => ['required'],
                 'description'               => 'required',
-                'name'                      => ['required', 'string', 'max:255', 'min:3', 'regex:/^[a-zA-Z\s]+$/','unique:' . VocationalExam::class],
+                'name'                      => ['required', 'string', 'max:255', 'min:3','unique:' . VocationalExam::class],
             ], [
                 'name.unique'           => 'Nama Jurusan sudah digunakan..',
                 'name.required'         => 'Nama Jurusan sudah digunakan..',

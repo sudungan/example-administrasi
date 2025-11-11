@@ -25,7 +25,6 @@ export default function stateVocationalExam() {
                 try {
                     const result = await axios.get('list-vocational-exam')
                     listVocationExam.value = result.data.data
-                    console.log('data', listVocationExam.value)
                     currentView.value = 'table'
                 } catch (error) {
                     console.log('error', error)
