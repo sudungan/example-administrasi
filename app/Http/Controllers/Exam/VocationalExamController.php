@@ -46,7 +46,7 @@ class VocationalExamController extends Controller
                 'name.regex'            => 'Nama Jurusan hanya boleh berisi huruf dan spasi.',
                 'description.required'  => 'Tema Ujian wajib disi..',
             ]);
-            
+
             // mengirimkan response json ketika request fail berdasarkan rule validasi
             if ($validator->fails()) {
                 return response()->json([
@@ -60,7 +60,7 @@ class VocationalExamController extends Controller
 
             // melakukan store data kedalam class model VocationalExam
             VocationalExam::create($validated);
-            
+
             // mengirimkan pesan sukses berbentuk json ke front-end
             return response()->json([
                 'message'   => 'Exam Created Successfully'
@@ -68,6 +68,56 @@ class VocationalExamController extends Controller
 
         } catch (\Exception $error) {
             //throw $th;
+        }
+    }
+
+    public function getExamById($examId) {
+        try {
+            $vocExam = VocationalExam::findOrFail($examId);
+            
+            return response()->json([
+                'message'   => 'get exam successfully', 
+                'data'      => $vocExam
+            ], HttpCode::OK);
+
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function updateExam(Request $request, $examId) {
+        try {
+            
+            return response()->json([
+                'message'   => 'update exam successfully', 
+                'data'      => ''
+            ], HttpCode::OK);
+
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function deleteVocationalExam($vocExamId) {
+        try {
+            $vocExam = VocationalExam::findOrFail($vocExamId);
+
+            // jika data exam sudah dipakai ditable lain kasih error conflict
+
+            // selain itu hapus
+            $vocExam->delete();
+
+            return response()->json([
+                'message'   => 'exam deleted succesfully'
+            ], HttpCode::OK);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message'   => $error->getMessage()
+            ], HttpCode::INTERNAL_SERVER_ERROR);
         }
     }
 }

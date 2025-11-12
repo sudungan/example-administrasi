@@ -20,7 +20,7 @@ Route::view('dashboard', 'dashboard')
 
 Route::middleware(['auth'])->group(function () {
     // ROUTE FOR SCHEDULE SUBJECT
-    Route::get('schedules', [ScheduleController::class, 'index'])->name('schedules.index');
+    Route::get('jadwal-pelajaran', [ScheduleController::class, 'index'])->name('schedules.index');
     Route::post('store-timetable', [ScheduleController::class, 'storeTimetable'])->name('store-timetable');
     Route::get('list-timetable', [ScheduleController::class, 'getListTimetable'])->name('list-timetable');
     Route::get('time-slot-by/{timeId}', [ScheduleController::class, 'getTimeSlotBy'])->name('time-slot-by');
@@ -29,7 +29,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // ROUTE FOR SUBJECT
-    Route::get('subjects', [SubjectController::class, 'index'])->name('subjects.index');
+    Route::get('mata-pelajaran', [SubjectController::class, 'index'])->name('subjects.index');
     Route::post('store-subject', [SubjectController::class, 'storeSubject'])->name('store-subject');
     Route::post('store-teacher-colour', [SubjectController::class, 'storeTeacherColour'])->name('store-teacher-colour');
     Route::get('check-base-colour-by/{teacherId}', [SubjectController::class, 'checkBaseTeacherSubject'])->name('check-base-colour-by');
@@ -53,7 +53,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('delete-classroom-by/{classroom}', [ClassroomController::class, 'deleteClassroomBy'])->name('delete-classroom-by');
 
     // ROUTE FOR ROLES
-    Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::get('jabatan', [RoleController::class, 'index'])->name('roles.index');
     Route::get('list-role', [RoleController::class, 'getListRole'])->name('list-role');
     Route::post('store-role', [RoleController::class, 'store'])->name('store-role');
     Route::get('edit-addition-role/{additionRoleId}', [RoleController::class, 'editAdditionRole'])->name('edit-addition-role');
@@ -61,7 +61,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('delete-addition-role/{additionRoleId}', [RoleController::class, 'deleteAdditionRole'])->name('delete-addition-role');
 
     // ROUTE FOR MAJORS
-    Route::get('majors', [MajorController::class, 'index'])->name('majors.index');
+    Route::get('jurusan', [MajorController::class, 'index'])->name('majors.index');
     Route::get('list-major', [MajorController::class, 'getListMajor'])->name('list-major');
     Route::get('edit-major/{majorId}', [MajorController::class, 'getMajorBy'])->name('edit-major');
     Route::get('list-teacher', [MajorController::class, 'getListTeacher'])->name('list-teacher');
@@ -72,7 +72,7 @@ Route::middleware(['auth'])->group(function () {
 
     // ROUTE FOR USERS
     Route::get('list-role-to-user', [UserController::class, 'getListRole'])->name('list-role-to-user');
-    Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::get('pengguna', [UserController::class, 'index'])->name('users.index');
     Route::post('store-data-user-general', [UserController::class, 'storeDataUserGeneral']);
     Route::get('edit-user-by/{userId}', [UserController::class, 'getEditUserBy'])->name('edit-user-by');
     Route::put('update-user-by/{userId}', [UserController::class, 'updateUserBy'])->name('update-user-by');
@@ -88,7 +88,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('ujian-keahlian',[VocationalExamController::class, 'index'])->name('ujian-keahlian.index');
     Route::get('list-vocational-exam',[VocationalExamController::class, 'getListVocationalExam'])->name('list-vocational-exam');
     Route::post('store-data-vocational-exam', [VocationalExamController::class, 'storeVocationalExam'])->name('store-data-vocational-exam');
-    
+    Route::delete('destroy-vocational-exam/{vocExamId}', [VocationalExamController::class,'deleteVocationalExam'])->name('destroy-vocational-exam');
+    Route::get('edit-exam-by/{examId}', [VocationalExamController::class, 'getExamById'])->name('');
+
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');

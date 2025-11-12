@@ -12,14 +12,31 @@ export default defineComponent({
             required: true
         }
     },
-    emits: [''],
+    emits: ['reload'],
     setup(props, {emit}) {
         function btnEditVocationalExam(examId) {
-            console.log('mau edit', examId)
+            emit('edit', examId)
         }
 
         function deleteConfirmation(examId) {
-            console.log('mau delete', examId)
+            confirmDelete('Yakin dihapus?', async (result)=>{
+                if(!result.isConfirmed) {
+                    return
+                }
+                await swalLoading('delete process..',async (result)=> {
+                    try {
+                        let result = await axios.delete(`/destroy-vocational-exam/${examId}`)
+                        successNotification(result.data.message)
+                        emit('reload')
+                    } catch (error) {
+                        if (error.response && error.response.status == 409) {
+                            swalNotificationConflict(error.response.data.message)
+                        }else {
+                            swalInternalServerError(error.response.data.message) // http code 500
+                        }
+                    }
+                });
+            })
         }
         return {
             btnEditVocationalExam, deleteConfirmation

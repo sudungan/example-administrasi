@@ -15,7 +15,7 @@ export default defineComponent({
         }
 
         const deleteConfirmation = (majorId)=> {
-             confirmDelete('Yakin dihapus?', async (result)=>{
+            confirmDelete('Yakin dihapus?', async (result)=>{
                 if(!result.isConfirmed) {
                     return
                 }

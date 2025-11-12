@@ -2,16 +2,18 @@
     import loadingTableVocationalExam from "./loadingTableVocationalExam.js"
     import dataTableVocationalExam from "./dataTableVocationalExam.js"
     import formCreateVocationalExam from "./formCreateVocationalExam.js"
+    import formEditVocationalExam from "./formEditVocationalExam.js"
 
 export default function stateVocationalExam() {
     createApp({
         components: {
             loadingTableVocationalExam, dataTableVocationalExam, 
-            formCreateVocationalExam
+            formCreateVocationalExam, formEditVocationalExam
         },
         setup() {
             const currentView = ref("loading-table")
             const listVocationExam = ref([])
+            const editExam = ref({ id: '', name: '', period: '', description: '' })
             const showFormCreate = () => currentView.value = 'create'
             const showTable = () =>  currentView.value = 'table'
             const isLoading = ref(false)
@@ -34,9 +36,20 @@ export default function stateVocationalExam() {
             const refreshListVocationalExam = async ()=> {
                 await getListVocationExam()
             }
+
+            const getEditExam = async(examId)=> {
+                try {
+                    const result = await axios.get(`edit-exam-by/${examId}`)
+                    editExam.value = result.data.data
+                    console.log('data', editExam.value)
+                    currentView.value = 'edit-exam-component'
+                } catch (error) {
+                    
+                }
+            }
             return {
                 showFormCreate, currentView, showTable, listVocationExam, refreshListVocationalExam,
-                isLoading
+                isLoading, getEditExam, editExam
             }
         },
         template: `
@@ -61,6 +74,8 @@ export default function stateVocationalExam() {
             <div v-cloak v-show="currentView === 'table'" class="relative shadow-md sm:rounded-lg">
                 <data-table-vocational-exam
                     :visable-card="currentView"
+                    @reload="refreshListVocationalExam"
+                    @edit="getEditExam"
                     :data-provide-by="listVocationExam"
                 />
             </div>
@@ -68,8 +83,19 @@ export default function stateVocationalExam() {
             <!-- komponent untuk show-list-subject-by-teacherId -->
 
 
-            <!-- komponent untuk form-create-ujian-keahlian -->
-
+            <!-- komponent untuk form-edit-ujian-keahlian -->
+            <div
+                v-cloak
+                v-show="currentView === 'edit-exam-component'"
+                class="flex fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <form-edit-vocational-exam
+                    :exam="editExam"
+                    :visable-card="currentView"
+                    :waiting-process="isLoading"
+                    @reload="refreshListVocationalExam"
+                    @back-to="currentView = $event"
+                />
+            </div>
 
             <!-- komponent untuk form-add-create-vocational-exam -->
              <div

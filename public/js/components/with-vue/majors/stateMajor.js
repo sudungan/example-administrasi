@@ -85,15 +85,11 @@ export default function stateMajor() {
 
             const getEditMajor = async(majorId)=> {
                 try {
-                     try {
-                        let result = await axios.get(`edit-major/${majorId}`);
-                        editDataMajor.value = result.data.data;
-                        currentView.value = 'edit';
-                    } catch (error) {
-                        console.log('data error',error)
-                    }
+                    let result = await axios.get(`edit-major/${majorId}`);
+                    editDataMajor.value = result.data.data;
+                    currentView.value = 'edit';
                 } catch (error) {
-                    console.log('error', error)
+                    console.log('data error',error)
                 }
             }
 
